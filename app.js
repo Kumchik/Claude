@@ -181,12 +181,17 @@ function buildPlateEl(shape, sections, clavishes, patternCls, plateColorHex, pat
     const sectionEl = document.createElement('div');
     sectionEl.className = 'plate-section';
     for (let c = 0; c < clavishes; c++){
+      const well = document.createElement('div');
+      well.className = 'lever-well';
+      well.style.width = `${leverDim.w}px`;
+      well.style.height = `${leverDim.h}px`;
+
       const lever = document.createElement('div');
       lever.className = 'key-lever' + (finishId === 'glossy' ? ' finish-glossy' : '');
       lever.style.setProperty('--lever-color', leverColorHex);
-      lever.style.width = `${leverDim.w}px`;
-      lever.style.height = `${leverDim.h}px`;
-      sectionEl.appendChild(lever);
+      well.appendChild(lever);
+
+      sectionEl.appendChild(well);
     }
     plate.appendChild(sectionEl);
   }
