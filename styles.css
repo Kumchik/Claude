@@ -241,7 +241,10 @@ button{ font-family:inherit; cursor:pointer; }
    cutout itself doesn't grow or stretch when sections/clavishes change,
    only the plate around it does. */
 .lever-well{
-  background: color-mix(in srgb, var(--plate-color) 55%, #000 45%);
+  /* darkened lever colour, not plate colour — the well is the socket the
+     lever sits in, so it should read as part of the lever, and shift
+     together with it when the lever's own colour changes */
+  background: color-mix(in srgb, var(--lever-color) 55%, #000 45%);
   border-radius: 50%;
   padding: 4px;
   display:flex; align-items:center; justify-content:center;

@@ -257,6 +257,11 @@ function buildPlateEl(shape, sections, clavishes, patternCls, plateColorHex, pat
       well.className = 'lever-well';
       well.style.width = `${leverDim.w}px`;
       well.style.height = `${leverDim.h}px`;
+      // set on the well (not just the dot) so the well's own darkened
+      // background is derived from --lever-color too, via CSS
+      // inheritance down to .lever-dot — the well is the "подложка" the
+      // lever sits in, and it should shift color together with it
+      well.style.setProperty('--lever-color', leverColorHex);
 
       // seen from straight above, the важелёк is just one flat-coloured
       // circle — the stick's cross-section, centred in its hole
@@ -264,7 +269,6 @@ function buildPlateEl(shape, sections, clavishes, patternCls, plateColorHex, pat
       lever.className = 'key-lever';
       const dot = document.createElement('div');
       dot.className = 'lever-dot' + (finishId === 'glossy' ? ' finish-glossy' : '');
-      dot.style.setProperty('--lever-color', leverColorHex);
       lever.appendChild(dot);
       well.appendChild(lever);
 
