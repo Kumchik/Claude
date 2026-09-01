@@ -3,12 +3,18 @@
    Плейсхолдер-ціни, курси валют і контакти: див. README.md,
    де описано, що саме потрібно замінити.
 
-   Модель товару: накладка — це одна пластина (без білої рамки-підкладки
-   навколо, реальні накладки монтуються впритул до стіни), всередині якої
-   в ряд стоять важельки — по одному на кожну секцію вимикача. Важелько
-   завжди має форму качельки (як справжній тумблер) і фарбується окремим
-   кольором, незалежно від форми самої накладки — так само, як у
-   реальному конструкторі printesso.com.
+   Модель товару: накладка — це одна товста друкована пластина (без білої
+   рамки-підкладки навколо, реальні накладки монтуються впритул до стіни),
+   всередині якої в ряд стоять важельки — по одному на кожну секцію
+   вимикача. Важелько завжди має форму качельки (як справжній тумблер) і
+   фарбується окремим кольором. Накладка має свій колір фону і окремий
+   колір паттерна (візерунок малюється поверх фону іншим кольором) — три
+   незалежні кольори разом, так само, як у реальному конструкторі
+   printesso.com. Квадратна форма — це стандартна прямокутна планка, яка
+   помітно розширюється під кілька секцій (як справжній подвійний/потрійний
+   вимикач); круг/хмаринка/печиво — декоративні силуети, які лишаються
+   компактними і просто трохи підростають, а важельки в них стають
+   тіснішими один до одного.
    ========================================================= */
 
 const SHAPES = [
@@ -59,14 +65,14 @@ const CURRENCIES = [
 ];
 
 const CATALOG = [
-  { name: 'Ранкова кава',    keys: 2, pattern: 'dots',     color: 'terracotta', lever: 'cream',      shape: 'square' },
-  { name: "М'ята свіжість",  keys: 1, pattern: 'solid',    color: 'mint',       lever: 'cream',      shape: 'circle' },
-  { name: 'Дискотека',       keys: 3, pattern: 'terrazzo', color: 'lilac',      lever: 'cream',      shape: 'cookie' },
-  { name: 'Скандинавія',     keys: 1, pattern: 'marble',   color: 'cream',      lever: 'sage',       shape: 'square' },
-  { name: 'Захід сонця',     keys: 2, pattern: 'waves',    color: 'coral',      lever: 'cream',      shape: 'cloud'  },
-  { name: 'Гірчичне поле',   keys: 4, pattern: 'stripes',  color: 'mustard',    lever: 'cream',      shape: 'square' },
-  { name: 'Нічне місто',     keys: 2, pattern: 'solid',    color: 'charcoal',   lever: 'mustard',    shape: 'circle' },
-  { name: 'Пудровий бриз',   keys: 1, pattern: 'dots',     color: 'blush',      lever: 'cream',      shape: 'cookie' },
+  { name: 'Ранкова кава',    keys: 2, pattern: 'dots',     color: 'terracotta', patternColor: 'cream', lever: 'cream',   shape: 'square' },
+  { name: "М'ята свіжість",  keys: 1, pattern: 'solid',    color: 'mint',       patternColor: 'cream', lever: 'cream',   shape: 'circle' },
+  { name: 'Дискотека',       keys: 3, pattern: 'terrazzo', color: 'lilac',      patternColor: 'cream', lever: 'cream',   shape: 'cookie' },
+  { name: 'Скандинавія',     keys: 1, pattern: 'marble',   color: 'cream',      patternColor: 'sage',  lever: 'sage',    shape: 'square' },
+  { name: 'Захід сонця',     keys: 2, pattern: 'waves',    color: 'coral',      patternColor: 'mustard', lever: 'cream', shape: 'cloud'  },
+  { name: 'Гірчичне поле',   keys: 4, pattern: 'stripes',  color: 'mustard',    patternColor: 'cream', lever: 'cream',   shape: 'square' },
+  { name: 'Нічне місто',     keys: 2, pattern: 'dots',     color: 'charcoal',   patternColor: 'sky',   lever: 'mustard', shape: 'circle' },
+  { name: 'Пудровий бриз',   keys: 1, pattern: 'dots',     color: 'blush',      patternColor: 'cream', lever: 'cream',   shape: 'cookie' },
 ];
 
 const FAQ = [
@@ -106,6 +112,7 @@ const state = {
   keys: 1,
   pattern: 'solid',
   color: 'coral',
+  patternColor: 'cream',
   leverColor: 'cream',
   finish: 'matte',
   currency: 'UAH',
@@ -134,35 +141,43 @@ function formatPrice(uahAmount){
    One "plate" = one real switch накладка: a single printed panel that
    widens to fit 1–4 lever cutouts side by side, exactly like a real
    single/double/triple-gang switch — not separate tiles glued together. */
+// "Квадрат" is a standard rectangular plate — it genuinely widens for
+// more sections, like a real double/triple-gang switch. The decorative
+// silhouettes (круг/хмаринка/печиво) stay compact — they just grow a
+// little and pack the levers closer, the way the reference photos show
+// a scalloped печиво накладка holding two switches without stretching
+// into a long stadium shape.
 const PLATE_SIZE = {
-  base:  { height: 100, lever: { w: 20, h: 42 }, widths: { 1: 100, 2: 172, 3: 244, 4: 316 } },
-  large: { height: 160, lever: { w: 32, h: 68 }, widths: { 1: 160, 2: 272, 3: 384, 4: 496 } },
+  base: {
+    height: 100,
+    rect:    { widths: { 1: 100, 2: 172, 3: 244, 4: 316 }, lever: { 1:{w:20,h:40}, 2:{w:20,h:40}, 3:{w:20,h:40}, 4:{w:20,h:40} } },
+    compact: { widths: { 1: 100, 2: 132, 3: 164, 4: 196 }, lever: { 1:{w:20,h:40}, 2:{w:16,h:34}, 3:{w:13,h:30}, 4:{w:11,h:26} } },
+  },
+  large: {
+    height: 160,
+    rect:    { widths: { 1: 160, 2: 272, 3: 384, 4: 496 }, lever: { 1:{w:32,h:64}, 2:{w:32,h:64}, 3:{w:32,h:64}, 4:{w:32,h:64} } },
+    compact: { widths: { 1: 160, 2: 208, 3: 256, 4: 304 }, lever: { 1:{w:32,h:64}, 2:{w:25,h:54}, 3:{w:20,h:46}, 4:{w:17,h:40} } },
+  },
 };
 
-// Круг/хмаринка/печиво тримають форму лише на 1 секції — розтягнуті на
-// кілька секцій ці силуети ламаються (гострі зубці замість хвиль тощо), і
-// реальні дво-/триклавішні накладки завжди прямокутні, тож із 2+ секціями
-// завжди друкуємо стандартний прямокутник незалежно від обраної форми.
-function effectiveShape(shape, count){
-  return count > 1 ? 'square' : shape;
-}
-
-function buildPlateEl(shape, count, patternCls, plateColorHex, leverColorHex, finishId, size){
+function buildPlateEl(shape, count, patternCls, plateColorHex, patternColorHex, leverColorHex, finishId, size){
   const dims = PLATE_SIZE[size === 'large' ? 'large' : 'base'];
-  const shownShape = effectiveShape(shape, count);
+  const table = shape === 'square' ? dims.rect : dims.compact;
+  const leverDim = table.lever[count] || table.lever[1];
 
   const plate = document.createElement('div');
-  plate.className = `switch-plate ${patternCls} shape-${shownShape}` + (size === 'large' ? ' plate-large' : '');
+  plate.className = `switch-plate ${patternCls} shape-${shape}` + (size === 'large' ? ' plate-large' : '');
   plate.style.setProperty('--plate-color', plateColorHex);
-  plate.style.width = `${dims.widths[count] || dims.widths[1]}px`;
+  plate.style.setProperty('--pattern-color', patternColorHex);
+  plate.style.width = `${table.widths[count] || table.widths[1]}px`;
   plate.style.height = `${dims.height}px`;
 
   for (let i = 0; i < count; i++){
     const lever = document.createElement('div');
     lever.className = 'key-lever' + (finishId === 'glossy' ? ' finish-glossy' : '');
     lever.style.setProperty('--lever-color', leverColorHex);
-    lever.style.width = `${dims.lever.w}px`;
-    lever.style.height = `${dims.lever.h}px`;
+    lever.style.width = `${leverDim.w}px`;
+    lever.style.height = `${leverDim.h}px`;
     plate.appendChild(lever);
   }
   return plate;
@@ -196,9 +211,10 @@ function renderCatalog(){
     card.className = 'catalog-card';
 
     const color = getColor(item.color);
+    const patternColor = getColor(item.patternColor);
     const lever = getColor(item.lever);
     const pattern = getPattern(item.pattern);
-    card.appendChild(buildPlateEl(item.shape, item.keys, pattern.cls, color.hex, lever.hex, 'matte'));
+    card.appendChild(buildPlateEl(item.shape, item.keys, pattern.cls, color.hex, patternColor.hex, lever.hex, 'matte'));
 
     const h3 = document.createElement('h3');
     h3.textContent = item.name;
@@ -218,6 +234,7 @@ function renderCatalog(){
       state.keys = item.keys;
       state.pattern = item.pattern;
       state.color = item.color;
+      state.patternColor = item.patternColor;
       state.leverColor = item.lever;
       renderOptions();
       updatePreview();
@@ -258,7 +275,6 @@ function renderOptions(){
     btn.addEventListener('click', () => { state.shape = s.id; renderOptions(); updatePreview(); });
     shapeRow.appendChild(btn);
   });
-  document.getElementById('shapeHint').hidden = state.keys <= 1;
 
   // number of sections
   const keysRow = document.getElementById('optKeys');
@@ -271,7 +287,7 @@ function renderOptions(){
     keysRow.appendChild(btn);
   });
 
-  // pattern (overlay only — the lever stays a plain colour, like the reference)
+  // pattern
   const patternRow = document.getElementById('optPattern');
   patternRow.innerHTML = '';
   PATTERNS.forEach(p => {
@@ -280,6 +296,7 @@ function renderOptions(){
     const swatch = document.createElement('div');
     swatch.className = `swatch ${p.cls}`;
     swatch.style.setProperty('--plate-color', getColor(state.color).hex);
+    swatch.style.setProperty('--pattern-color', getColor(state.patternColor).hex);
     btn.appendChild(swatch);
     const label = document.createElement('span');
     label.textContent = p.name;
@@ -288,9 +305,16 @@ function renderOptions(){
     patternRow.appendChild(btn);
   });
 
-  // overlay colour
+  // overlay (накладка) colour
   renderColorRow(document.getElementById('optColor'), state.color, (id) => {
     state.color = id; renderOptions(); updatePreview();
+  });
+
+  // pattern colour — only matters once a pattern other than "Однотон" is picked
+  const patternColorStep = document.getElementById('patternColorStep');
+  patternColorStep.hidden = state.pattern === 'solid';
+  renderColorRow(document.getElementById('optPatternColor'), state.patternColor, (id) => {
+    state.patternColor = id; renderOptions(); updatePreview();
   });
 
   // lever colour — separate palette pick, same swatches
@@ -313,17 +337,18 @@ function renderOptions(){
 /* ---------------- live preview ---------------- */
 function updatePreview(){
   const color = getColor(state.color);
+  const patternColor = getColor(state.patternColor);
   const lever = getColor(state.leverColor);
   const pattern = getPattern(state.pattern);
 
   const plateHolder = document.getElementById('livePreviewPlate');
-  const newPlate = buildPlateEl(state.shape, state.keys, pattern.cls, color.hex, lever.hex, state.finish, 'large');
+  const newPlate = buildPlateEl(state.shape, state.keys, pattern.cls, color.hex, patternColor.hex, lever.hex, state.finish, 'large');
   newPlate.id = 'livePreviewPlate';
   plateHolder.replaceWith(newPlate);
 
   document.getElementById('metaShape').textContent = getShape(state.shape).name;
   document.getElementById('metaKeys').textContent = state.keys;
-  document.getElementById('metaPattern').textContent = pattern.name;
+  document.getElementById('metaPattern').textContent = pattern.id === 'solid' ? pattern.name : `${pattern.name}, ${patternColor.name}`;
   document.getElementById('metaColor').textContent = color.name;
   document.getElementById('metaLeverColor').textContent = lever.name;
   document.getElementById('metaFinish').textContent = getFinish(state.finish).name;
@@ -375,6 +400,7 @@ const TELEGRAM_USERNAME = 'your_shop_username'; // TODO: замініть на �
 
 function buildSummary(){
   const color = getColor(state.color);
+  const patternColor = getColor(state.patternColor);
   const lever = getColor(state.leverColor);
   const pattern = getPattern(state.pattern);
   const finish = getFinish(state.finish);
@@ -384,12 +410,15 @@ function buildSummary(){
     'Заявка на накладку Waveform:',
     `— Форма: ${getShape(state.shape).name}`,
     `— Секцій: ${state.keys}`,
-    `— Візерунок накладки: ${pattern.name}`,
+    `— Візерунок: ${pattern.name}`,
     `— Колір накладки: ${color.name} (${color.hex})`,
+  ];
+  if (pattern.id !== 'solid') lines.push(`— Колір візерунка: ${patternColor.name} (${patternColor.hex})`);
+  lines.push(
     `— Колір важелька: ${lever.name} (${lever.hex})`,
     `— Покриття: ${finish.name}`,
     `— Разом: ${formatPrice(priceUAH)} (валюта: ${state.currency})`,
-  ];
+  );
   if (comment) lines.push(`— Коментар/заміри: ${comment}`);
   return lines.join('\n');
 }

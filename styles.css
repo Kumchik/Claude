@@ -185,17 +185,21 @@ button{ font-family:inherit; cursor:pointer; }
 
 .switch-plate{
   --plate-color: #FF6B6B;
+  --pattern-color: #FFF9F2;
   background: var(--plate-color);
   display:flex;
   align-items:center;
   justify-content:center;
-  gap: 14px;
+  gap: 10px;
   position:relative;
-  overflow:hidden;
   flex-shrink: 0;
-  box-shadow: var(--shadow-soft), inset 0 2px 6px rgba(0,0,0,0.12), inset 0 -3px 8px rgba(255,255,255,0.15);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.12), inset 0 -3px 8px rgba(255,255,255,0.15);
+  /* drop-shadow (unlike box-shadow) hugs the clip-path silhouette too,
+     giving every shape — including печиво's scallop — the look of a
+     thick printed block sitting proud of the wall */
+  filter: drop-shadow(0 3px 0 rgba(0,0,0,0.12)) drop-shadow(0 10px 18px rgba(36,31,46,0.2));
 }
-.switch-plate.plate-large{ gap: 22px; }
+.switch-plate.plate-large{ gap: 16px; }
 
 .key-lever{
   --lever-color: #F7F4EE;
@@ -228,30 +232,37 @@ button{ font-family:inherit; cursor:pointer; }
   clip-path: polygon(96.6% 65.1%, 83.9% 76.5%, 76.0% 91.6%, 58.9% 92.1%, 43.2% 98.5%, 29.8% 88.0%, 13.6% 82.8%, 10.1% 66.1%, 1.0% 51.7%, 9.1% 36.7%, 11.4% 19.8%, 27.2% 13.5%, 39.8% 2.1%, 56.0% 7.4%, 73.0% 6.7%, 82.0% 21.2%, 95.4% 31.6%, 93.0% 48.5%);
 }
 
+/* Patterns paint with --pattern-color on top of the накладка's own
+   --plate-color background — a separate, independently-chosen colour,
+   same as the reference configurator's "колір паттерна". The exact motifs
+   here are a stand-in (any pattern works, per the reference photos) —
+   what matters is the block/cutout form factor around them. */
 .pattern-solid{ }
 .pattern-dots{
-  background-image: radial-gradient(rgba(255,255,255,0.55) 22%, transparent 24%), linear-gradient(var(--plate-color), var(--plate-color));
+  background-image: radial-gradient(var(--pattern-color) 22%, transparent 24%), linear-gradient(var(--plate-color), var(--plate-color));
   background-size: 16px 16px;
 }
 .pattern-stripes{
-  background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.4) 0 8px, transparent 8px 18px), linear-gradient(var(--plate-color), var(--plate-color));
+  background-image: repeating-linear-gradient(135deg, var(--pattern-color) 0 8px, transparent 8px 18px), linear-gradient(var(--plate-color), var(--plate-color));
 }
 .pattern-waves{
-  background-image: radial-gradient(circle at 0 100%, transparent 11px, rgba(255,255,255,0.5) 12px, rgba(255,255,255,0.5) 14px, transparent 15px),
-                     radial-gradient(circle at 24px 0, transparent 11px, rgba(255,255,255,0.5) 12px, rgba(255,255,255,0.5) 14px, transparent 15px),
+  background-image: radial-gradient(circle at 0 100%, transparent 11px, var(--pattern-color) 12px, var(--pattern-color) 14px, transparent 15px),
+                     radial-gradient(circle at 24px 0, transparent 11px, var(--pattern-color) 12px, var(--pattern-color) 14px, transparent 15px),
                      linear-gradient(var(--plate-color), var(--plate-color));
   background-size: 24px 24px;
 }
 .pattern-marble{
-  background-image: linear-gradient(135deg, rgba(255,255,255,0.55) 0%, transparent 30%, transparent 60%, rgba(0,0,0,0.08) 100%),
+  background-image: linear-gradient(135deg, var(--pattern-color) 0%, transparent 35%, transparent 65%, var(--pattern-color) 100%),
                      linear-gradient(var(--plate-color), var(--plate-color));
+  opacity: 1;
 }
+.pattern-marble{ background-blend-mode: soft-light; }
 .pattern-terrazzo{
   background-image:
-    radial-gradient(circle at 15% 25%, rgba(255,255,255,0.7) 3px, transparent 4px),
-    radial-gradient(circle at 70% 60%, rgba(255,255,255,0.6) 4px, transparent 5px),
-    radial-gradient(circle at 40% 80%, rgba(0,0,0,0.12) 3px, transparent 4px),
-    radial-gradient(circle at 85% 20%, rgba(0,0,0,0.1) 2.5px, transparent 3.5px),
+    radial-gradient(circle at 15% 25%, var(--pattern-color) 3px, transparent 4px),
+    radial-gradient(circle at 70% 60%, var(--pattern-color) 4px, transparent 5px),
+    radial-gradient(circle at 40% 80%, var(--pattern-color) 3px, transparent 4px),
+    radial-gradient(circle at 85% 20%, var(--pattern-color) 2.5px, transparent 3.5px),
     linear-gradient(var(--plate-color), var(--plate-color));
   background-size: 60px 60px;
 }
@@ -308,6 +319,7 @@ button{ font-family:inherit; cursor:pointer; }
   display:flex; flex-direction:column; gap: 28px;
 }
 .config-step{ display:flex; flex-direction:column; gap: 14px; }
+.config-step[hidden]{ display:none; }
 .step-label{ font-weight:700; display:flex; align-items:center; gap:10px; font-size:1.02rem; }
 .step-label em{ color: var(--ink-soft); font-style:normal; font-weight:500; font-size:.85rem; }
 .step-num{
