@@ -54,11 +54,10 @@ const FINISHES = [
 
 // Базові ціни вказані в гривнях (UAH) — це "домашня" валюта прайсу,
 // з якої курсом перераховуються EUR і USD (див. CURRENCIES нижче).
-// Ціна росте з кількістю секцій (окремих корпусів вимикачів під однією
-// накладкою); друга клавіша в секції — невелика доплата за той самий
-// корпус (рамка не стає більшою, тож і доплата менша, ніж за секцію).
+// Ціна залежить лише від кількості секцій (окремих корпусів вимикачів під
+// однією накладкою) — друга клавіша в тій самій секції не збільшує рамку
+// й не впливає на ціну.
 const SECTION_BASE_PRICE = { 1: 599, 2: 990, 3: 1390, 4: 1750 };
-const SECOND_CLAVISH_SURCHARGE_PER_SECTION = 90;
 
 // Курси — orієнтовні і застарівають, підставте актуальні перед публікацією
 // (або замініть на окремий прайс під кожен ринок замість автоконвертації).
@@ -129,12 +128,11 @@ function getPattern(id){ return PATTERNS.find(p => p.id === id); }
 function getFinish(id){ return FINISHES.find(f => f.id === id); }
 function getCurrency(code){ return CURRENCIES.find(c => c.code === code); }
 
-function calcPriceUAH(sections, clavishes, patternId, finishId){
+function calcPriceUAH(sections, patternId, finishId){
   const base = SECTION_BASE_PRICE[sections] || SECTION_BASE_PRICE[1];
-  const clavishFee = clavishes === 2 ? SECOND_CLAVISH_SURCHARGE_PER_SECTION * sections : 0;
   const patternFee = getPattern(patternId).surcharge;
   const finishFee = getFinish(finishId).surcharge;
-  return base + clavishFee + patternFee + finishFee;
+  return base + patternFee + finishFee;
 }
 
 function formatPrice(uahAmount){
@@ -234,7 +232,7 @@ function renderCatalog(){
 
     const price = document.createElement('span');
     price.className = 'price';
-    const baseUAH = calcPriceUAH(item.sections, item.clavishes, item.pattern, 'matte');
+    const baseUAH = calcPriceUAH(item.sections, item.pattern, 'matte');
     price.textContent = `від ${formatPrice(baseUAH)}`;
     card.appendChild(price);
 
@@ -309,7 +307,7 @@ function renderOptions(){
   [1, 2].forEach(n => {
     const btn = document.createElement('button');
     btn.className = 'opt-pill' + (state.clavishes === n ? ' active' : '');
-    btn.textContent = clavishLabel(n) + (n === 2 ? ` (+${formatPrice(SECOND_CLAVISH_SURCHARGE_PER_SECTION * state.sections)})` : '');
+    btn.textContent = clavishLabel(n);
     btn.addEventListener('click', () => { state.clavishes = n; renderOptions(); updatePreview(); });
     clavishRow.appendChild(btn);
   });
@@ -381,7 +379,7 @@ function updatePreview(){
   document.getElementById('metaLeverColor').textContent = lever.name;
   document.getElementById('metaFinish').textContent = getFinish(state.finish).name;
 
-  const priceUAH = calcPriceUAH(state.sections, state.clavishes, state.pattern, state.finish);
+  const priceUAH = calcPriceUAH(state.sections, state.pattern, state.finish);
   const priceLabel = formatPrice(priceUAH);
   document.getElementById('metaPrice').textContent = priceLabel;
   document.getElementById('orderBtnPrice').textContent = priceLabel;
@@ -433,7 +431,7 @@ function buildSummary(){
   const pattern = getPattern(state.pattern);
   const finish = getFinish(state.finish);
   const comment = document.getElementById('orderComment').value.trim();
-  const priceUAH = calcPriceUAH(state.sections, state.clavishes, state.pattern, state.finish);
+  const priceUAH = calcPriceUAH(state.sections, state.pattern, state.finish);
   const lines = [
     'Заявка на накладку Waveform:',
     `— Форма: ${getShape(state.shape).name}`,

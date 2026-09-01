@@ -237,7 +237,10 @@ button{ font-family:inherit; cursor:pointer; }
 /* the four selectable plate silhouettes — a wider plate (more sections)
    just stretches the same shape, the way a real double/triple gang
    накладка is a stretched single-gang one */
-.shape-square{ border-radius: 20%; }
+/* fixed px radius (not %) — so the corners stay the same size as the
+   plate widens for 2-4 sections, instead of ballooning into a pill */
+.shape-square{ border-radius: 20px; }
+.plate-large.shape-square{ border-radius: 30px; }
 .shape-circle{ border-radius: 50%; }
 .shape-cloud{ border-radius: 60% 40% 55% 45% / 40% 55% 45% 60%; }
 .shape-cookie{
@@ -314,8 +317,12 @@ button{ font-family:inherit; cursor:pointer; }
 
 /* ---------- configurator ---------- */
 .configurator{
-  display:grid; grid-template-columns: 340px 1fr; gap: 44px; align-items:start;
+  display:grid; grid-template-columns: 340px 1fr; gap: 44px;
+  /* NOT align-items:start — the preview column must stretch to the full
+     height of the (much taller) options column, or its sticky child has
+     no room to travel and never actually stays on screen while scrolling */
 }
+.configurator-preview{ align-self: stretch; }
 .preview-sticky{ position: sticky; top: 100px; display:flex; flex-direction:column; align-items:center; gap: 24px; }
 .preview-meta{
   width: 100%; background: var(--card); border-radius: var(--radius-md);
@@ -330,8 +337,11 @@ button{ font-family:inherit; cursor:pointer; }
   background: var(--card); border-radius: var(--radius-lg); padding: 36px;
   box-shadow: var(--shadow-card);
   display:flex; flex-direction:column; gap: 28px;
+  min-width: 0; /* grid/flex items default to min-width:auto, which lets
+    an intrinsically-sized child (the comment <textarea> below) force
+    this whole column wider than the page instead of shrinking to fit */
 }
-.config-step{ display:flex; flex-direction:column; gap: 14px; }
+.config-step{ display:flex; flex-direction:column; gap: 14px; min-width: 0; }
 .config-step[hidden]{ display:none; }
 .step-label{ font-weight:700; display:flex; align-items:center; gap:10px; font-size:1.02rem; }
 .step-label em{ color: var(--ink-soft); font-style:normal; font-weight:500; font-size:.85rem; }
@@ -377,7 +387,7 @@ button{ font-family:inherit; cursor:pointer; }
 }
 
 .order-comment{
-  width:100%; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+  width:100%; min-width: 0; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
   padding: 12px 14px; font-family:inherit; font-size:.95rem; resize: vertical;
 }
 .order-comment:focus{ outline:none; border-color: var(--coral); }
@@ -453,7 +463,18 @@ button{ font-family:inherit; cursor:pointer; }
   .hero-inner{ grid-template-columns: 1fr; }
   .hero-visual{ order:-1; }
   .configurator{ grid-template-columns: 1fr; }
-  .preview-sticky{ position: static; }
+  /* Single column now means .configurator-preview and .configurator-controls
+     become two separate grid rows, each sized to only its own content —
+     so .preview-sticky's containing block (its direct parent) would be
+     short and sticky would have no room to travel. display:contents
+     removes that wrapper from the box tree (keeping it in the DOM) so
+     .preview-sticky is promoted to sit directly in .configurator's own
+     block, which spans the combined height of the preview AND every
+     option below it — giving the floating result room to actually stay
+     on screen while the customer scrolls through the whole configurator,
+     instead of scrolling back up to check what they built. */
+  .configurator-preview{ display: contents; }
+  .preview-sticky{ top: 88px; z-index: 5; padding-bottom: 4px; }
   .catalog-grid{ grid-template-columns: repeat(2,1fr); }
   .benefits-grid{ grid-template-columns: repeat(2,1fr); }
   .steps-grid{ grid-template-columns: repeat(2,1fr); }
@@ -470,6 +491,18 @@ button{ font-family:inherit; cursor:pointer; }
   .burger{ display:flex; }
   .header-cta{ display:none; }
   .currency-toggle button{ padding:6px 8px; font-size:.72rem; }
+  /* the floating preview gets a background of its own here, since on a
+     single-column layout it now sits on top of the options scrolling
+     underneath it, and collapses its attribute list to just the price
+     so it stays a small, unobtrusive strip rather than covering the
+     whole screen while the customer keeps configuring below it */
+  .preview-sticky{
+    background: rgba(255,249,242,0.94); backdrop-filter: blur(6px);
+    border-radius: var(--radius-md); padding: 12px 12px 4px; gap: 10px;
+  }
+  .preview-meta{ padding: 10px 16px; }
+  .preview-meta .preview-row:not(.preview-price){ display:none; }
+  .preview-divider{ display:none; }
   .catalog-grid{ grid-template-columns: 1fr; }
   .benefits-grid{ grid-template-columns: 1fr; }
   .steps-grid{ grid-template-columns: 1fr; }
