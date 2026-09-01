@@ -3,18 +3,19 @@
    Плейсхолдер-ціни, курси валют і контакти: див. README.md,
    де описано, що саме потрібно замінити.
 
-   Модель товару: накладка — це одна товста друкована пластина (без білої
-   рамки-підкладки навколо, реальні накладки монтуються впритул до стіни),
-   всередині якої в ряд стоять важельки — по одному на кожну секцію
-   вимикача. Важелько завжди має форму качельки (як справжній тумблер) і
-   фарбується окремим кольором. Накладка має свій колір фону і окремий
-   колір паттерна (візерунок малюється поверх фону іншим кольором) — три
-   незалежні кольори разом, так само, як у реальному конструкторі
-   printesso.com. Квадратна форма — це стандартна прямокутна планка, яка
-   помітно розширюється під кілька секцій (як справжній подвійний/потрійний
-   вимикач); круг/хмаринка/печиво — декоративні силуети, які лишаються
-   компактними і просто трохи підростають, а важельки в них стають
-   тіснішими один до одного.
+   Модель товару (уточнено за реальними вимикачами, не лише фото):
+   накладка — квадратна (чи іншої силуетної форми) товста друкована
+   пластина з прямокутним вирізом (закругленими кутами) по центру, крізь
+   який стирчить важелёк — окремий елемент, що клеїться прямо на сам
+   вимикач. Один фізичний корпус вимикача ("секція") має ОДИН РОЗМІР
+   рамки незалежно від того, скільки в ньому клавіш: 1 клавіша — один
+   виріз, 2 клавіші — два вирізи в тій самій рамці (рамка не стає
+   ширшою!). А ось коли поруч стоїть кілька окремих корпусів вимикачів
+   (група), накладка справді розширюється на кожен додатковий корпус —
+   це і є "кількість секцій". Тобто підсумкова кількість важельків =
+   секції × клавіші в секції, згруповані по секціях (важельки однієї
+   секції стоять близько один до одного, а різні секції — з більшим
+   проміжком, як окремі корпуси на стіні).
    ========================================================= */
 
 const SHAPES = [
@@ -53,8 +54,11 @@ const FINISHES = [
 
 // Базові ціни вказані в гривнях (UAH) — це "домашня" валюта прайсу,
 // з якої курсом перераховуються EUR і USD (див. CURRENCIES нижче).
-// Ціна залежить від кількості секцій — кожна секція друкується окремим модулем.
-const KEY_BASE_PRICE = { 1: 599, 2: 990, 3: 1390, 4: 1750 };
+// Ціна росте з кількістю секцій (окремих корпусів вимикачів під однією
+// накладкою); друга клавіша в секції — невелика доплата за той самий
+// корпус (рамка не стає більшою, тож і доплата менша, ніж за секцію).
+const SECTION_BASE_PRICE = { 1: 599, 2: 990, 3: 1390, 4: 1750 };
+const SECOND_CLAVISH_SURCHARGE_PER_SECTION = 90;
 
 // Курси — orієнтовні і застарівають, підставте актуальні перед публікацією
 // (або замініть на окремий прайс під кожен ринок замість автоконвертації).
@@ -65,28 +69,28 @@ const CURRENCIES = [
 ];
 
 const CATALOG = [
-  { name: 'Ранкова кава',    keys: 2, pattern: 'dots',     color: 'terracotta', patternColor: 'cream', lever: 'cream',   shape: 'square' },
-  { name: "М'ята свіжість",  keys: 1, pattern: 'solid',    color: 'mint',       patternColor: 'cream', lever: 'cream',   shape: 'circle' },
-  { name: 'Дискотека',       keys: 3, pattern: 'terrazzo', color: 'lilac',      patternColor: 'cream', lever: 'cream',   shape: 'cookie' },
-  { name: 'Скандинавія',     keys: 1, pattern: 'marble',   color: 'cream',      patternColor: 'sage',  lever: 'sage',    shape: 'square' },
-  { name: 'Захід сонця',     keys: 2, pattern: 'waves',    color: 'coral',      patternColor: 'mustard', lever: 'cream', shape: 'cloud'  },
-  { name: 'Гірчичне поле',   keys: 4, pattern: 'stripes',  color: 'mustard',    patternColor: 'cream', lever: 'cream',   shape: 'square' },
-  { name: 'Нічне місто',     keys: 2, pattern: 'dots',     color: 'charcoal',   patternColor: 'sky',   lever: 'mustard', shape: 'circle' },
-  { name: 'Пудровий бриз',   keys: 1, pattern: 'dots',     color: 'blush',      patternColor: 'cream', lever: 'cream',   shape: 'cookie' },
+  { name: 'Ранкова кава',    sections: 1, clavishes: 2, pattern: 'dots',     color: 'terracotta', patternColor: 'cream',   lever: 'cream',   shape: 'square' },
+  { name: "М'ята свіжість",  sections: 1, clavishes: 1, pattern: 'solid',    color: 'mint',       patternColor: 'cream',   lever: 'cream',   shape: 'circle' },
+  { name: 'Дискотека',       sections: 2, clavishes: 1, pattern: 'terrazzo', color: 'lilac',      patternColor: 'cream',   lever: 'cream',   shape: 'cookie' },
+  { name: 'Скандинавія',     sections: 1, clavishes: 1, pattern: 'marble',   color: 'cream',      patternColor: 'sage',    lever: 'sage',    shape: 'square' },
+  { name: 'Захід сонця',     sections: 1, clavishes: 2, pattern: 'waves',    color: 'coral',      patternColor: 'mustard', lever: 'cream',   shape: 'cloud'  },
+  { name: 'Гірчичне поле',   sections: 3, clavishes: 1, pattern: 'stripes',  color: 'mustard',    patternColor: 'cream',   lever: 'cream',   shape: 'square' },
+  { name: 'Нічне місто',     sections: 2, clavishes: 2, pattern: 'dots',     color: 'charcoal',   patternColor: 'sky',     lever: 'mustard', shape: 'square' },
+  { name: 'Пудровий бриз',   sections: 1, clavishes: 2, pattern: 'dots',     color: 'blush',      patternColor: 'cream',   lever: 'cream',   shape: 'cookie' },
 ];
 
 const FAQ = [
   {
-    q: 'Як зрозуміти, скільки секцій у мого вимикача?',
-    a: 'Порахуйте кількість окремих клавіш або розеток на панелі — зазвичай від 1 до 4. Кожна клавіша чи розетка — це одна секція. Якщо сумніваєтесь, надішліть нам фото вимикача в месенджері, і ми підкажемо.'
+    q: 'У чому різниця між "секціями" і "клавішами в секції"?',
+    a: 'Секція — це один окремий корпус вимикача на стіні; кожна додаткова секція розширює накладку. Клавіші в секції — це кількість важельків усередині одного й того самого корпусу: 1 чи 2 клавіші в одному корпусі мають однаковий розмір рамки, просто з одним чи двома вирізами. Якщо у вас поруч стоять два окремих вимикачі — це 2 секції; якщо один здвоєний вимикач — це 1 секція з 2 клавішами.'
   },
   {
     q: 'Чи підійде накладка до мого вимикача?',
-    a: 'Друкуємо під точні розміри — плоскі й випуклі вимикачі, з 1–4 секціями, включно з розетками. При оформленні замовлення надішлемо інструкцію, як виміряти ширину, висоту й виступ від стіни, щоб накладка сіла ідеально.'
+    a: 'Друкуємо під точні розміри — плоскі й випуклі вимикачі, до 4 секцій, включно з розетками. При оформленні замовлення надішлемо інструкцію, як виміряти ширину, висоту й виступ від стіни, щоб накладка сіла ідеально.'
   },
   {
     q: 'З яких частин складається комплект і як його встановлювати?',
-    a: 'У комплекті дві частини: маленькі декоративні важельки та рамка з вирізами під секції. Важельки приклеюються прямо на існуючі клавіші вашого вимикача, а рамка після цього просто клацає зверху на штатні кріплення. Розбирати механізм вимикача чи викликати електрика не потрібно.'
+    a: 'У комплекті дві частини: маленькі декоративні важельки та накладка з прямокутними вирізами (закругленими кутами) під кожну клавішу. Важельки приклеюються прямо на існуючі клавіші вашого вимикача — крізь виріз накладки, а сама накладка після цього просто клацає зверху на штатні кріплення. Розбирати механізм вимикача чи викликати електрика не потрібно.'
   },
   {
     q: 'З якого матеріалу друкуєте?',
@@ -98,7 +102,7 @@ const FAQ = [
   },
   {
     q: 'Чи можна замовити колір поза палітрою конструктора?',
-    a: 'Так, палітра в конструкторі — це основні варіанти. Надішліть референс або код кольору (HEX/RAL/Pantone) у повідомленні до замовлення — підберемо максимально близько, окремо для накладки і окремо для важелька.'
+    a: 'Так, палітра в конструкторі — це основні варіанти. Надішліть референс або код кольору (HEX/RAL/Pantone) у повідомленні до замовлення — підберемо максимально близько, окремо для накладки, окремо для візерунка і окремо для важелька.'
   },
   {
     q: 'В якій валюті ціни і як відбувається оплата?',
@@ -109,7 +113,8 @@ const FAQ = [
 /* ---------------- state ---------------- */
 const state = {
   shape: 'square',
-  keys: 1,
+  sections: 1,
+  clavishes: 1,
   pattern: 'solid',
   color: 'coral',
   patternColor: 'cream',
@@ -124,11 +129,12 @@ function getPattern(id){ return PATTERNS.find(p => p.id === id); }
 function getFinish(id){ return FINISHES.find(f => f.id === id); }
 function getCurrency(code){ return CURRENCIES.find(c => c.code === code); }
 
-function calcPriceUAH(keys, patternId, finishId){
-  const base = KEY_BASE_PRICE[keys] || KEY_BASE_PRICE[1];
+function calcPriceUAH(sections, clavishes, patternId, finishId){
+  const base = SECTION_BASE_PRICE[sections] || SECTION_BASE_PRICE[1];
+  const clavishFee = clavishes === 2 ? SECOND_CLAVISH_SURCHARGE_PER_SECTION * sections : 0;
   const patternFee = getPattern(patternId).surcharge;
   const finishFee = getFinish(finishId).surcharge;
-  return base + patternFee + finishFee;
+  return base + clavishFee + patternFee + finishFee;
 }
 
 function formatPrice(uahAmount){
@@ -138,47 +144,53 @@ function formatPrice(uahAmount){
 }
 
 /* ---------------- rendering helpers ----------------
-   One "plate" = one real switch накладка: a single printed panel that
-   widens to fit 1–4 lever cutouts side by side, exactly like a real
-   single/double/triple-gang switch — not separate tiles glued together. */
+   .switch-plate = the whole printed panel, sized by section count.
+     .plate-section = one physical switch corpus's slot — fixed-share
+       width regardless of clavishes, so 1 vs 2 clavishes never resizes
+       the corpus, only how tight its own levers sit together.
+         .key-lever = the rocker cap glued onto the real toggle. */
 // "Квадрат" is a standard rectangular plate — it genuinely widens for
 // more sections, like a real double/triple-gang switch. The decorative
 // silhouettes (круг/хмаринка/печиво) stay compact — they just grow a
-// little and pack the levers closer, the way the reference photos show
-// a scalloped печиво накладка holding two switches without stretching
-// into a long stadium shape.
+// little, the way the reference photos show a scalloped печиво
+// накладка holding two switches without stretching into a long stadium.
 const PLATE_SIZE = {
   base: {
     height: 100,
-    rect:    { widths: { 1: 100, 2: 172, 3: 244, 4: 316 }, lever: { 1:{w:20,h:40}, 2:{w:20,h:40}, 3:{w:20,h:40}, 4:{w:20,h:40} } },
-    compact: { widths: { 1: 100, 2: 132, 3: 164, 4: 196 }, lever: { 1:{w:20,h:40}, 2:{w:16,h:34}, 3:{w:13,h:30}, 4:{w:11,h:26} } },
+    rect:    { widths: { 1: 100, 2: 172, 3: 244, 4: 316 }, lever: { 1:{w:22,h:42}, 2:{w:15,h:38} } },
+    compact: { widths: { 1: 100, 2: 132, 3: 164, 4: 196 }, lever: { 1:{w:20,h:38}, 2:{w:13,h:32} } },
   },
   large: {
     height: 160,
-    rect:    { widths: { 1: 160, 2: 272, 3: 384, 4: 496 }, lever: { 1:{w:32,h:64}, 2:{w:32,h:64}, 3:{w:32,h:64}, 4:{w:32,h:64} } },
-    compact: { widths: { 1: 160, 2: 208, 3: 256, 4: 304 }, lever: { 1:{w:32,h:64}, 2:{w:25,h:54}, 3:{w:20,h:46}, 4:{w:17,h:40} } },
+    rect:    { widths: { 1: 160, 2: 272, 3: 384, 4: 496 }, lever: { 1:{w:34,h:66}, 2:{w:23,h:58} } },
+    compact: { widths: { 1: 160, 2: 208, 3: 256, 4: 304 }, lever: { 1:{w:30,h:58}, 2:{w:19,h:48} } },
   },
 };
 
-function buildPlateEl(shape, count, patternCls, plateColorHex, patternColorHex, leverColorHex, finishId, size){
+function buildPlateEl(shape, sections, clavishes, patternCls, plateColorHex, patternColorHex, leverColorHex, finishId, size){
   const dims = PLATE_SIZE[size === 'large' ? 'large' : 'base'];
   const table = shape === 'square' ? dims.rect : dims.compact;
-  const leverDim = table.lever[count] || table.lever[1];
+  const leverDim = table.lever[clavishes] || table.lever[1];
 
   const plate = document.createElement('div');
   plate.className = `switch-plate ${patternCls} shape-${shape}` + (size === 'large' ? ' plate-large' : '');
   plate.style.setProperty('--plate-color', plateColorHex);
   plate.style.setProperty('--pattern-color', patternColorHex);
-  plate.style.width = `${table.widths[count] || table.widths[1]}px`;
+  plate.style.width = `${table.widths[sections] || table.widths[1]}px`;
   plate.style.height = `${dims.height}px`;
 
-  for (let i = 0; i < count; i++){
-    const lever = document.createElement('div');
-    lever.className = 'key-lever' + (finishId === 'glossy' ? ' finish-glossy' : '');
-    lever.style.setProperty('--lever-color', leverColorHex);
-    lever.style.width = `${leverDim.w}px`;
-    lever.style.height = `${leverDim.h}px`;
-    plate.appendChild(lever);
+  for (let s = 0; s < sections; s++){
+    const sectionEl = document.createElement('div');
+    sectionEl.className = 'plate-section';
+    for (let c = 0; c < clavishes; c++){
+      const lever = document.createElement('div');
+      lever.className = 'key-lever' + (finishId === 'glossy' ? ' finish-glossy' : '');
+      lever.style.setProperty('--lever-color', leverColorHex);
+      lever.style.width = `${leverDim.w}px`;
+      lever.style.height = `${leverDim.h}px`;
+      sectionEl.appendChild(lever);
+    }
+    plate.appendChild(sectionEl);
   }
   return plate;
 }
@@ -214,7 +226,7 @@ function renderCatalog(){
     const patternColor = getColor(item.patternColor);
     const lever = getColor(item.lever);
     const pattern = getPattern(item.pattern);
-    card.appendChild(buildPlateEl(item.shape, item.keys, pattern.cls, color.hex, patternColor.hex, lever.hex, 'matte'));
+    card.appendChild(buildPlateEl(item.shape, item.sections, item.clavishes, pattern.cls, color.hex, patternColor.hex, lever.hex, 'matte'));
 
     const h3 = document.createElement('h3');
     h3.textContent = item.name;
@@ -222,7 +234,7 @@ function renderCatalog(){
 
     const price = document.createElement('span');
     price.className = 'price';
-    const baseUAH = KEY_BASE_PRICE[item.keys] + pattern.surcharge;
+    const baseUAH = calcPriceUAH(item.sections, item.clavishes, item.pattern, 'matte');
     price.textContent = `від ${formatPrice(baseUAH)}`;
     card.appendChild(price);
 
@@ -231,7 +243,8 @@ function renderCatalog(){
     btn.textContent = 'Налаштувати';
     btn.addEventListener('click', () => {
       state.shape = item.shape;
-      state.keys = item.keys;
+      state.sections = item.sections;
+      state.clavishes = item.clavishes;
       state.pattern = item.pattern;
       state.color = item.color;
       state.patternColor = item.patternColor;
@@ -249,6 +262,9 @@ function renderCatalog(){
 /* ---------------- configurator options ---------------- */
 function sectionLabel(n){
   return n === 1 ? '1 секція' : `${n} секції`;
+}
+function clavishLabel(n){
+  return n === 1 ? '1 клавіша' : '2 клавіші';
 }
 
 function renderColorRow(container, selectedId, onPick){
@@ -276,15 +292,26 @@ function renderOptions(){
     shapeRow.appendChild(btn);
   });
 
-  // number of sections
-  const keysRow = document.getElementById('optKeys');
-  keysRow.innerHTML = '';
+  // number of sections (separate switch corpuses side by side)
+  const sectionsRow = document.getElementById('optSections');
+  sectionsRow.innerHTML = '';
   [1, 2, 3, 4].forEach(n => {
     const btn = document.createElement('button');
-    btn.className = 'opt-pill' + (state.keys === n ? ' active' : '');
+    btn.className = 'opt-pill' + (state.sections === n ? ' active' : '');
     btn.textContent = sectionLabel(n);
-    btn.addEventListener('click', () => { state.keys = n; renderOptions(); updatePreview(); });
-    keysRow.appendChild(btn);
+    btn.addEventListener('click', () => { state.sections = n; renderOptions(); updatePreview(); });
+    sectionsRow.appendChild(btn);
+  });
+
+  // clavishes per section (1 or 2 rockers inside the same corpus size)
+  const clavishRow = document.getElementById('optClavishes');
+  clavishRow.innerHTML = '';
+  [1, 2].forEach(n => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-pill' + (state.clavishes === n ? ' active' : '');
+    btn.textContent = clavishLabel(n) + (n === 2 ? ` (+${formatPrice(SECOND_CLAVISH_SURCHARGE_PER_SECTION * state.sections)})` : '');
+    btn.addEventListener('click', () => { state.clavishes = n; renderOptions(); updatePreview(); });
+    clavishRow.appendChild(btn);
   });
 
   // pattern
@@ -342,18 +369,19 @@ function updatePreview(){
   const pattern = getPattern(state.pattern);
 
   const plateHolder = document.getElementById('livePreviewPlate');
-  const newPlate = buildPlateEl(state.shape, state.keys, pattern.cls, color.hex, patternColor.hex, lever.hex, state.finish, 'large');
+  const newPlate = buildPlateEl(state.shape, state.sections, state.clavishes, pattern.cls, color.hex, patternColor.hex, lever.hex, state.finish, 'large');
   newPlate.id = 'livePreviewPlate';
   plateHolder.replaceWith(newPlate);
 
   document.getElementById('metaShape').textContent = getShape(state.shape).name;
-  document.getElementById('metaKeys').textContent = state.keys;
+  document.getElementById('metaSections').textContent = state.sections;
+  document.getElementById('metaClavishes').textContent = state.clavishes;
   document.getElementById('metaPattern').textContent = pattern.id === 'solid' ? pattern.name : `${pattern.name}, ${patternColor.name}`;
   document.getElementById('metaColor').textContent = color.name;
   document.getElementById('metaLeverColor').textContent = lever.name;
   document.getElementById('metaFinish').textContent = getFinish(state.finish).name;
 
-  const priceUAH = calcPriceUAH(state.keys, state.pattern, state.finish);
+  const priceUAH = calcPriceUAH(state.sections, state.clavishes, state.pattern, state.finish);
   const priceLabel = formatPrice(priceUAH);
   document.getElementById('metaPrice').textContent = priceLabel;
   document.getElementById('orderBtnPrice').textContent = priceLabel;
@@ -405,11 +433,12 @@ function buildSummary(){
   const pattern = getPattern(state.pattern);
   const finish = getFinish(state.finish);
   const comment = document.getElementById('orderComment').value.trim();
-  const priceUAH = calcPriceUAH(state.keys, state.pattern, state.finish);
+  const priceUAH = calcPriceUAH(state.sections, state.clavishes, state.pattern, state.finish);
   const lines = [
     'Заявка на накладку Waveform:',
     `— Форма: ${getShape(state.shape).name}`,
-    `— Секцій: ${state.keys}`,
+    `— Секцій: ${state.sections}`,
+    `— Клавіш у секції: ${state.clavishes}`,
     `— Візерунок: ${pattern.name}`,
     `— Колір накладки: ${color.name} (${color.hex})`,
   ];

@@ -66,15 +66,27 @@
         </div>
       </div>
       <div class="hero-visual modules-row">
+        <!-- 1 секція, 1 клавіша -->
         <div class="switch-plate pattern-dots shape-circle" style="--plate-color:#FF6B6B; width:100px; height:100px;">
-          <div class="key-lever finish-glossy" style="--lever-color:#FFF9F2; width:20px; height:42px;"></div>
+          <div class="plate-section">
+            <div class="key-lever finish-glossy" style="--lever-color:#FFF9F2; width:22px; height:42px;"></div>
+          </div>
         </div>
-        <div class="switch-plate pattern-solid shape-square" style="--plate-color:#5EC8B8; width:172px; height:100px;">
-          <div class="key-lever finish-glossy" style="--lever-color:#FFF9F2; width:20px; height:42px;"></div>
-          <div class="key-lever finish-glossy" style="--lever-color:#FFF9F2; width:20px; height:42px;"></div>
+        <!-- 1 секція, 2 клавіші — та сама рамка, просто два вирізи -->
+        <div class="switch-plate pattern-solid shape-square" style="--plate-color:#5EC8B8; width:100px; height:100px;">
+          <div class="plate-section">
+            <div class="key-lever finish-glossy" style="--lever-color:#FFF9F2; width:15px; height:38px;"></div>
+            <div class="key-lever finish-glossy" style="--lever-color:#FFF9F2; width:15px; height:38px;"></div>
+          </div>
         </div>
-        <div class="switch-plate pattern-stripes shape-cookie" style="--plate-color:#FFC857; width:100px; height:100px;">
-          <div class="key-lever finish-glossy" style="--lever-color:#FFF9F2; width:20px; height:42px;"></div>
+        <!-- 2 секції, 1 клавіша — окремі корпуси, накладка ширша -->
+        <div class="switch-plate pattern-stripes shape-cookie" style="--plate-color:#FFC857; width:132px; height:100px;">
+          <div class="plate-section">
+            <div class="key-lever finish-glossy" style="--lever-color:#FFF9F2; width:20px; height:38px;"></div>
+          </div>
+          <div class="plate-section">
+            <div class="key-lever finish-glossy" style="--lever-color:#FFF9F2; width:20px; height:38px;"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -111,7 +123,7 @@
       <div class="section-head">
         <p class="eyebrow">конструктор</p>
         <h2>Зберіть накладку під себе</h2>
-        <p class="section-lead">Сім кроків — і ми вже знаємо, що друкувати. Прев'ю оновлюється в реальному часі.</p>
+        <p class="section-lead">Кілька кроків — і ми вже знаємо, що друкувати. Прев'ю оновлюється в реальному часі.</p>
       </div>
 
       <div class="configurator">
@@ -127,7 +139,11 @@
               </div>
               <div class="preview-row">
                 <span>Секцій</span>
-                <strong id="metaKeys">1</strong>
+                <strong id="metaSections">1</strong>
+              </div>
+              <div class="preview-row">
+                <span>Клавіш у секції</span>
+                <strong id="metaClavishes">1</strong>
               </div>
               <div class="preview-row">
                 <span>Візерунок</span>
@@ -159,41 +175,48 @@
           <div class="config-step">
             <div class="step-label"><span class="step-num">1</span>Форма елемента</div>
             <div class="options-row" id="optShape"></div>
-            <p class="step-hint">Квадрат помітно розширюється під кілька секцій (як справжній подвійний/потрійний вимикач); круг, хмаринка й печиво лишаються компактними, важельки просто стають тіснішими.</p>
+            <p class="step-hint">Квадрат помітно розширюється під кілька секцій (як справжній подвійний/потрійний вимикач); круг, хмаринка й печиво лишаються компактними.</p>
           </div>
 
           <div class="config-step">
             <div class="step-label"><span class="step-num">2</span>Кількість секцій</div>
-            <div class="options-row" id="optKeys"></div>
+            <div class="options-row" id="optSections"></div>
+            <p class="step-hint">Секція — окремий корпус вимикача на стіні. Кілька секцій поруч — ширша накладка, як здвоєний/строєний вимикач.</p>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">3</span>Візерунок накладки</div>
+            <div class="step-label"><span class="step-num">3</span>Клавіш у секції</div>
+            <div class="options-row" id="optClavishes"></div>
+            <p class="step-hint">1 чи 2 клавіші в одному корпусі — рамка того самого розміру, просто з одним чи двома вирізами.</p>
+          </div>
+
+          <div class="config-step">
+            <div class="step-label"><span class="step-num">4</span>Візерунок накладки</div>
             <div class="options-row options-pattern" id="optPattern"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">4</span>Колір накладки</div>
+            <div class="step-label"><span class="step-num">5</span>Колір накладки</div>
             <div class="options-row options-color" id="optColor"></div>
           </div>
 
           <div class="config-step" id="patternColorStep">
-            <div class="step-label"><span class="step-num">5</span>Колір візерунка</div>
+            <div class="step-label"><span class="step-num">6</span>Колір візерунка</div>
             <div class="options-row options-color" id="optPatternColor"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">6</span>Колір важелька</div>
+            <div class="step-label"><span class="step-num">7</span>Колір важелька</div>
             <div class="options-row options-color" id="optLeverColor"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">7</span>Покриття</div>
+            <div class="step-label"><span class="step-num">8</span>Покриття</div>
             <div class="options-row" id="optFinish"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">8</span>Коментар до замовлення <em>(необов'язково)</em></div>
+            <div class="step-label"><span class="step-num">9</span>Коментар до замовлення <em>(необов'язково)</em></div>
             <textarea id="orderComment" class="order-comment" rows="3" placeholder="Наприклад: ширина рамки 80×80мм, виступ від стіни 20мм"></textarea>
           </div>
 

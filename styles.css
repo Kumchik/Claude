@@ -201,6 +201,19 @@ button{ font-family:inherit; cursor:pointer; }
 }
 .switch-plate.plate-large{ gap: 16px; }
 
+/* one .plate-section = one physical switch corpus's slot. Flexed to an
+   equal share of the plate's width regardless of clavishes, so 1 vs 2
+   clavishes packs levers tighter instead of resizing the corpus. */
+.plate-section{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 5px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.switch-plate.plate-large .plate-section{ gap: 8px; }
+
 .key-lever{
   --lever-color: #F7F4EE;
   background: var(--lever-color);
