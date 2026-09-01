@@ -1,72 +1,83 @@
 /* =========================================================
-   ЩЁЛК — configurator logic
-   Плейсхолдер-цены и контакты: см. README.md, где что заменить.
+   Waveform — configurator logic
+   Плейсхолдер-ціни, курси валют і контакти: див. README.md,
+   де описано, що саме потрібно замінити.
    ========================================================= */
 
 const PATTERNS = [
   { id: 'solid',    name: 'Однотон',   cls: 'pattern-solid',    surcharge: 0   },
-  { id: 'dots',     name: 'Горошек',   cls: 'pattern-dots',     surcharge: 150 },
-  { id: 'stripes',  name: 'Полоски',   cls: 'pattern-stripes',  surcharge: 150 },
-  { id: 'waves',    name: 'Волна',     cls: 'pattern-waves',    surcharge: 180 },
-  { id: 'marble',   name: 'Мрамор',    cls: 'pattern-marble',   surcharge: 200 },
+  { id: 'dots',     name: 'Горошок',   cls: 'pattern-dots',     surcharge: 130 },
+  { id: 'stripes',  name: 'Смужки',    cls: 'pattern-stripes',  surcharge: 130 },
+  { id: 'waves',    name: 'Хвиля',     cls: 'pattern-waves',    surcharge: 160 },
+  { id: 'marble',   name: 'Мармур',    cls: 'pattern-marble',   surcharge: 190 },
   { id: 'terrazzo', name: 'Терраццо',  cls: 'pattern-terrazzo', surcharge: 220 },
 ];
 
 const COLORS = [
-  { id: 'coral',      name: 'Коралл',     hex: '#FF6B6B' },
-  { id: 'mint',       name: 'Мята',       hex: '#5EC8B8' },
-  { id: 'mustard',    name: 'Горчица',    hex: '#FFC857' },
-  { id: 'lilac',      name: 'Лаванда',    hex: '#B8A6E8' },
-  { id: 'sky',        name: 'Небо',       hex: '#6FB7F7' },
-  { id: 'blush',      name: 'Пудра',      hex: '#F4A6C6' },
-  { id: 'sage',       name: 'Шалфей',     hex: '#9CB88F' },
-  { id: 'terracotta', name: 'Терракота',  hex: '#D97D54' },
-  { id: 'charcoal',   name: 'Графит',     hex: '#4A4550' },
-  { id: 'cream',      name: 'Крем',       hex: '#F3E9DA' },
+  { id: 'coral',      name: 'Корал',     hex: '#FF6B6B' },
+  { id: 'mint',       name: "М'ята",     hex: '#5EC8B8' },
+  { id: 'mustard',    name: 'Гірчиця',   hex: '#FFC857' },
+  { id: 'lilac',      name: 'Лаванда',   hex: '#B8A6E8' },
+  { id: 'sky',        name: 'Небо',      hex: '#6FB7F7' },
+  { id: 'blush',      name: 'Пудра',     hex: '#F4A6C6' },
+  { id: 'sage',       name: 'Шавлія',    hex: '#9CB88F' },
+  { id: 'terracotta', name: 'Теракота',  hex: '#D97D54' },
+  { id: 'charcoal',   name: 'Графіт',    hex: '#4A4550' },
+  { id: 'cream',      name: 'Крем',      hex: '#F3E9DA' },
 ];
 
 const FINISHES = [
-  { id: 'matte',  name: 'Матовое',    surcharge: 0   },
-  { id: 'glossy', name: 'Глянцевое',  surcharge: 100 },
+  { id: 'matte',  name: 'Матове',    surcharge: 0  },
+  { id: 'glossy', name: 'Глянцеве',  surcharge: 90 },
 ];
 
-const KEY_BASE_PRICE = { 1: 690, 2: 890, 3: 1090, 4: 1290 };
+// Базові ціни вказані в гривнях (UAH) — це "домашня" валюта прайсу,
+// з якої курсом перераховуються EUR і USD (див. CURRENCIES нижче).
+const KEY_BASE_PRICE = { 1: 790, 2: 990, 3: 1190, 4: 1390 };
+
+// Курси — orієнтовні і застарівають, підставте актуальні перед публікацією
+// (або замініть на окремий прайс під кожен ринок замість автоконвертації).
+const CURRENCIES = [
+  { code: 'UAH', symbol: '₴', rate: 1,     position: 'after'  },
+  { code: 'EUR', symbol: '€', rate: 1/45,  position: 'before' },
+  { code: 'USD', symbol: '$', rate: 1/41,  position: 'before' },
+];
 
 const CATALOG = [
-  { name: 'Утренний кофе',    keys: 2, pattern: 'dots',     color: 'terracotta' },
-  { name: 'Мятная свежесть',  keys: 1, pattern: 'solid',    color: 'mint' },
-  { name: 'Дискотека',        keys: 3, pattern: 'terrazzo', color: 'lilac' },
-  { name: 'Скандинавия',      keys: 1, pattern: 'marble',   color: 'cream' },
-  { name: 'Закат',            keys: 2, pattern: 'waves',    color: 'coral' },
-  { name: 'Горчичное поле',   keys: 4, pattern: 'stripes',  color: 'mustard' },
-  { name: 'Ночной город',     keys: 2, pattern: 'solid',    color: 'charcoal' },
-  { name: 'Пудровый бриз',    keys: 1, pattern: 'dots',     color: 'blush' },
+  { name: 'Ранкова кава',    keys: 2, pattern: 'dots',     color: 'terracotta' },
+  { name: "М'ята свіжість",  keys: 1, pattern: 'solid',    color: 'mint' },
+  { name: 'Дискотека',       keys: 3, pattern: 'terrazzo', color: 'lilac' },
+  { name: 'Скандинавія',     keys: 1, pattern: 'marble',   color: 'cream' },
+  { name: 'Захід сонця',     keys: 2, pattern: 'waves',    color: 'coral' },
+  { name: 'Гірчичне поле',   keys: 4, pattern: 'stripes',  color: 'mustard' },
+  { name: 'Нічне місто',     keys: 2, pattern: 'solid',    color: 'charcoal' },
+  { name: 'Пудровий бриз',   keys: 1, pattern: 'dots',     color: 'blush' },
 ];
 
 const FAQ = [
   {
-    q: 'Как понять, сколько клавиш у моего выключателя?',
-    a: 'Посчитайте количество отдельных кнопок (клавиш) на панели — обычно от 1 до 4. Если сомневаетесь, пришлите нам фото выключателя в мессенджере, и мы подскажем.'
+    q: 'Як зрозуміти, скільки клавіш у мого вимикача?',
+    a: 'Порахуйте кількість окремих кнопок (клавіш) на панелі — зазвичай від 1 до 4. Якщо сумніваєтесь, надішліть нам фото вимикача в месенджері, і ми підкажемо.'
   },
   {
-    q: 'Подойдёт ли накладка к моей рамке?',
-    a: 'Печатаем накладки под стандартные рамки популярных серий (Legrand, Schneider Electric, Werkel и аналоги). При оформлении заказа уточним модель рамки, чтобы посадка была точной.'
+    q: 'Чи підійде накладка до моєї рамки?',
+    a: 'Друкуємо накладки під стандартні рамки популярних серій (Legrand, Schneider Electric, Werkel) та американські вимикачі Decora. При оформленні замовлення уточнимо модель рамки, щоб посадка була точною.'
   },
   {
-    q: 'Из какого материала печатаете?',
-    a: 'Используем прочный PLA/PETG пластик — он не токсичен, устойчив к истиранию и не выгорает на солнце. При необходимости покрываем матовым или глянцевым финишем.'
+    q: 'З якого матеріалу друкуєте?',
+    a: 'Використовуємо міцний PLA/PETG пластик — він не токсичний, стійкий до стирання і не вигорає на сонці. За потреби покриваємо матовим або глянцевим фінішем.'
   },
   {
-    q: 'Сколько занимает изготовление и доставка?',
-    a: 'Печать и финишная обработка — 3–5 дней после согласования макета. Доставка по России — ещё 2–7 дней в зависимости от способа отправки.'
+    q: 'Скільки часу займає виготовлення і доставка?',
+    a: 'Друк і фінішна обробка — 3–5 днів після погодження макета. Доставка по Україні — 2–5 днів, у країни ЄС та США — зазвичай 7–14 днів залежно від способу відправки.'
   },
   {
-    q: 'Можно заказать цвет вне палитры конструктора?',
-    a: 'Да, палитра в конструкторе — основные варианты. Пришлите референс или код цвета (HEX/RAL/Pantone) в сообщении к заказу — подберём максимально близко.'
+    q: 'Чи можна замовити колір поза палітрою конструктора?',
+    a: 'Так, палітра в конструкторі — це основні варіанти. Надішліть референс або код кольору (HEX/RAL/Pantone) у повідомленні до замовлення — підберемо максимально близько.'
   },
   {
-    q: 'Как оплатить заказ?',
-    a: 'Оплата не происходит на сайте. После заявки мы согласуем макет и стоимость в переписке, затем пришлём реквизиты для предоплаты.'
+    q: 'В якій валюті ціни і як відбувається оплата?',
+    a: 'Ціни показані в гривнях, євро або доларах — оберіть зручну валюту перемикачем угорі сторінки. Оплата не відбувається на сайті: після заявки ми погодимо макет і вартість у переписці, а тоді надішлемо реквізити для оплати.'
   },
 ];
 
@@ -76,21 +87,29 @@ const state = {
   pattern: 'solid',
   color: 'coral',
   finish: 'matte',
+  currency: 'UAH',
 };
 
 function getColor(id){ return COLORS.find(c => c.id === id); }
 function getPattern(id){ return PATTERNS.find(p => p.id === id); }
 function getFinish(id){ return FINISHES.find(f => f.id === id); }
+function getCurrency(code){ return CURRENCIES.find(c => c.code === code); }
 
-function calcPrice(){
-  const base = KEY_BASE_PRICE[state.keys] || KEY_BASE_PRICE[1];
-  const patternFee = getPattern(state.pattern).surcharge;
-  const finishFee = getFinish(state.finish).surcharge;
+function calcPriceUAH(keys, patternId, finishId){
+  const base = KEY_BASE_PRICE[keys] || KEY_BASE_PRICE[1];
+  const patternFee = getPattern(patternId).surcharge;
+  const finishFee = getFinish(finishId).surcharge;
   return base + patternFee + finishFee;
 }
 
+function formatPrice(uahAmount){
+  const cur = getCurrency(state.currency);
+  const value = Math.round(uahAmount * cur.rate);
+  return cur.position === 'before' ? `${cur.symbol}${value}` : `${value} ${cur.symbol}`;
+}
+
 /* ---------------- rendering helpers ---------------- */
-function buildPlateEl(keys, patternCls, colorHex, finishId, size){
+function buildPlateEl(keys, patternCls, colorHex, finishId){
   const plate = document.createElement('div');
   plate.className = `switch-plate ${patternCls}`;
   plate.style.setProperty('--plate-color', colorHex);
@@ -100,6 +119,25 @@ function buildPlateEl(keys, patternCls, colorHex, finishId, size){
     plate.appendChild(key);
   }
   return plate;
+}
+
+/* ---------------- currency switcher ---------------- */
+function renderCurrencyToggle(){
+  const holder = document.getElementById('currencyToggle');
+  holder.innerHTML = '';
+  CURRENCIES.forEach(cur => {
+    const btn = document.createElement('button');
+    btn.className = state.currency === cur.code ? 'active' : '';
+    btn.textContent = `${cur.symbol} ${cur.code}`;
+    btn.addEventListener('click', () => {
+      state.currency = cur.code;
+      renderCurrencyToggle();
+      renderCatalog();
+      renderOptions();
+      updatePreview();
+    });
+    holder.appendChild(btn);
+  });
 }
 
 /* ---------------- catalog ---------------- */
@@ -123,13 +161,13 @@ function renderCatalog(){
 
     const price = document.createElement('span');
     price.className = 'price';
-    const base = KEY_BASE_PRICE[item.keys] + pattern.surcharge;
-    price.textContent = `от ${base} ₽`;
+    const baseUAH = KEY_BASE_PRICE[item.keys] + pattern.surcharge;
+    price.textContent = `від ${formatPrice(baseUAH)}`;
     card.appendChild(price);
 
     const btn = document.createElement('button');
     btn.className = 'btn btn-ghost btn-small';
-    btn.textContent = 'Настроить';
+    btn.textContent = 'Налаштувати';
     btn.addEventListener('click', () => {
       state.keys = item.keys;
       state.pattern = item.pattern;
@@ -145,6 +183,10 @@ function renderCatalog(){
 }
 
 /* ---------------- configurator options ---------------- */
+function keyLabel(n){
+  return n === 1 ? '1 клавіша' : `${n} клавіші`;
+}
+
 function renderOptions(){
   // keys
   const keysRow = document.getElementById('optKeys');
@@ -152,7 +194,7 @@ function renderOptions(){
   [1, 2, 3, 4].forEach(n => {
     const btn = document.createElement('button');
     btn.className = 'opt-pill' + (state.keys === n ? ' active' : '');
-    btn.textContent = n === 1 ? '1 клавиша' : `${n} клавиши`;
+    btn.textContent = keyLabel(n);
     btn.addEventListener('click', () => { state.keys = n; renderOptions(); updatePreview(); });
     keysRow.appendChild(btn);
   });
@@ -193,7 +235,7 @@ function renderOptions(){
   FINISHES.forEach(f => {
     const btn = document.createElement('button');
     btn.className = 'opt-pill' + (state.finish === f.id ? ' active' : '');
-    btn.textContent = f.surcharge ? `${f.name} (+${f.surcharge} ₽)` : f.name;
+    btn.textContent = f.surcharge ? `${f.name} (+${formatPrice(f.surcharge)})` : f.name;
     btn.addEventListener('click', () => { state.finish = f.id; renderOptions(); updatePreview(); });
     finishRow.appendChild(btn);
   });
@@ -213,9 +255,10 @@ function updatePreview(){
   document.getElementById('metaColor').textContent = color.name;
   document.getElementById('metaFinish').textContent = getFinish(state.finish).name;
 
-  const price = calcPrice();
-  document.getElementById('metaPrice').textContent = `${price} ₽`;
-  document.getElementById('orderBtnPrice').textContent = `${price} ₽`;
+  const priceUAH = calcPriceUAH(state.keys, state.pattern, state.finish);
+  const priceLabel = formatPrice(priceUAH);
+  document.getElementById('metaPrice').textContent = priceLabel;
+  document.getElementById('orderBtnPrice').textContent = priceLabel;
 }
 
 /* ---------------- FAQ ---------------- */
@@ -255,22 +298,23 @@ function renderFaq(){
 }
 
 /* ---------------- order modal ---------------- */
-const TELEGRAM_USERNAME = 'your_shop_username'; // TODO: замените на реальный юзернейм/бот
+const TELEGRAM_USERNAME = 'your_shop_username'; // TODO: замініть на реальний юзернейм/бот
 
 function buildSummary(){
   const color = getColor(state.color);
   const pattern = getPattern(state.pattern);
   const finish = getFinish(state.finish);
   const comment = document.getElementById('orderComment').value.trim();
+  const priceUAH = calcPriceUAH(state.keys, state.pattern, state.finish);
   const lines = [
-    'Заявка на накладку ЩЁЛК:',
-    `— Клавиш: ${state.keys}`,
-    `— Узор: ${pattern.name}`,
-    `— Цвет: ${color.name} (${color.hex})`,
-    `— Покрытие: ${finish.name}`,
-    `— Итого: ${calcPrice()} ₽`,
+    'Заявка на накладку Waveform:',
+    `— Клавіш: ${state.keys}`,
+    `— Візерунок: ${pattern.name}`,
+    `— Колір: ${color.name} (${color.hex})`,
+    `— Покриття: ${finish.name}`,
+    `— Разом: ${formatPrice(priceUAH)} (валюта: ${state.currency})`,
   ];
-  if (comment) lines.push(`— Комментарий: ${comment}`);
+  if (comment) lines.push(`— Коментар: ${comment}`);
   return lines.join('\n');
 }
 
@@ -289,6 +333,7 @@ function closeOrderModal(){
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('year').textContent = new Date().getFullYear();
 
+  renderCurrencyToggle();
   renderCatalog();
   renderOptions();
   updatePreview();
@@ -305,10 +350,10 @@ document.addEventListener('DOMContentLoaded', () => {
       await navigator.clipboard.writeText(text);
       const btn = document.getElementById('copySummaryBtn');
       const original = btn.textContent;
-      btn.textContent = 'Скопировано!';
+      btn.textContent = 'Скопійовано!';
       setTimeout(() => { btn.textContent = original; }, 1600);
     } catch (err) {
-      alert('Не удалось скопировать автоматически — выделите текст вручную.');
+      alert('Не вдалося скопіювати автоматично — виділіть текст вручну.');
     }
   });
 

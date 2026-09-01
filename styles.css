@@ -122,6 +122,17 @@ button{ font-family:inherit; cursor:pointer; }
 .burger{ display:none; flex-direction:column; gap:5px; background:none; border:none; padding:8px; }
 .burger span{ width: 22px; height: 2px; background: var(--ink); border-radius: 2px; }
 
+.currency-toggle{
+  display:flex; gap:2px; background: rgba(36,31,46,0.06);
+  padding:4px; border-radius:999px; flex-shrink:0;
+}
+.currency-toggle button{
+  border:none; background:none; padding:7px 11px; border-radius:999px;
+  font-weight:700; font-size:.8rem; color: var(--ink-soft); transition: all .15s ease;
+  white-space:nowrap;
+}
+.currency-toggle button.active{ background:#fff; color: var(--ink); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
 /* ---------- hero ---------- */
 .hero{ position:relative; overflow:hidden; padding: 72px 0 90px; }
 .hero-blob{ position:absolute; border-radius:50%; filter: blur(50px); opacity:.45; z-index:0; }
@@ -402,6 +413,7 @@ button{ font-family:inherit; cursor:pointer; }
   .main-nav.open{ display:flex; }
   .burger{ display:flex; }
   .header-cta{ display:none; }
+  .currency-toggle button{ padding:6px 8px; font-size:.72rem; }
   .catalog-grid{ grid-template-columns: 1fr; }
   .benefits-grid{ grid-template-columns: 1fr; }
   .steps-grid{ grid-template-columns: 1fr; }

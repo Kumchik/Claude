@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ЩЁЛК — дизайнерские накладки на выключатели</title>
-<meta name="description" content="Дофаминовый декор для дома: дизайнерские накладки на выключатели света. Выбирайте количество клавиш, узор и цвет — собираем накладку под ваш интерьер.">
+<title>Waveform — дизайнерські накладки на вимикачі</title>
+<meta name="description" content="Дофаміновий декор для дому: дизайнерські накладки на вимикачі світла. Обирайте кількість клавіш, візерунок і колір — збираємо накладку під ваш інтер'єр. Доставка по Україні, ЄС та США.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
@@ -13,15 +13,16 @@
 
 <header class="site-header">
   <div class="container header-inner">
-    <a href="#top" class="logo">ЩЁЛК<span class="logo-dot">.</span></a>
+    <a href="#top" class="logo">Waveform<span class="logo-dot">.</span></a>
     <nav class="main-nav" id="mainNav">
       <a href="#catalog">Каталог</a>
-      <a href="#configurator">Конфигуратор</a>
-      <a href="#how">Как это работает</a>
-      <a href="#faq">Вопросы</a>
-      <a href="#contacts">Контакты</a>
+      <a href="#configurator">Конструктор</a>
+      <a href="#how">Як це працює</a>
+      <a href="#faq">Питання</a>
+      <a href="#contacts">Контакти</a>
     </nav>
-    <a href="#configurator" class="btn btn-primary btn-small header-cta">Собрать накладку</a>
+    <div class="currency-toggle" id="currencyToggle"></div>
+    <a href="#configurator" class="btn btn-primary btn-small header-cta">Зібрати накладку</a>
     <button class="burger" id="burgerBtn" aria-label="Меню">
       <span></span><span></span><span></span>
     </button>
@@ -37,17 +38,17 @@
     <div class="hero-blob blob-3"></div>
     <div class="container hero-inner">
       <div class="hero-text">
-        <p class="eyebrow">дофаминовый декор для дома</p>
-        <h1>Выключатель,<br>который выключает <span class="highlight">скуку</span></h1>
-        <p class="hero-sub">3D-печатные накладки на выключатели света: любой цвет, узор и количество клавиш. Соберите свою за 2 минуты в конструкторе ниже.</p>
+        <p class="eyebrow">дофаміновий декор для дому</p>
+        <h1>Вимикач,<br>який вимикає <span class="highlight">нудьгу</span></h1>
+        <p class="hero-sub">3D-друковані накладки на вимикачі світла: будь-який колір, візерунок і кількість клавіш. Зберіть свою за 2 хвилини у конструкторі нижче.</p>
         <div class="hero-actions">
-          <a href="#configurator" class="btn btn-primary">Собрать свою накладку</a>
-          <a href="#catalog" class="btn btn-ghost">Смотреть коллекции</a>
+          <a href="#configurator" class="btn btn-primary">Зібрати свою накладку</a>
+          <a href="#catalog" class="btn btn-ghost">Переглянути колекції</a>
         </div>
         <div class="hero-stats">
-          <div><strong>1–4</strong><span>клавиши на выбор</span></div>
-          <div><strong>12+</strong><span>цветов</span></div>
-          <div><strong>3–5 дней</strong><span>на печать</span></div>
+          <div><strong>1–4</strong><span>клавіші на вибір</span></div>
+          <div><strong>12+</strong><span>кольорів</span></div>
+          <div><strong>3–5 днів</strong><span>на друк</span></div>
         </div>
       </div>
       <div class="hero-visual">
@@ -73,16 +74,16 @@
     </div>
   </section>
 
-  <!-- LOGOS / TRUST -->
+  <!-- TRUST -->
   <section class="trust-strip">
     <div class="container trust-inner">
-      <span>Подходит к стандартным рамкам</span>
+      <span>Підходить до стандартних рамок</span>
       <span>•</span>
-      <span>Прочный PLA/PETG пластик</span>
+      <span>Міцний PLA/PETG пластик</span>
       <span>•</span>
-      <span>Ручная сборка и покраска</span>
+      <span>Ручна збірка та фарбування</span>
       <span>•</span>
-      <span>Отправка по РФ</span>
+      <span>Доставка по Україні, ЄС та США</span>
     </div>
   </section>
 
@@ -90,9 +91,9 @@
   <section class="section" id="catalog">
     <div class="container">
       <div class="section-head">
-        <p class="eyebrow">готовые коллекции</p>
-        <h2>Выберите настроение своей комнаты</h2>
-        <p class="section-lead">Каждая коллекция — это готовое сочетание узора и палитры. Нажмите «Настроить», чтобы открыть её в конструкторе со своими параметрами.</p>
+        <p class="eyebrow">готові колекції</p>
+        <h2>Оберіть настрій своєї кімнати</h2>
+        <p class="section-lead">Кожна колекція — це готове поєднання візерунка та палітри. Натисніть «Налаштувати», щоб відкрити її в конструкторі зі своїми параметрами.</p>
       </div>
       <div class="catalog-grid" id="catalogGrid"></div>
     </div>
@@ -103,8 +104,8 @@
     <div class="container">
       <div class="section-head">
         <p class="eyebrow">конструктор</p>
-        <h2>Соберите накладку под себя</h2>
-        <p class="section-lead">Четыре шага — и мы уже знаем, что печатать. Превью обновляется в реальном времени.</p>
+        <h2>Зберіть накладку під себе</h2>
+        <p class="section-lead">Чотири кроки — і ми вже знаємо, що друкувати. Прев'ю оновлюється в реальному часі.</p>
       </div>
 
       <div class="configurator">
@@ -117,25 +118,25 @@
             </div>
             <div class="preview-meta">
               <div class="preview-row">
-                <span>Клавиш</span>
+                <span>Клавіш</span>
                 <strong id="metaKeys">1</strong>
               </div>
               <div class="preview-row">
-                <span>Узор</span>
+                <span>Візерунок</span>
                 <strong id="metaPattern">Однотон</strong>
               </div>
               <div class="preview-row">
-                <span>Цвет</span>
-                <strong id="metaColor">Коралл</strong>
+                <span>Колір</span>
+                <strong id="metaColor">Корал</strong>
               </div>
               <div class="preview-row">
-                <span>Покрытие</span>
-                <strong id="metaFinish">Матовое</strong>
+                <span>Покриття</span>
+                <strong id="metaFinish">Матове</strong>
               </div>
               <div class="preview-divider"></div>
               <div class="preview-row preview-price">
-                <span>Итого</span>
-                <strong id="metaPrice">690 ₽</strong>
+                <span>Разом</span>
+                <strong id="metaPrice">790 ₴</strong>
               </div>
             </div>
           </div>
@@ -144,32 +145,32 @@
         <div class="configurator-controls">
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">1</span>Количество клавиш</div>
+            <div class="step-label"><span class="step-num">1</span>Кількість клавіш</div>
             <div class="options-row" id="optKeys"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">2</span>Узор</div>
+            <div class="step-label"><span class="step-num">2</span>Візерунок</div>
             <div class="options-row options-pattern" id="optPattern"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">3</span>Цвет</div>
+            <div class="step-label"><span class="step-num">3</span>Колір</div>
             <div class="options-row options-color" id="optColor"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">4</span>Покрытие</div>
+            <div class="step-label"><span class="step-num">4</span>Покриття</div>
             <div class="options-row" id="optFinish"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">5</span>Комментарий к заказу <em>(необязательно)</em></div>
-            <textarea id="orderComment" class="order-comment" rows="3" placeholder="Например: под рамку Legrand Valena, стены цвета шалфей"></textarea>
+            <div class="step-label"><span class="step-num">5</span>Коментар до замовлення <em>(необов'язково)</em></div>
+            <textarea id="orderComment" class="order-comment" rows="3" placeholder="Наприклад: під рамку Legrand Valena, стіни кольору шавлії"></textarea>
           </div>
 
-          <button class="btn btn-primary btn-wide" id="orderBtn">Оформить заказ — <span id="orderBtnPrice">690 ₽</span></button>
-          <p class="config-note">Мы не списываем оплату на сайте — после заявки уточним детали в мессенджере и пришлём 3D-макет на согласование.</p>
+          <button class="btn btn-primary btn-wide" id="orderBtn">Оформити замовлення — <span id="orderBtnPrice">790 ₴</span></button>
+          <p class="config-note">Ми не списуємо оплату на сайті — після заявки уточнимо деталі в месенджері та надішлемо 3D-макет на погодження.</p>
         </div>
       </div>
     </div>
@@ -179,29 +180,29 @@
   <section class="section" id="benefits">
     <div class="container">
       <div class="section-head">
-        <p class="eyebrow">почему щёлк</p>
-        <h2>Мелкая деталь, которая меняет комнату</h2>
+        <p class="eyebrow">чому waveform</p>
+        <h2>Дрібна деталь, яка змінює кімнату</h2>
       </div>
       <div class="benefits-grid">
         <div class="benefit-card">
           <div class="benefit-icon">🎨</div>
-          <h3>Любой цвет и узор</h3>
-          <p>Не ограничены каталогом — под запрос подберём оттенок в тон обоям или мебели.</p>
+          <h3>Будь-який колір і візерунок</h3>
+          <p>Не обмежені каталогом — під запит підберемо відтінок у тон шпалерам чи меблям.</p>
         </div>
         <div class="benefit-card">
           <div class="benefit-icon">📐</div>
-          <h3>Точная посадка</h3>
-          <p>Печатаем под стандартные рамки одинарных и многоклавишных выключателей — не болтается и не перекрывает механизм.</p>
+          <h3>Точна посадка</h3>
+          <p>Друкуємо під стандартні рамки одинарних і багатоклавішних вимикачів — європейські (Legrand, Schneider Electric, Werkel) та американські Decora.</p>
         </div>
         <div class="benefit-card">
           <div class="benefit-icon">🧵</div>
-          <h3>Прочный пластик</h3>
-          <p>PLA/PETG выдерживает годы ежедневных щелчков и не выгорает на солнце.</p>
+          <h3>Міцний пластик</h3>
+          <p>PLA/PETG витримує роки щоденних клацань і не вигорає на сонці.</p>
         </div>
         <div class="benefit-card">
           <div class="benefit-icon">🚚</div>
-          <h3>Печать под заказ</h3>
-          <p>Каждая накладка печатается после оплаты — без склада и лишних остатков.</p>
+          <h3>Друк під замовлення</h3>
+          <p>Кожна накладка друкується після оплати — без складу і зайвих залишків.</p>
         </div>
       </div>
     </div>
@@ -211,29 +212,29 @@
   <section class="section section-alt" id="how">
     <div class="container">
       <div class="section-head">
-        <p class="eyebrow">как это работает</p>
-        <h2>От клика до накладки на стене</h2>
+        <p class="eyebrow">як це працює</p>
+        <h2>Від кліку до накладки на стіні</h2>
       </div>
       <div class="steps-grid">
         <div class="step-card">
           <span class="step-index">01</span>
-          <h3>Собираете дизайн</h3>
-          <p>Выбираете количество клавиш, узор и цвет в конструкторе — или берёте готовую коллекцию.</p>
+          <h3>Збираєте дизайн</h3>
+          <p>Обираєте кількість клавіш, візерунок і колір у конструкторі — або берете готову колекцію.</p>
         </div>
         <div class="step-card">
           <span class="step-index">02</span>
-          <h3>Отправляете заявку</h3>
-          <p>Заявка с параметрами уходит нам в мессенджер — уточняем модель рамки и адрес доставки.</p>
+          <h3>Надсилаєте заявку</h3>
+          <p>Заявка з параметрами йде нам у месенджер — уточнюємо модель рамки та адресу доставки.</p>
         </div>
         <div class="step-card">
           <span class="step-index">03</span>
-          <h3>Печатаем и красим</h3>
-          <p>Печать занимает 2–4 дня, ещё день на финишную обработку и контроль качества.</p>
+          <h3>Друкуємо і фарбуємо</h3>
+          <p>Друк займає 2–4 дні, ще день на фінішну обробку і контроль якості.</p>
         </div>
         <div class="step-card">
           <span class="step-index">04</span>
-          <h3>Доставляем</h3>
-          <p>Отправляем по России транспортной компанией или почтой — вы просто защёлкиваете накладку на выключатель.</p>
+          <h3>Доставляємо</h3>
+          <p>Відправляємо по Україні, ЄС та США — ви просто клацаєте накладку на вимикач.</p>
         </div>
       </div>
     </div>
@@ -243,8 +244,8 @@
   <section class="section" id="faq">
     <div class="container container-narrow">
       <div class="section-head">
-        <p class="eyebrow">вопросы и ответы</p>
-        <h2>Если сомневаетесь — почитайте тут</h2>
+        <p class="eyebrow">питання та відповіді</p>
+        <h2>Якщо сумніваєтесь — почитайте тут</h2>
       </div>
       <div class="faq-list" id="faqList"></div>
     </div>
@@ -253,13 +254,13 @@
   <!-- CONTACTS / CTA -->
   <section class="section cta-section" id="contacts">
     <div class="container cta-inner">
-      <h2>Остались вопросы по замерам или срокам?</h2>
-      <p>Напишите нам — поможем подобрать накладку под вашу рамку и посчитаем точную стоимость.</p>
+      <h2>Залишились питання щодо замірів чи термінів?</h2>
+      <p>Напишіть нам — допоможемо підібрати накладку під вашу рамку і порахуємо точну вартість.</p>
       <div class="cta-actions">
-        <a href="https://t.me/your_shop_username" class="btn btn-primary" target="_blank" rel="noopener">Написать в Telegram</a>
+        <a href="https://t.me/your_shop_username" class="btn btn-primary" target="_blank" rel="noopener">Написати в Telegram</a>
         <a href="mailto:hello@example.com" class="btn btn-ghost-invert">hello@example.com</a>
       </div>
-      <p class="cta-note">*Контакты временные — замените на свои в футере и в этом блоке перед публикацией сайта.</p>
+      <p class="cta-note">*Контакти тимчасові — замініть на свої у футері та в цьому блоці перед публікацією сайту.</p>
     </div>
   </section>
 
@@ -268,44 +269,44 @@
 <footer class="site-footer">
   <div class="container footer-inner">
     <div class="footer-brand">
-      <a href="#top" class="logo">ЩЁЛК<span class="logo-dot">.</span></a>
-      <p>Дизайнерские накладки на выключатели света. Печатаем под заказ в России.</p>
+      <a href="#top" class="logo">Waveform<span class="logo-dot">.</span></a>
+      <p>Дизайнерські накладки на вимикачі світла. Друкуємо під замовлення для України, Європи та США.</p>
     </div>
     <div class="footer-col">
-      <h4>Навигация</h4>
+      <h4>Навігація</h4>
       <a href="#catalog">Каталог</a>
       <a href="#configurator">Конструктор</a>
-      <a href="#how">Как это работает</a>
-      <a href="#faq">Вопросы</a>
+      <a href="#how">Як це працює</a>
+      <a href="#faq">Питання</a>
     </div>
     <div class="footer-col">
-      <h4>Контакты</h4>
+      <h4>Контакти</h4>
       <a href="https://t.me/your_shop_username" target="_blank" rel="noopener">Telegram</a>
       <a href="mailto:hello@example.com">hello@example.com</a>
-      <a href="tel:+70000000000">+7 (000) 000-00-00</a>
+      <a href="tel:+380000000000">+380 00 000 0000</a>
     </div>
     <div class="footer-col">
-      <h4>Соцсети</h4>
-      <a href="#" target="_blank" rel="noopener">Instagram*</a>
-      <a href="#" target="_blank" rel="noopener">VK</a>
+      <h4>Соцмережі</h4>
+      <a href="#" target="_blank" rel="noopener">Instagram</a>
+      <a href="#" target="_blank" rel="noopener">TikTok</a>
     </div>
   </div>
   <div class="container footer-bottom">
-    <span>© <span id="year"></span> ЩЁЛК. Все права защищены.</span>
-    <span>Сайт — демо-версия, контакты и цены нужно заменить на реальные.</span>
+    <span>© <span id="year"></span> Waveform. Усі права захищені.</span>
+    <span>Сайт — демо-версія, контакти та ціни потрібно замінити на реальні.</span>
   </div>
 </footer>
 
 <!-- ORDER MODAL -->
 <div class="modal-overlay" id="orderModal">
   <div class="modal">
-    <button class="modal-close" id="modalClose" aria-label="Закрыть">✕</button>
-    <h3>Заявка почти готова</h3>
-    <p class="modal-sub">Скопируйте сводку заказа и отправьте нам в Telegram — либо просто нажмите кнопку ниже, текст подставится автоматически.</p>
+    <button class="modal-close" id="modalClose" aria-label="Закрити">✕</button>
+    <h3>Заявка майже готова</h3>
+    <p class="modal-sub">Скопіюйте зведення замовлення та надішліть нам у Telegram — або просто натисніть кнопку нижче, текст підставиться автоматично.</p>
     <pre class="order-summary" id="orderSummary"></pre>
     <div class="modal-actions">
-      <button class="btn btn-primary" id="copySummaryBtn">Скопировать текст</button>
-      <a class="btn btn-ghost" id="sendTelegramBtn" href="#" target="_blank" rel="noopener">Отправить в Telegram</a>
+      <button class="btn btn-primary" id="copySummaryBtn">Скопіювати текст</button>
+      <a class="btn btn-ghost" id="sendTelegramBtn" href="#" target="_blank" rel="noopener">Надіслати в Telegram</a>
     </div>
   </div>
 </div>
