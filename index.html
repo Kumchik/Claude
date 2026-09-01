@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ЩЁЛК — дизайнерские накладки на выключатели</title>
+<meta name="description" content="Дофаминовый декор для дома: дизайнерские накладки на выключатели света. Выбирайте количество клавиш, узор и цвет — собираем накладку под ваш интерьер.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="#top" class="logo">ЩЁЛК<span class="logo-dot">.</span></a>
+    <nav class="main-nav" id="mainNav">
+      <a href="#catalog">Каталог</a>
+      <a href="#configurator">Конфигуратор</a>
+      <a href="#how">Как это работает</a>
+      <a href="#faq">Вопросы</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+    <a href="#configurator" class="btn btn-primary btn-small header-cta">Собрать накладку</a>
+    <button class="burger" id="burgerBtn" aria-label="Меню">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-blob blob-1"></div>
+    <div class="hero-blob blob-2"></div>
+    <div class="hero-blob blob-3"></div>
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <p class="eyebrow">дофаминовый декор для дома</p>
+        <h1>Выключатель,<br>который выключает <span class="highlight">скуку</span></h1>
+        <p class="hero-sub">3D-печатные накладки на выключатели света: любой цвет, узор и количество клавиш. Соберите свою за 2 минуты в конструкторе ниже.</p>
+        <div class="hero-actions">
+          <a href="#configurator" class="btn btn-primary">Собрать свою накладку</a>
+          <a href="#catalog" class="btn btn-ghost">Смотреть коллекции</a>
+        </div>
+        <div class="hero-stats">
+          <div><strong>1–4</strong><span>клавиши на выбор</span></div>
+          <div><strong>12+</strong><span>цветов</span></div>
+          <div><strong>3–5 дней</strong><span>на печать</span></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="switch-frame frame-preview" data-hero-preview>
+          <div class="switch-plate pattern-dots" style="--plate-color:#FF6B6B;">
+            <div class="switch-key key-glossy"></div>
+            <div class="switch-key key-glossy"></div>
+          </div>
+        </div>
+        <div class="switch-frame frame-preview frame-small" data-hero-preview>
+          <div class="switch-plate pattern-solid" style="--plate-color:#5EC8B8;">
+            <div class="switch-key"></div>
+          </div>
+        </div>
+        <div class="switch-frame frame-preview frame-small" data-hero-preview>
+          <div class="switch-plate pattern-stripes" style="--plate-color:#FFC857;">
+            <div class="switch-key"></div>
+            <div class="switch-key"></div>
+            <div class="switch-key"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGOS / TRUST -->
+  <section class="trust-strip">
+    <div class="container trust-inner">
+      <span>Подходит к стандартным рамкам</span>
+      <span>•</span>
+      <span>Прочный PLA/PETG пластик</span>
+      <span>•</span>
+      <span>Ручная сборка и покраска</span>
+      <span>•</span>
+      <span>Отправка по РФ</span>
+    </div>
+  </section>
+
+  <!-- CATALOG -->
+  <section class="section" id="catalog">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">готовые коллекции</p>
+        <h2>Выберите настроение своей комнаты</h2>
+        <p class="section-lead">Каждая коллекция — это готовое сочетание узора и палитры. Нажмите «Настроить», чтобы открыть её в конструкторе со своими параметрами.</p>
+      </div>
+      <div class="catalog-grid" id="catalogGrid"></div>
+    </div>
+  </section>
+
+  <!-- CONFIGURATOR -->
+  <section class="section section-alt" id="configurator">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">конструктор</p>
+        <h2>Соберите накладку под себя</h2>
+        <p class="section-lead">Четыре шага — и мы уже знаем, что печатать. Превью обновляется в реальном времени.</p>
+      </div>
+
+      <div class="configurator">
+        <div class="configurator-preview">
+          <div class="preview-sticky">
+            <div class="switch-frame frame-large" id="livePreviewFrame">
+              <div class="switch-plate" id="livePreviewPlate">
+                <!-- keys injected by JS -->
+              </div>
+            </div>
+            <div class="preview-meta">
+              <div class="preview-row">
+                <span>Клавиш</span>
+                <strong id="metaKeys">1</strong>
+              </div>
+              <div class="preview-row">
+                <span>Узор</span>
+                <strong id="metaPattern">Однотон</strong>
+              </div>
+              <div class="preview-row">
+                <span>Цвет</span>
+                <strong id="metaColor">Коралл</strong>
+              </div>
+              <div class="preview-row">
+                <span>Покрытие</span>
+                <strong id="metaFinish">Матовое</strong>
+              </div>
+              <div class="preview-divider"></div>
+              <div class="preview-row preview-price">
+                <span>Итого</span>
+                <strong id="metaPrice">690 ₽</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="configurator-controls">
+
+          <div class="config-step">
+            <div class="step-label"><span class="step-num">1</span>Количество клавиш</div>
+            <div class="options-row" id="optKeys"></div>
+          </div>
+
+          <div class="config-step">
+            <div class="step-label"><span class="step-num">2</span>Узор</div>
+            <div class="options-row options-pattern" id="optPattern"></div>
+          </div>
+
+          <div class="config-step">
+            <div class="step-label"><span class="step-num">3</span>Цвет</div>
+            <div class="options-row options-color" id="optColor"></div>
+          </div>
+
+          <div class="config-step">
+            <div class="step-label"><span class="step-num">4</span>Покрытие</div>
+            <div class="options-row" id="optFinish"></div>
+          </div>
+
+          <div class="config-step">
+            <div class="step-label"><span class="step-num">5</span>Комментарий к заказу <em>(необязательно)</em></div>
+            <textarea id="orderComment" class="order-comment" rows="3" placeholder="Например: под рамку Legrand Valena, стены цвета шалфей"></textarea>
+          </div>
+
+          <button class="btn btn-primary btn-wide" id="orderBtn">Оформить заказ — <span id="orderBtnPrice">690 ₽</span></button>
+          <p class="config-note">Мы не списываем оплату на сайте — после заявки уточним детали в мессенджере и пришлём 3D-макет на согласование.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENEFITS -->
+  <section class="section" id="benefits">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">почему щёлк</p>
+        <h2>Мелкая деталь, которая меняет комнату</h2>
+      </div>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon">🎨</div>
+          <h3>Любой цвет и узор</h3>
+          <p>Не ограничены каталогом — под запрос подберём оттенок в тон обоям или мебели.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">📐</div>
+          <h3>Точная посадка</h3>
+          <p>Печатаем под стандартные рамки одинарных и многоклавишных выключателей — не болтается и не перекрывает механизм.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">🧵</div>
+          <h3>Прочный пластик</h3>
+          <p>PLA/PETG выдерживает годы ежедневных щелчков и не выгорает на солнце.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">🚚</div>
+          <h3>Печать под заказ</h3>
+          <p>Каждая накладка печатается после оплаты — без склада и лишних остатков.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section section-alt" id="how">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">как это работает</p>
+        <h2>От клика до накладки на стене</h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <span class="step-index">01</span>
+          <h3>Собираете дизайн</h3>
+          <p>Выбираете количество клавиш, узор и цвет в конструкторе — или берёте готовую коллекцию.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-index">02</span>
+          <h3>Отправляете заявку</h3>
+          <p>Заявка с параметрами уходит нам в мессенджер — уточняем модель рамки и адрес доставки.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-index">03</span>
+          <h3>Печатаем и красим</h3>
+          <p>Печать занимает 2–4 дня, ещё день на финишную обработку и контроль качества.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-index">04</span>
+          <h3>Доставляем</h3>
+          <p>Отправляем по России транспортной компанией или почтой — вы просто защёлкиваете накладку на выключатель.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="container container-narrow">
+      <div class="section-head">
+        <p class="eyebrow">вопросы и ответы</p>
+        <h2>Если сомневаетесь — почитайте тут</h2>
+      </div>
+      <div class="faq-list" id="faqList"></div>
+    </div>
+  </section>
+
+  <!-- CONTACTS / CTA -->
+  <section class="section cta-section" id="contacts">
+    <div class="container cta-inner">
+      <h2>Остались вопросы по замерам или срокам?</h2>
+      <p>Напишите нам — поможем подобрать накладку под вашу рамку и посчитаем точную стоимость.</p>
+      <div class="cta-actions">
+        <a href="https://t.me/your_shop_username" class="btn btn-primary" target="_blank" rel="noopener">Написать в Telegram</a>
+        <a href="mailto:hello@example.com" class="btn btn-ghost-invert">hello@example.com</a>
+      </div>
+      <p class="cta-note">*Контакты временные — замените на свои в футере и в этом блоке перед публикацией сайта.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <a href="#top" class="logo">ЩЁЛК<span class="logo-dot">.</span></a>
+      <p>Дизайнерские накладки на выключатели света. Печатаем под заказ в России.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Навигация</h4>
+      <a href="#catalog">Каталог</a>
+      <a href="#configurator">Конструктор</a>
+      <a href="#how">Как это работает</a>
+      <a href="#faq">Вопросы</a>
+    </div>
+    <div class="footer-col">
+      <h4>Контакты</h4>
+      <a href="https://t.me/your_shop_username" target="_blank" rel="noopener">Telegram</a>
+      <a href="mailto:hello@example.com">hello@example.com</a>
+      <a href="tel:+70000000000">+7 (000) 000-00-00</a>
+    </div>
+    <div class="footer-col">
+      <h4>Соцсети</h4>
+      <a href="#" target="_blank" rel="noopener">Instagram*</a>
+      <a href="#" target="_blank" rel="noopener">VK</a>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© <span id="year"></span> ЩЁЛК. Все права защищены.</span>
+    <span>Сайт — демо-версия, контакты и цены нужно заменить на реальные.</span>
+  </div>
+</footer>
+
+<!-- ORDER MODAL -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal">
+    <button class="modal-close" id="modalClose" aria-label="Закрыть">✕</button>
+    <h3>Заявка почти готова</h3>
+    <p class="modal-sub">Скопируйте сводку заказа и отправьте нам в Telegram — либо просто нажмите кнопку ниже, текст подставится автоматически.</p>
+    <pre class="order-summary" id="orderSummary"></pre>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="copySummaryBtn">Скопировать текст</button>
+      <a class="btn btn-ghost" id="sendTelegramBtn" href="#" target="_blank" rel="noopener">Отправить в Telegram</a>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
