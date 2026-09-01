@@ -30,7 +30,7 @@ const PATTERNS = [
   { id: 'dots',     name: 'Горошок',   cls: 'pattern-dots',     surcharge: 130 },
   { id: 'stripes',  name: 'Смужки',    cls: 'pattern-stripes',  surcharge: 130 },
   { id: 'waves',    name: 'Хвиля',     cls: 'pattern-waves',    surcharge: 160 },
-  { id: 'marble',   name: 'Мармур',    cls: 'pattern-marble',   surcharge: 190 },
+  { id: 'checker',  name: 'Клітинка',  cls: 'pattern-checker',  surcharge: 190 },
   { id: 'terrazzo', name: 'Терраццо',  cls: 'pattern-terrazzo', surcharge: 220 },
 ];
 
@@ -71,7 +71,7 @@ const CATALOG = [
   { name: 'Ранкова кава',    sections: 1, clavishes: 2, pattern: 'dots',     color: 'terracotta', patternColor: 'cream',   lever: 'cream',   shape: 'square' },
   { name: "М'ята свіжість",  sections: 1, clavishes: 1, pattern: 'solid',    color: 'mint',       patternColor: 'cream',   lever: 'cream',   shape: 'circle' },
   { name: 'Дискотека',       sections: 2, clavishes: 1, pattern: 'terrazzo', color: 'lilac',      patternColor: 'cream',   lever: 'cream',   shape: 'cookie' },
-  { name: 'Скандинавія',     sections: 1, clavishes: 1, pattern: 'marble',   color: 'cream',      patternColor: 'sage',    lever: 'sage',    shape: 'square' },
+  { name: 'Скандинавія',     sections: 1, clavishes: 1, pattern: 'checker', color: 'cream',      patternColor: 'sage',    lever: 'sage',    shape: 'square' },
   { name: 'Захід сонця',     sections: 1, clavishes: 2, pattern: 'waves',    color: 'coral',      patternColor: 'mustard', lever: 'cream',   shape: 'cloud'  },
   { name: 'Гірчичне поле',   sections: 3, clavishes: 1, pattern: 'stripes',  color: 'mustard',    patternColor: 'cream',   lever: 'cream',   shape: 'square' },
   { name: 'Нічне місто',     sections: 2, clavishes: 2, pattern: 'dots',     color: 'charcoal',   patternColor: 'sky',     lever: 'mustard', shape: 'square' },
