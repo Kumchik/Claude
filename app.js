@@ -57,7 +57,7 @@ const FINISHES = [
 // Ціна залежить лише від кількості секцій (окремих корпусів вимикачів під
 // однією накладкою) — друга клавіша в тій самій секції не збільшує рамку
 // й не впливає на ціну.
-const SECTION_BASE_PRICE = { 1: 599, 2: 990, 3: 1390, 4: 1750 };
+const SECTION_BASE_PRICE = { 1: 210, 2: 350, 3: 490, 4: 630 };
 
 // Курси — orієнтовні і застарівають, підставте актуальні перед публікацією
 // (або замініть на окремий прайс під кожен ринок замість автоконвертації).
@@ -524,7 +524,7 @@ function renderFaq(){
 }
 
 /* ---------------- order modal ---------------- */
-const TELEGRAM_USERNAME = 'your_shop_username'; // TODO: замініть на реальний юзернейм/бот
+const TELEGRAM_USERNAME = 'kumchik';
 
 function buildSummary(){
   const color = getColor(state.color);
@@ -555,7 +555,7 @@ function buildSummary(){
 function openOrderModal(){
   const summary = buildSummary();
   document.getElementById('orderSummary').textContent = summary;
-  const tgLink = `https://t.me/share/url?url=&text=${encodeURIComponent(summary)}`;
+  const tgLink = `https://t.me/${TELEGRAM_USERNAME}?text=${encodeURIComponent(summary)}`;
   document.getElementById('sendTelegramBtn').href = tgLink;
   document.getElementById('orderModal').classList.add('open');
 }
