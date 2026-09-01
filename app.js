@@ -154,23 +154,27 @@ function formatPrice(uahAmount){
 // silhouettes (круг/хмаринка/печиво) stay compact — they just grow a
 // little, the way the reference photos show a scalloped печиво
 // накладка holding two switches without stretching into a long stadium.
+// lever hole is a single fixed circle per shape family/preview size — it
+// never resizes for section or clavish count, only the plate around it
+// grows (a real switch's own cutout doesn't change size just because the
+// wall plate next to it got wider or gained a second toggle)
 const PLATE_SIZE = {
   base: {
     height: 100,
-    rect:    { widths: { 1: 100, 2: 172, 3: 244, 4: 316 }, lever: { 1:{w:22,h:42}, 2:{w:15,h:38} } },
-    compact: { widths: { 1: 100, 2: 132, 3: 164, 4: 196 }, lever: { 1:{w:20,h:38}, 2:{w:13,h:32} } },
+    rect:    { widths: { 1: 100, 2: 172, 3: 244, 4: 316 }, lever: 26 },
+    compact: { widths: { 1: 100, 2: 132, 3: 164, 4: 196 }, lever: 16 },
   },
   large: {
     height: 160,
-    rect:    { widths: { 1: 160, 2: 272, 3: 384, 4: 496 }, lever: { 1:{w:34,h:66}, 2:{w:23,h:58} } },
-    compact: { widths: { 1: 160, 2: 208, 3: 256, 4: 304 }, lever: { 1:{w:30,h:58}, 2:{w:19,h:48} } },
+    rect:    { widths: { 1: 160, 2: 272, 3: 384, 4: 496 }, lever: 42 },
+    compact: { widths: { 1: 160, 2: 208, 3: 256, 4: 304 }, lever: 25 },
   },
 };
 
 function buildPlateEl(shape, sections, clavishes, patternCls, plateColorHex, patternColorHex, leverColorHex, finishId, size){
   const dims = PLATE_SIZE[size === 'large' ? 'large' : 'base'];
   const table = shape === 'square' ? dims.rect : dims.compact;
-  const leverDim = table.lever[clavishes] || table.lever[1];
+  const leverDim = { w: table.lever, h: table.lever };
 
   const plate = document.createElement('div');
   plate.className = `switch-plate ${patternCls} shape-${shape}` + (size === 'large' ? ' plate-large' : '');

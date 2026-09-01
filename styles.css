@@ -216,16 +216,19 @@ button{ font-family:inherit; cursor:pointer; }
 /* .lever-well = the cutout hole itself: a bit of the печатана's own
    material (darkened, since it's the recessed inner wall, not the lit
    top surface) showing around the lever, with a strong inset shadow at
-   its top to read as a real hole with depth — not a flat ring. */
+   its top to read as a real hole with depth — not a flat ring. Always a
+   true circle (equal width/height, set in JS) at one fixed size — the
+   cutout itself doesn't grow or stretch when sections/clavishes change,
+   only the plate around it does. */
 .lever-well{
   background: color-mix(in srgb, var(--plate-color) 55%, #000 45%);
-  border-radius: 34%;
+  border-radius: 50%;
   padding: 4px;
   display:flex; align-items:center; justify-content:center;
   flex-shrink: 0;
   box-shadow: inset 0 3px 5px rgba(0,0,0,0.55), inset 0 -1px 2px rgba(255,255,255,0.12);
 }
-.plate-large .lever-well{ padding: 7px; border-radius: 30%; }
+.plate-large .lever-well{ padding: 7px; }
 
 /* the real важелёк is two parts, not one rocker cap: a flat oval BASE
    taped straight onto the switch's own toggle, and a small coloured
