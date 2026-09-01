@@ -146,7 +146,9 @@ function formatPrice(uahAmount){
      .plate-section = one physical switch corpus's slot — fixed-share
        width regardless of clavishes, so 1 vs 2 clavishes never resizes
        the corpus, only how tight its own levers sit together.
-         .key-lever = the rocker cap glued onto the real toggle. */
+         .lever-well > .key-lever (.lever-base + .lever-stick) = the
+           важелёк: an oval base taped onto the real toggle, with a
+           coloured stick standing up out of it. */
 // "Квадрат" is a standard rectangular plate — it genuinely widens for
 // more sections, like a real double/triple-gang switch. The decorative
 // silhouettes (круг/хмаринка/печиво) stay compact — they just grow a
@@ -186,9 +188,18 @@ function buildPlateEl(shape, sections, clavishes, patternCls, plateColorHex, pat
       well.style.width = `${leverDim.w}px`;
       well.style.height = `${leverDim.h}px`;
 
+      // real важелёк = a flat oval base (taped straight onto the switch's
+      // own toggle) with a small coloured stick standing up from it —
+      // not a rocker-shaped cap
       const lever = document.createElement('div');
-      lever.className = 'key-lever' + (finishId === 'glossy' ? ' finish-glossy' : '');
-      lever.style.setProperty('--lever-color', leverColorHex);
+      lever.className = 'key-lever';
+      const base = document.createElement('div');
+      base.className = 'lever-base';
+      const stick = document.createElement('div');
+      stick.className = 'lever-stick' + (finishId === 'glossy' ? ' finish-glossy' : '');
+      stick.style.setProperty('--lever-color', leverColorHex);
+      lever.appendChild(base);
+      lever.appendChild(stick);
       well.appendChild(lever);
 
       sectionEl.appendChild(well);

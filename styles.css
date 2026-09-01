@@ -167,19 +167,18 @@ button{ font-family:inherit; cursor:pointer; }
   gap: 22px;
 }
 /* ---------- switch mockups ----------
-   One "module" = one physical switch/socket section, built as three nested
-   layers of the same silhouette (real накладки are sold this way — a shaped
-   frame + shaped overlay around a shaped cutout), plus a separately-coloured
-   lever/toggle cap sitting in the cutout:
+   One "module" = one physical switch/socket section:
      .switch-plate  — the printed накладка itself: the whole visible plate,
                       no separate white housing behind it (real накладки
                       mount flush on the wall, there's no picture-frame
                       border around them)
-       .key-lever     — the small rocker cap glued onto the real switch's
-                        toggle ("важілок"), always a rounded paddle shape
-                        regardless of the plate's silhouette — sections
-                        line up inside ONE plate, like a real multi-gang
-                        switch, not as separate side-by-side modules
+       .lever-well    — the cutout hole through the накладка
+         .key-lever     — the важелёк: a flat oval base taped straight onto
+                          the switch's own toggle, with a small coloured
+                          stick standing up out of it — not a rocker cap.
+                          Sections line up inside ONE plate, like a real
+                          multi-gang switch, not separate side-by-side
+                          modules.
 */
 .modules-row{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap: 20px; }
 
@@ -228,35 +227,45 @@ button{ font-family:inherit; cursor:pointer; }
 }
 .plate-large .lever-well{ padding: 7px; border-radius: 30%; }
 
+/* the real важелёк is two parts, not one rocker cap: a flat oval BASE
+   taped straight onto the switch's own toggle, and a small coloured
+   STICK standing up out of its middle — that's the part you actually
+   flip. Both sit inside .key-lever, which just fills the well. */
 .key-lever{
-  --lever-color: #F7F4EE;
-  background: var(--lever-color);
-  border-radius: 28%;
   flex-shrink: 0;
   width: 100%; height: 100%;
   position:relative;
-  overflow: hidden; /* clips the cast-shadow gradient below to the lever's own rounded shape */
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
 }
 .key-lever::before{
   /* the накладка's cutout edge overhangs the lever slightly, so its
-     shadow falls across the lever's own top — without this the lever
-     reads as a flat button sitting ON the накладка instead of a part
-     recessed through it */
+     shadow falls across the top of the base/stick — without this it
+     reads as parts sitting ON the накладка instead of recessed through
+     it */
   content:'';
   position:absolute; inset:0;
-  background: linear-gradient(to bottom, rgba(0,0,0,.42) 0%, rgba(0,0,0,.16) 30%, transparent 60%);
+  background: linear-gradient(to bottom, rgba(0,0,0,.4) 0%, rgba(0,0,0,.12) 32%, transparent 62%);
   pointer-events:none;
+  z-index: 2;
 }
-.key-lever::after{
-  /* the hairline split of a real rocker toggle */
-  content:'';
-  position:absolute; left:16%; right:16%; top:50%;
-  height:2px; background: rgba(0,0,0,0.2);
-  border-radius:2px; transform: translateY(-50%);
+
+.lever-base{
+  position:absolute; left:4%; right:4%; bottom:2%;
+  height: 46%;
+  border-radius: 46% / 50%;
+  background: #F3E9DA;
+  box-shadow: 0 2px 3px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.6), inset 0 -2px 3px rgba(0,0,0,.08);
 }
-.key-lever.finish-glossy{
-  background: linear-gradient(160deg, color-mix(in srgb, var(--lever-color) 70%, #fff), var(--lever-color));
+
+.lever-stick{
+  --lever-color: #FF6B6B;
+  position:absolute; left:32%; right:32%; bottom:14%;
+  height: 78%;
+  border-radius: 40% 40% 30% 30% / 50% 50% 20% 20%;
+  background: var(--lever-color);
+  box-shadow: 0 3px 4px rgba(0,0,0,.35), inset -1px 0 2px rgba(0,0,0,.15), inset 1px 0 0 rgba(255,255,255,.35);
+}
+.lever-stick.finish-glossy{
+  background: linear-gradient(100deg, color-mix(in srgb, var(--lever-color) 75%, #fff), var(--lever-color) 60%, color-mix(in srgb, var(--lever-color) 80%, #000) 100%);
 }
 
 /* the four selectable plate silhouettes — a wider plate (more sections)
