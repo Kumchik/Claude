@@ -54,7 +54,7 @@
       <div class="hero-text">
         <p class="eyebrow">дофаміновий декор для дому</p>
         <h1>Вимикач,<br>який вимикає <span class="highlight">нудьгу</span></h1>
-        <p class="hero-sub">3D-друковані накладки на вимикачі світла: будь-який колір, візерунок і кількість клавіш. Зберіть свою за 2 хвилини у конструкторі нижче.</p>
+        <p class="hero-sub">3D-друковані накладки на вимикачі світла: квадратна, вертикальна чи горизонтальна рамка, будь-який колір, візерунок і кількість клавіш. Зберіть свою за 2 хвилини у конструкторі нижче.</p>
         <div class="hero-actions">
           <a href="#configurator" class="btn btn-primary">Зібрати свою накладку</a>
           <a href="#catalog" class="btn btn-ghost">Переглянути колекції</a>
@@ -66,19 +66,22 @@
         </div>
       </div>
       <div class="hero-visual">
-        <div class="switch-frame frame-preview" data-hero-preview>
-          <div class="switch-plate pattern-dots" style="--plate-color:#FF6B6B;">
+        <div class="switch-frame frame-preview shape-square" data-hero-preview>
+          <div class="switch-plate pattern-dots shape-square" style="--plate-color:#FF6B6B; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr;">
+            <div class="switch-key key-glossy"></div>
+            <div class="switch-key key-glossy"></div>
             <div class="switch-key key-glossy"></div>
             <div class="switch-key key-glossy"></div>
           </div>
         </div>
-        <div class="switch-frame frame-preview frame-small" data-hero-preview>
-          <div class="switch-plate pattern-solid" style="--plate-color:#5EC8B8;">
+        <div class="switch-frame frame-preview frame-small shape-horizontal" data-hero-preview>
+          <div class="switch-plate pattern-solid shape-horizontal" style="--plate-color:#5EC8B8;">
+            <div class="switch-key"></div>
             <div class="switch-key"></div>
           </div>
         </div>
-        <div class="switch-frame frame-preview frame-small" data-hero-preview>
-          <div class="switch-plate pattern-stripes" style="--plate-color:#FFC857;">
+        <div class="switch-frame frame-preview frame-small shape-vertical" data-hero-preview>
+          <div class="switch-plate pattern-stripes shape-vertical" style="--plate-color:#FFC857;">
             <div class="switch-key"></div>
             <div class="switch-key"></div>
             <div class="switch-key"></div>
@@ -119,18 +122,22 @@
       <div class="section-head">
         <p class="eyebrow">конструктор</p>
         <h2>Зберіть накладку під себе</h2>
-        <p class="section-lead">Чотири кроки — і ми вже знаємо, що друкувати. Прев'ю оновлюється в реальному часі.</p>
+        <p class="section-lead">П'ять кроків — і ми вже знаємо, що друкувати. Прев'ю оновлюється в реальному часі.</p>
       </div>
 
       <div class="configurator">
         <div class="configurator-preview">
           <div class="preview-sticky">
-            <div class="switch-frame frame-large" id="livePreviewFrame">
+            <div class="switch-frame frame-large shape-square" id="livePreviewFrame">
               <div class="switch-plate" id="livePreviewPlate">
                 <!-- keys injected by JS -->
               </div>
             </div>
             <div class="preview-meta">
+              <div class="preview-row">
+                <span>Форма</span>
+                <strong id="metaShape">Квадратна</strong>
+              </div>
               <div class="preview-row">
                 <span>Клавіш</span>
                 <strong id="metaKeys">1</strong>
@@ -159,27 +166,32 @@
         <div class="configurator-controls">
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">1</span>Кількість клавіш</div>
+            <div class="step-label"><span class="step-num">1</span>Форма рамки</div>
+            <div class="options-row" id="optShape"></div>
+          </div>
+
+          <div class="config-step">
+            <div class="step-label"><span class="step-num">2</span>Кількість клавіш</div>
             <div class="options-row" id="optKeys"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">2</span>Візерунок</div>
+            <div class="step-label"><span class="step-num">3</span>Візерунок</div>
             <div class="options-row options-pattern" id="optPattern"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">3</span>Колір</div>
+            <div class="step-label"><span class="step-num">4</span>Колір</div>
             <div class="options-row options-color" id="optColor"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">4</span>Покриття</div>
+            <div class="step-label"><span class="step-num">5</span>Покриття</div>
             <div class="options-row" id="optFinish"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">5</span>Коментар до замовлення <em>(необов'язково)</em></div>
+            <div class="step-label"><span class="step-num">6</span>Коментар до замовлення <em>(необов'язково)</em></div>
             <textarea id="orderComment" class="order-comment" rows="3" placeholder="Наприклад: під рамку Legrand Valena, стіни кольору шавлії"></textarea>
           </div>
 
@@ -205,8 +217,8 @@
         </div>
         <div class="benefit-card">
           <div class="benefit-icon">📐</div>
-          <h3>Точна посадка</h3>
-          <p>Друкуємо під стандартні рамки одинарних і багатоклавішних вимикачів — європейські (Legrand, Schneider Electric, Werkel) та американські Decora.</p>
+          <h3>Квадратні й прямокутні формати</h3>
+          <p>Друкуємо квадратну, вертикальну або горизонтальну рамку під стандартні одинарні й багатоклавішні вимикачі — європейські (Legrand, Schneider Electric, Werkel) та американські Decora.</p>
         </div>
         <div class="benefit-card">
           <div class="benefit-icon">🧵</div>
@@ -233,7 +245,7 @@
         <div class="step-card">
           <span class="step-index">01</span>
           <h3>Збираєте дизайн</h3>
-          <p>Обираєте кількість клавіш, візерунок і колір у конструкторі — або берете готову колекцію.</p>
+          <p>Обираєте форму рамки, кількість клавіш, візерунок і колір у конструкторі — або берете готову колекцію.</p>
         </div>
         <div class="step-card">
           <span class="step-index">02</span>
@@ -248,7 +260,7 @@
         <div class="step-card">
           <span class="step-index">04</span>
           <h3>Доставляємо</h3>
-          <p>Відправляємо по Україні, ЄС та США — ви просто клацаєте накладку на вимикач.</p>
+          <p>Відправляємо по Україні, ЄС та США. Важельки приклеюєте на клавіші вимикача, а рамку зверху — просто клацаєте, без викруток.</p>
         </div>
       </div>
     </div>

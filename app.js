@@ -4,6 +4,12 @@
    де описано, що саме потрібно замінити.
    ========================================================= */
 
+const SHAPES = [
+  { id: 'square',     name: 'Квадратна'     },
+  { id: 'vertical',   name: 'Вертикальна'   },
+  { id: 'horizontal', name: 'Горизонтальна' },
+];
+
 const PATTERNS = [
   { id: 'solid',    name: 'Однотон',   cls: 'pattern-solid',    surcharge: 0   },
   { id: 'dots',     name: 'Горошок',   cls: 'pattern-dots',     surcharge: 130 },
@@ -44,14 +50,14 @@ const CURRENCIES = [
 ];
 
 const CATALOG = [
-  { name: 'Ранкова кава',    keys: 2, pattern: 'dots',     color: 'terracotta' },
-  { name: "М'ята свіжість",  keys: 1, pattern: 'solid',    color: 'mint' },
-  { name: 'Дискотека',       keys: 3, pattern: 'terrazzo', color: 'lilac' },
-  { name: 'Скандинавія',     keys: 1, pattern: 'marble',   color: 'cream' },
-  { name: 'Захід сонця',     keys: 2, pattern: 'waves',    color: 'coral' },
-  { name: 'Гірчичне поле',   keys: 4, pattern: 'stripes',  color: 'mustard' },
-  { name: 'Нічне місто',     keys: 2, pattern: 'solid',    color: 'charcoal' },
-  { name: 'Пудровий бриз',   keys: 1, pattern: 'dots',     color: 'blush' },
+  { name: 'Ранкова кава',    keys: 2, pattern: 'dots',     color: 'terracotta', shape: 'horizontal' },
+  { name: "М'ята свіжість",  keys: 1, pattern: 'solid',    color: 'mint',       shape: 'square'     },
+  { name: 'Дискотека',       keys: 3, pattern: 'terrazzo', color: 'lilac',      shape: 'vertical'   },
+  { name: 'Скандинавія',     keys: 1, pattern: 'marble',   color: 'cream',      shape: 'square'     },
+  { name: 'Захід сонця',     keys: 4, pattern: 'waves',    color: 'coral',      shape: 'square'     },
+  { name: 'Гірчичне поле',   keys: 4, pattern: 'stripes',  color: 'mustard',    shape: 'vertical'   },
+  { name: 'Нічне місто',     keys: 2, pattern: 'solid',    color: 'charcoal',   shape: 'horizontal' },
+  { name: 'Пудровий бриз',   keys: 1, pattern: 'dots',     color: 'blush',      shape: 'square'     },
 ];
 
 const FAQ = [
@@ -62,6 +68,10 @@ const FAQ = [
   {
     q: 'Чи підійде накладка до моєї рамки?',
     a: 'Друкуємо накладки під стандартні рамки популярних серій (Legrand, Schneider Electric, Werkel) та американські вимикачі Decora. При оформленні замовлення уточнимо модель рамки, щоб посадка була точною.'
+  },
+  {
+    q: 'З яких частин складається комплект і як його встановлювати?',
+    a: 'У комплекті дві частини: маленькі декоративні важельки та рамка з вирізами під клавіші. Важельки приклеюються прямо на існуючі клавіші вашого вимикача, а рамка після цього просто клацає зверху на штатні кріплення. Розбирати механізм вимикача чи викликати електрика не потрібно.'
   },
   {
     q: 'З якого матеріалу друкуєте?',
@@ -83,6 +93,7 @@ const FAQ = [
 
 /* ---------------- state ---------------- */
 const state = {
+  shape: 'square', // квадратні "quadro"-рамки — основний акцент лінійки
   keys: 1,
   pattern: 'solid',
   color: 'coral',
@@ -90,10 +101,18 @@ const state = {
   currency: 'UAH',
 };
 
+function getShape(id){ return SHAPES.find(s => s.id === id); }
 function getColor(id){ return COLORS.find(c => c.id === id); }
 function getPattern(id){ return PATTERNS.find(p => p.id === id); }
 function getFinish(id){ return FINISHES.find(f => f.id === id); }
 function getCurrency(code){ return CURRENCIES.find(c => c.code === code); }
+
+// Квадратні "quadro"-рамки вкладають клавіші в сітку, а не в один ряд —
+// підбираємо кількість колонок/рядків під кількість клавіш.
+function squareGrid(keys){
+  if (keys === 4) return { cols: 2, rows: 2 };
+  return { cols: keys, rows: 1 };
+}
 
 function calcPriceUAH(keys, patternId, finishId){
   const base = KEY_BASE_PRICE[keys] || KEY_BASE_PRICE[1];
@@ -109,16 +128,27 @@ function formatPrice(uahAmount){
 }
 
 /* ---------------- rendering helpers ---------------- */
-function buildPlateEl(keys, patternCls, colorHex, finishId){
+function buildPlateEl(keys, patternCls, colorHex, finishId, shape){
   const plate = document.createElement('div');
-  plate.className = `switch-plate ${patternCls}`;
+  plate.className = `switch-plate ${patternCls} shape-${shape}`;
   plate.style.setProperty('--plate-color', colorHex);
+  if (shape === 'square'){
+    const { cols, rows } = squareGrid(keys);
+    plate.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    plate.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+  }
   for (let i = 0; i < keys; i++){
     const key = document.createElement('div');
     key.className = 'switch-key' + (finishId === 'glossy' ? ' finish-glossy key-glossy' : '');
     plate.appendChild(key);
   }
   return plate;
+}
+
+function buildFrameEl(shape){
+  const frame = document.createElement('div');
+  frame.className = `switch-frame shape-${shape}`;
+  return frame;
 }
 
 /* ---------------- currency switcher ---------------- */
@@ -148,11 +178,10 @@ function renderCatalog(){
     const card = document.createElement('div');
     card.className = 'catalog-card';
 
-    const frame = document.createElement('div');
-    frame.className = 'switch-frame';
     const color = getColor(item.color);
     const pattern = getPattern(item.pattern);
-    frame.appendChild(buildPlateEl(item.keys, pattern.cls, color.hex, 'matte'));
+    const frame = buildFrameEl(item.shape);
+    frame.appendChild(buildPlateEl(item.keys, pattern.cls, color.hex, 'matte', item.shape));
     card.appendChild(frame);
 
     const h3 = document.createElement('h3');
@@ -169,6 +198,7 @@ function renderCatalog(){
     btn.className = 'btn btn-ghost btn-small';
     btn.textContent = 'Налаштувати';
     btn.addEventListener('click', () => {
+      state.shape = item.shape;
       state.keys = item.keys;
       state.pattern = item.pattern;
       state.color = item.color;
@@ -188,6 +218,17 @@ function keyLabel(n){
 }
 
 function renderOptions(){
+  // shape
+  const shapeRow = document.getElementById('optShape');
+  shapeRow.innerHTML = '';
+  SHAPES.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-pill' + (state.shape === s.id ? ' active' : '');
+    btn.textContent = s.name;
+    btn.addEventListener('click', () => { state.shape = s.id; renderOptions(); updatePreview(); });
+    shapeRow.appendChild(btn);
+  });
+
   // keys
   const keysRow = document.getElementById('optKeys');
   keysRow.innerHTML = '';
@@ -246,10 +287,14 @@ function updatePreview(){
   const plateHolder = document.getElementById('livePreviewPlate');
   const color = getColor(state.color);
   const pattern = getPattern(state.pattern);
-  const newPlate = buildPlateEl(state.keys, pattern.cls, color.hex, state.finish);
+  const newPlate = buildPlateEl(state.keys, pattern.cls, color.hex, state.finish, state.shape);
   newPlate.id = 'livePreviewPlate';
   plateHolder.replaceWith(newPlate);
 
+  const frameEl = document.getElementById('livePreviewFrame');
+  frameEl.className = `switch-frame frame-large shape-${state.shape}`;
+
+  document.getElementById('metaShape').textContent = getShape(state.shape).name;
   document.getElementById('metaKeys').textContent = state.keys;
   document.getElementById('metaPattern').textContent = pattern.name;
   document.getElementById('metaColor').textContent = color.name;
@@ -308,6 +353,7 @@ function buildSummary(){
   const priceUAH = calcPriceUAH(state.keys, state.pattern, state.finish);
   const lines = [
     'Заявка на накладку Waveform:',
+    `— Форма рамки: ${getShape(state.shape).name}`,
     `— Клавіш: ${state.keys}`,
     `— Візерунок: ${pattern.name}`,
     `— Колір: ${color.name} (${color.hex})`,

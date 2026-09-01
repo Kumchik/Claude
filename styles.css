@@ -163,14 +163,14 @@ button{ font-family:inherit; cursor:pointer; }
 
 .hero-visual{
   position:relative;
-  display:grid;
-  grid-template-columns: 1.3fr 1fr;
-  grid-template-rows: auto auto;
-  gap: 20px;
+  display:flex;
+  flex-wrap: wrap;
+  align-items:center;
+  justify-content:center;
+  gap: 22px;
+  padding: 10px;
 }
-.frame-preview{ justify-self:center; }
-.frame-preview:first-child{ grid-row: 1 / 3; }
-.frame-small{ transform: scale(.82); }
+.frame-small{ transform: scale(.9); }
 
 /* ---------- switch mockups ---------- */
 .switch-frame{
@@ -180,30 +180,39 @@ button{ font-family:inherit; cursor:pointer; }
   box-shadow: var(--shadow-soft);
   width: 132px;
 }
+.switch-frame.shape-horizontal{ width: 190px; }
 .frame-large{ width: 220px; margin: 0 auto; }
+.frame-large.shape-horizontal{ width: 300px; }
+
 .switch-plate{
   --plate-color: #FF6B6B;
   background: var(--plate-color);
   border-radius: 16px;
   padding: 14px 10px;
-  display:flex;
-  flex-direction:column;
   gap: 10px;
-  min-height: 160px;
-  justify-content:center;
   position:relative;
   overflow:hidden;
   box-shadow: inset 0 2px 6px rgba(0,0,0,0.12), inset 0 -3px 8px rgba(255,255,255,0.15);
 }
-.frame-large .switch-plate{ min-height: 260px; padding: 22px 16px; gap:16px; }
+/* three frame shapes: real switch overlays come as tall (vertical, keys stacked),
+   wide (horizontal, keys in a row) or "quadro"-style square multi-gang panels */
+.switch-plate.shape-vertical{ display:flex; flex-direction:column; justify-content:center; min-height:160px; }
+.switch-plate.shape-horizontal{ display:flex; flex-direction:row; justify-content:center; min-height:90px; }
+.switch-plate.shape-square{ display:grid; aspect-ratio: 1 / 1; }
+
+.frame-large .switch-plate.shape-vertical{ min-height: 260px; padding: 22px 16px; gap:16px; }
+.frame-large .switch-plate.shape-horizontal{ min-height: 160px; padding: 22px 16px; gap:16px; }
+.frame-large .switch-plate.shape-square{ padding: 20px; gap: 14px; }
+
 .switch-key{
   background: #F7F4EE;
   border-radius: 10px;
-  flex: 1;
   min-height: 34px;
   box-shadow: 0 2px 0 rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
   position:relative; z-index:1;
 }
+.shape-vertical .switch-key,
+.shape-horizontal .switch-key{ flex: 1; }
 .frame-large .switch-key{ min-height: 46px; border-radius:14px; }
 .key-glossy{ background: linear-gradient(160deg,#fff,#EDEAE2); }
 .switch-key.finish-glossy{ box-shadow: 0 2px 0 rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9), 0 0 0 1px rgba(255,255,255,.4); }
