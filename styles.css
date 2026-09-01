@@ -244,7 +244,7 @@ button{ font-family:inherit; cursor:pointer; }
   /* darkened lever colour, not plate colour — the well is the socket the
      lever sits in, so it should read as part of the lever, and shift
      together with it when the lever's own colour changes */
-  background: color-mix(in srgb, var(--lever-color) 55%, #000 45%);
+  background: color-mix(in srgb, var(--lever-color, #FF6B6B) 55%, #000 45%);
   border-radius: 50%;
   padding: 4px;
   display:flex; align-items:center; justify-content:center;
@@ -277,17 +277,21 @@ button{ font-family:inherit; cursor:pointer; }
    width/height percentage pair, which stretches it into an oval) and
    centred in the well */
 .lever-dot{
-  --lever-color: #FF6B6B;
+  /* no --lever-color default here on purpose — it must inherit the one
+     actually set on .lever-well (its ancestor), the same value the
+     well's own background uses, so the two always match and move
+     together. Redeclaring a fallback on this element would shadow that
+     inherited value instead of just backstopping it. */
   position:absolute; left:50%; top:50%;
   width: 62%;
   aspect-ratio: 1 / 1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: var(--lever-color);
+  background: var(--lever-color, #FF6B6B);
   box-shadow: 0 2px 3px rgba(0,0,0,.35), inset -1px -1px 2px rgba(0,0,0,.15), inset 1px 1px 0 rgba(255,255,255,.35);
 }
 .lever-dot.finish-glossy{
-  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--lever-color) 75%, #fff), var(--lever-color) 55%, color-mix(in srgb, var(--lever-color) 80%, #000) 100%);
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--lever-color, #FF6B6B) 75%, #fff), var(--lever-color, #FF6B6B) 55%, color-mix(in srgb, var(--lever-color, #FF6B6B) 80%, #000) 100%);
 }
 
 /* the four selectable plate silhouettes — a wider plate (more sections)
