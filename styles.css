@@ -166,70 +166,61 @@ button{ font-family:inherit; cursor:pointer; }
   padding: 10px;
   gap: 22px;
 }
-.hero-visual .switch-frame{ width: 128px; height: 128px; }
-
 /* ---------- switch mockups ----------
    One "module" = one physical switch/socket section, built as three nested
    layers of the same silhouette (real накладки are sold this way — a shaped
    frame + shaped overlay around a shaped cutout), plus a separately-coloured
    lever/toggle cap sitting in the cutout:
-     .switch-frame  — the white mounting plate against the wall
-       .switch-plate  — the printed overlay (colour + pattern), "накладка"
-         .switch-key    — the cutout where the switch itself pokes through
-           .key-lever     — the small decorative cap glued on the toggle, "рычажок"
+     .switch-plate  — the printed накладка itself: the whole visible plate,
+                      no separate white housing behind it (real накладки
+                      mount flush on the wall, there's no picture-frame
+                      border around them)
+       .key-lever     — the small rocker cap glued onto the real switch's
+                        toggle ("важілок"), always a rounded paddle shape
+                        regardless of the plate's silhouette — sections
+                        line up inside ONE plate, like a real multi-gang
+                        switch, not as separate side-by-side modules
 */
-.modules-row{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap: 14px; }
-
-.switch-frame{
-  background: #fff;
-  padding: 10px;
-  box-shadow: var(--shadow-soft);
-  width: 108px;
-  height: 108px;
-  flex-shrink: 0;
-  display:flex;
-}
-.frame-large{ width: 168px; height: 168px; padding: 14px; }
+.modules-row{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap: 20px; }
 
 .switch-plate{
   --plate-color: #FF6B6B;
   background: var(--plate-color);
-  flex: 1;
-  padding: 10px;
   display:flex;
   align-items:center;
   justify-content:center;
+  gap: 14px;
   position:relative;
   overflow:hidden;
-  box-shadow: inset 0 2px 6px rgba(0,0,0,0.12), inset 0 -3px 8px rgba(255,255,255,0.15);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-soft), inset 0 2px 6px rgba(0,0,0,0.12), inset 0 -3px 8px rgba(255,255,255,0.15);
 }
-
-.switch-key{
-  --lever-color: #F7F4EE;
-  width: 64%;
-  height: 64%;
-  background: #F7F4EE;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow: 0 2px 0 rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
-  position:relative; z-index:1;
-}
+.switch-plate.plate-large{ gap: 22px; }
 
 .key-lever{
-  width: 52%;
-  height: 52%;
+  --lever-color: #F7F4EE;
   background: var(--lever-color);
-  box-shadow: 0 2px 0 rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.5);
+  border-radius: 30%;
+  flex-shrink: 0;
+  position:relative;
+  box-shadow: 0 3px 5px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.5);
+}
+.key-lever::after{
+  /* the hairline split of a real rocker toggle */
+  content:'';
+  position:absolute; left:16%; right:16%; top:50%;
+  height:2px; background: rgba(0,0,0,0.15);
+  border-radius:2px; transform: translateY(-50%);
 }
 .key-lever.finish-glossy{
   background: linear-gradient(160deg, color-mix(in srgb, var(--lever-color) 70%, #fff), var(--lever-color));
-  box-shadow: 0 2px 0 rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9), 0 0 0 1px rgba(255,255,255,.3);
+  box-shadow: 0 3px 5px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.9), 0 0 0 1px rgba(255,255,255,.3);
 }
 
-/* the four selectable silhouettes — applied to frame + plate + key + lever together
-   so every layer reads as one coherent shape, like the reference photos */
-.shape-square{ border-radius: 22%; }
+/* the four selectable plate silhouettes — a wider plate (more sections)
+   just stretches the same shape, the way a real double/triple gang
+   накладка is a stretched single-gang one */
+.shape-square{ border-radius: 20%; }
 .shape-circle{ border-radius: 50%; }
 .shape-cloud{ border-radius: 60% 40% 55% 45% / 40% 55% 45% 60%; }
 .shape-cookie{
@@ -293,8 +284,7 @@ button{ font-family:inherit; cursor:pointer; }
   transition: transform .18s ease;
 }
 .catalog-card:hover{ transform: translateY(-4px); }
-.catalog-card .modules-row{ margin: 0 0 18px; }
-.catalog-card .switch-frame{ box-shadow:none; background: var(--bg-alt); }
+.catalog-card .switch-plate{ margin: 0 auto 18px; }
 .catalog-card h3{ font-size: 1.05rem; margin-bottom: .2em; }
 .catalog-card .price{ color: var(--coral); font-weight:700; margin-bottom: 14px; display:block; }
 
@@ -325,6 +315,7 @@ button{ font-family:inherit; cursor:pointer; }
   color:#fff; font-size:.8rem; display:flex; align-items:center; justify-content:center; flex-shrink:0;
 }
 .options-row{ display:flex; flex-wrap:wrap; gap: 10px; }
+.step-hint{ font-size:.82rem; color: var(--ink-soft); margin: 2px 0 0; }
 
 .opt-pill{
   border: 1.5px solid var(--line);

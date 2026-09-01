@@ -3,11 +3,12 @@
    Плейсхолдер-ціни, курси валют і контакти: див. README.md,
    де описано, що саме потрібно замінити.
 
-   Модель товару: кожна секція вимикача — це окремий модуль
-   (рамка → накладка з візерунком → виріз → важелько), три
-   верхні шари мають однакову форму, а важелько фарбується
-   окремим кольором — так само, як у реальному конструкторі
-   printesso.com.
+   Модель товару: накладка — це одна пластина (без білої рамки-підкладки
+   навколо, реальні накладки монтуються впритул до стіни), всередині якої
+   в ряд стоять важельки — по одному на кожну секцію вимикача. Важелько
+   завжди має форму качельки (як справжній тумблер) і фарбується окремим
+   кольором, незалежно від форми самої накладки — так само, як у
+   реальному конструкторі printesso.com.
    ========================================================= */
 
 const SHAPES = [
@@ -130,37 +131,41 @@ function formatPrice(uahAmount){
 }
 
 /* ---------------- rendering helpers ----------------
-   One module = one physical section: frame > plate (pattern+colour) >
-   key cutout > lever (its own colour). Frame/plate/key/lever all share
-   the same shape class so the module reads as one coherent silhouette. */
-function buildModuleEl(shape, patternCls, plateColorHex, leverColorHex, finishId, size){
-  const frame = document.createElement('div');
-  frame.className = `switch-frame shape-${shape}` + (size === 'large' ? ' frame-large' : '');
+   One "plate" = one real switch накладка: a single printed panel that
+   widens to fit 1–4 lever cutouts side by side, exactly like a real
+   single/double/triple-gang switch — not separate tiles glued together. */
+const PLATE_SIZE = {
+  base:  { height: 100, lever: { w: 20, h: 42 }, widths: { 1: 100, 2: 172, 3: 244, 4: 316 } },
+  large: { height: 160, lever: { w: 32, h: 68 }, widths: { 1: 160, 2: 272, 3: 384, 4: 496 } },
+};
 
-  const plate = document.createElement('div');
-  plate.className = `switch-plate ${patternCls} shape-${shape}`;
-  plate.style.setProperty('--plate-color', plateColorHex);
-
-  const key = document.createElement('div');
-  key.className = `switch-key shape-${shape}`;
-
-  const lever = document.createElement('div');
-  lever.className = `key-lever shape-${shape}` + (finishId === 'glossy' ? ' finish-glossy' : '');
-  lever.style.setProperty('--lever-color', leverColorHex);
-
-  key.appendChild(lever);
-  plate.appendChild(key);
-  frame.appendChild(plate);
-  return frame;
+// Круг/хмаринка/печиво тримають форму лише на 1 секції — розтягнуті на
+// кілька секцій ці силуети ламаються (гострі зубці замість хвиль тощо), і
+// реальні дво-/триклавішні накладки завжди прямокутні, тож із 2+ секціями
+// завжди друкуємо стандартний прямокутник незалежно від обраної форми.
+function effectiveShape(shape, count){
+  return count > 1 ? 'square' : shape;
 }
 
-function buildModulesRow(count, shape, patternCls, plateColorHex, leverColorHex, finishId, size){
-  const row = document.createElement('div');
-  row.className = 'modules-row';
+function buildPlateEl(shape, count, patternCls, plateColorHex, leverColorHex, finishId, size){
+  const dims = PLATE_SIZE[size === 'large' ? 'large' : 'base'];
+  const shownShape = effectiveShape(shape, count);
+
+  const plate = document.createElement('div');
+  plate.className = `switch-plate ${patternCls} shape-${shownShape}` + (size === 'large' ? ' plate-large' : '');
+  plate.style.setProperty('--plate-color', plateColorHex);
+  plate.style.width = `${dims.widths[count] || dims.widths[1]}px`;
+  plate.style.height = `${dims.height}px`;
+
   for (let i = 0; i < count; i++){
-    row.appendChild(buildModuleEl(shape, patternCls, plateColorHex, leverColorHex, finishId, size));
+    const lever = document.createElement('div');
+    lever.className = 'key-lever' + (finishId === 'glossy' ? ' finish-glossy' : '');
+    lever.style.setProperty('--lever-color', leverColorHex);
+    lever.style.width = `${dims.lever.w}px`;
+    lever.style.height = `${dims.lever.h}px`;
+    plate.appendChild(lever);
   }
-  return row;
+  return plate;
 }
 
 /* ---------------- currency switcher ---------------- */
@@ -193,7 +198,7 @@ function renderCatalog(){
     const color = getColor(item.color);
     const lever = getColor(item.lever);
     const pattern = getPattern(item.pattern);
-    card.appendChild(buildModulesRow(item.keys, item.shape, pattern.cls, color.hex, lever.hex, 'matte'));
+    card.appendChild(buildPlateEl(item.shape, item.keys, pattern.cls, color.hex, lever.hex, 'matte'));
 
     const h3 = document.createElement('h3');
     h3.textContent = item.name;
@@ -253,6 +258,7 @@ function renderOptions(){
     btn.addEventListener('click', () => { state.shape = s.id; renderOptions(); updatePreview(); });
     shapeRow.appendChild(btn);
   });
+  document.getElementById('shapeHint').hidden = state.keys <= 1;
 
   // number of sections
   const keysRow = document.getElementById('optKeys');
@@ -310,10 +316,10 @@ function updatePreview(){
   const lever = getColor(state.leverColor);
   const pattern = getPattern(state.pattern);
 
-  const rowHolder = document.getElementById('livePreviewRow');
-  const newRow = buildModulesRow(state.keys, state.shape, pattern.cls, color.hex, lever.hex, state.finish, 'large');
-  newRow.id = 'livePreviewRow';
-  rowHolder.replaceWith(newRow);
+  const plateHolder = document.getElementById('livePreviewPlate');
+  const newPlate = buildPlateEl(state.shape, state.keys, pattern.cls, color.hex, lever.hex, state.finish, 'large');
+  newPlate.id = 'livePreviewPlate';
+  plateHolder.replaceWith(newPlate);
 
   document.getElementById('metaShape').textContent = getShape(state.shape).name;
   document.getElementById('metaKeys').textContent = state.keys;

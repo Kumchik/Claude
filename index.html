@@ -66,26 +66,15 @@
         </div>
       </div>
       <div class="hero-visual modules-row">
-        <div class="switch-frame shape-circle">
-          <div class="switch-plate pattern-dots shape-circle" style="--plate-color:#FF6B6B;">
-            <div class="switch-key shape-circle">
-              <div class="key-lever shape-circle finish-glossy" style="--lever-color:#FFF9F2;"></div>
-            </div>
-          </div>
+        <div class="switch-plate pattern-dots shape-circle" style="--plate-color:#FF6B6B; width:100px; height:100px;">
+          <div class="key-lever finish-glossy" style="--lever-color:#FFF9F2; width:20px; height:42px;"></div>
         </div>
-        <div class="switch-frame shape-cloud">
-          <div class="switch-plate pattern-solid shape-cloud" style="--plate-color:#5EC8B8;">
-            <div class="switch-key shape-cloud">
-              <div class="key-lever shape-cloud finish-glossy" style="--lever-color:#FFF9F2;"></div>
-            </div>
-          </div>
+        <div class="switch-plate pattern-solid shape-square" style="--plate-color:#5EC8B8; width:172px; height:100px;">
+          <div class="key-lever finish-glossy" style="--lever-color:#FFF9F2; width:20px; height:42px;"></div>
+          <div class="key-lever finish-glossy" style="--lever-color:#FFF9F2; width:20px; height:42px;"></div>
         </div>
-        <div class="switch-frame shape-cookie">
-          <div class="switch-plate pattern-stripes shape-cookie" style="--plate-color:#FFC857;">
-            <div class="switch-key shape-cookie">
-              <div class="key-lever shape-cookie finish-glossy" style="--lever-color:#FFF9F2;"></div>
-            </div>
-          </div>
+        <div class="switch-plate pattern-stripes shape-cookie" style="--plate-color:#FFC857; width:100px; height:100px;">
+          <div class="key-lever finish-glossy" style="--lever-color:#FFF9F2; width:20px; height:42px;"></div>
         </div>
       </div>
     </div>
@@ -128,8 +117,8 @@
       <div class="configurator">
         <div class="configurator-preview">
           <div class="preview-sticky">
-            <div class="modules-row" id="livePreviewRow">
-              <!-- modules injected by JS -->
+            <div class="switch-plate" id="livePreviewPlate">
+              <!-- накладка injected by JS -->
             </div>
             <div class="preview-meta">
               <div class="preview-row">
@@ -170,6 +159,7 @@
           <div class="config-step">
             <div class="step-label"><span class="step-num">1</span>Форма елемента</div>
             <div class="options-row" id="optShape"></div>
+            <p class="step-hint" id="shapeHint" hidden>Для 2–4 секцій друкуємо стандартну прямокутну накладку — круг, хмаринка й печиво доступні лише для однієї секції.</p>
           </div>
 
           <div class="config-step">
