@@ -368,7 +368,7 @@ button{ font-family:inherit; cursor:pointer; }
 }
 .config-step{ display:flex; flex-direction:column; gap: 14px; min-width: 0; }
 .config-step[hidden]{ display:none; }
-.step-label{ font-weight:700; display:flex; align-items:center; gap:10px; font-size:1.02rem; }
+.step-label{ font-weight:700; display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; font-size:1.02rem; }
 .step-label em{ color: var(--ink-soft); font-style:normal; font-weight:500; font-size:.85rem; }
 .step-num{
   width: 26px; height:26px; border-radius:50%; background: var(--grad-primary);
@@ -515,7 +515,16 @@ button{ font-family:inherit; cursor:pointer; }
   .main-nav.open{ display:flex; }
   .burger{ display:flex; }
   .header-cta{ display:none; }
-  .currency-toggle button{ padding:6px 8px; font-size:.72rem; }
+  /* logo + currency toggle + burger otherwise don't fit next to each
+     other on a real phone and force the whole page to scroll
+     horizontally — shrink the logo a touch and drop the currency
+     buttons down to just their symbol (₴/€/$, no "UAH"/"EUR"/"USD") */
+  .header-inner{ gap: 10px; }
+  .logo{ font-size: 1.1rem; gap: .4em; }
+  .logo-mark{ width: 28px; height: 28px; }
+  .currency-toggle{ gap: 0; }
+  .currency-toggle button{ padding:7px 9px; font-size:.85rem; }
+  .currency-toggle .cur-code{ display:none; }
   /* the floating preview gets a background of its own here, since on a
      single-column layout it now sits on top of the options scrolling
      underneath it, and collapses its attribute list to just the price

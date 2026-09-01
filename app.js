@@ -205,7 +205,10 @@ function renderCurrencyToggle(){
   CURRENCIES.forEach(cur => {
     const btn = document.createElement('button');
     btn.className = state.currency === cur.code ? 'active' : '';
-    btn.textContent = `${cur.symbol} ${cur.code}`;
+    // code wrapped separately so CSS can hide it on narrow phones,
+    // leaving just the symbol — the full header row otherwise doesn't
+    // fit next to the logo and burger and forces real horizontal scroll
+    btn.innerHTML = `${cur.symbol} <span class="cur-code">${cur.code}</span>`;
     btn.addEventListener('click', () => {
       state.currency = cur.code;
       renderCurrencyToggle();
