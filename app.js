@@ -159,18 +159,20 @@ function formatPrice(uahAmount){
 // for every shape, every section count, and 1 or 2 clavishes — a real
 // switch's own cutout doesn't change size just because the decorative
 // накладка around it got wider, rounder, or gained a second toggle.
-// Sized to still fit two side by side even in the tightest case (a
-// compact shape's narrower per-section slot at 4 sections).
+// Widened the compact shapes' own per-section growth a bit from earlier
+// (still far short of "квадрат"'s) specifically so this bigger, more
+// legible hole still fits two side by side even in the tightest case —
+// a compact shape's narrowest slot, at 4 sections with 2 clavishes each.
 const PLATE_SIZE = {
   base: {
-    height: 100, lever: 16,
+    height: 100, lever: 24,
     rect:    { widths: { 1: 100, 2: 172, 3: 244, 4: 316 } },
-    compact: { widths: { 1: 100, 2: 132, 3: 164, 4: 196 } },
+    compact: { widths: { 1: 100, 2: 150, 3: 200, 4: 260 } },
   },
   large: {
-    height: 160, lever: 25,
+    height: 160, lever: 38,
     rect:    { widths: { 1: 160, 2: 272, 3: 384, 4: 496 } },
-    compact: { widths: { 1: 160, 2: 208, 3: 256, 4: 304 } },
+    compact: { widths: { 1: 160, 2: 240, 3: 320, 4: 416 } },
   },
 };
 
