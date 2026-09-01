@@ -146,35 +146,38 @@ function formatPrice(uahAmount){
      .plate-section = one physical switch corpus's slot — fixed-share
        width regardless of clavishes, so 1 vs 2 clavishes never resizes
        the corpus, only how tight its own levers sit together.
-         .lever-well > .key-lever (.lever-base + .lever-stick) = the
-           важелёк: an oval base taped onto the real toggle, with a
-           coloured stick standing up out of it. */
+         .lever-well > .key-lever > .lever-dot = the важелёк, seen from
+           straight above: one flat-coloured circle (the actual stick's
+           cross-section — its base disappears behind it from this
+           angle, so it isn't drawn as a separate shape any more). */
 // "Квадрат" is a standard rectangular plate — it genuinely widens for
 // more sections, like a real double/triple-gang switch. The decorative
 // silhouettes (круг/хмаринка/печиво) stay compact — they just grow a
 // little, the way the reference photos show a scalloped печиво
 // накладка holding two switches without stretching into a long stadium.
-// lever hole is a single fixed circle per shape family/preview size — it
-// never resizes for section or clavish count, only the plate around it
-// grows (a real switch's own cutout doesn't change size just because the
-// wall plate next to it got wider or gained a second toggle)
+// The lever hole itself is one fixed circle per preview size, the same
+// for every shape, every section count, and 1 or 2 clavishes — a real
+// switch's own cutout doesn't change size just because the decorative
+// накладка around it got wider, rounder, or gained a second toggle.
+// Sized to still fit two side by side even in the tightest case (a
+// compact shape's narrower per-section slot at 4 sections).
 const PLATE_SIZE = {
   base: {
-    height: 100,
-    rect:    { widths: { 1: 100, 2: 172, 3: 244, 4: 316 }, lever: 26 },
-    compact: { widths: { 1: 100, 2: 132, 3: 164, 4: 196 }, lever: 16 },
+    height: 100, lever: 16,
+    rect:    { widths: { 1: 100, 2: 172, 3: 244, 4: 316 } },
+    compact: { widths: { 1: 100, 2: 132, 3: 164, 4: 196 } },
   },
   large: {
-    height: 160,
-    rect:    { widths: { 1: 160, 2: 272, 3: 384, 4: 496 }, lever: 42 },
-    compact: { widths: { 1: 160, 2: 208, 3: 256, 4: 304 }, lever: 25 },
+    height: 160, lever: 25,
+    rect:    { widths: { 1: 160, 2: 272, 3: 384, 4: 496 } },
+    compact: { widths: { 1: 160, 2: 208, 3: 256, 4: 304 } },
   },
 };
 
 function buildPlateEl(shape, sections, clavishes, patternCls, plateColorHex, patternColorHex, leverColorHex, finishId, size){
   const dims = PLATE_SIZE[size === 'large' ? 'large' : 'base'];
   const table = shape === 'square' ? dims.rect : dims.compact;
-  const leverDim = { w: table.lever, h: table.lever };
+  const leverDim = { w: dims.lever, h: dims.lever };
 
   const plate = document.createElement('div');
   plate.className = `switch-plate ${patternCls} shape-${shape}` + (size === 'large' ? ' plate-large' : '');
@@ -192,18 +195,14 @@ function buildPlateEl(shape, sections, clavishes, patternCls, plateColorHex, pat
       well.style.width = `${leverDim.w}px`;
       well.style.height = `${leverDim.h}px`;
 
-      // real важелёк = a flat oval base (taped straight onto the switch's
-      // own toggle) with a small coloured stick standing up from it —
-      // not a rocker-shaped cap
+      // seen from straight above, the важелёк is just one flat-coloured
+      // circle — the stick's cross-section, centred in its hole
       const lever = document.createElement('div');
       lever.className = 'key-lever';
-      const base = document.createElement('div');
-      base.className = 'lever-base';
-      const stick = document.createElement('div');
-      stick.className = 'lever-stick' + (finishId === 'glossy' ? ' finish-glossy' : '');
-      stick.style.setProperty('--lever-color', leverColorHex);
-      lever.appendChild(base);
-      lever.appendChild(stick);
+      const dot = document.createElement('div');
+      dot.className = 'lever-dot' + (finishId === 'glossy' ? ' finish-glossy' : '');
+      dot.style.setProperty('--lever-color', leverColorHex);
+      lever.appendChild(dot);
       well.appendChild(lever);
 
       sectionEl.appendChild(well);

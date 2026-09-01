@@ -230,10 +230,10 @@ button{ font-family:inherit; cursor:pointer; }
 }
 .plate-large .lever-well{ padding: 7px; }
 
-/* the real важелёк is two parts, not one rocker cap: a flat oval BASE
-   taped straight onto the switch's own toggle, and a small coloured
-   STICK standing up out of its middle — that's the part you actually
-   flip. Both sit inside .key-lever, which just fills the well. */
+/* seen from straight above, the важелёк is one flat-coloured circle —
+   the stick's own cross-section (its base is real but hidden directly
+   behind it from this angle, so it isn't drawn separately). Sits inside
+   .key-lever, which just fills the well. */
 .key-lever{
   flex-shrink: 0;
   width: 100%; height: 100%;
@@ -241,9 +241,8 @@ button{ font-family:inherit; cursor:pointer; }
 }
 .key-lever::before{
   /* the накладка's cutout edge overhangs the lever slightly, so its
-     shadow falls across the top of the base/stick — without this it
-     reads as parts sitting ON the накладка instead of recessed through
-     it */
+     shadow falls across the top of it — without this it reads as sitting
+     ON the накладка instead of recessed through it */
   content:'';
   position:absolute; inset:0;
   background: linear-gradient(to bottom, rgba(0,0,0,.4) 0%, rgba(0,0,0,.12) 32%, transparent 62%);
@@ -251,36 +250,20 @@ button{ font-family:inherit; cursor:pointer; }
   z-index: 2;
 }
 
-/* the well is a circle now, so its base sits as one flat-coloured circle
-   centred inside it — sized off width with aspect-ratio (not a
-   width/height percentage pair, which stretched it into an oval) */
-.lever-base{
-  position:absolute; left:50%; top:50%;
-  width: 76%;
-  aspect-ratio: 1 / 1;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: #F3E9DA;
-  box-shadow: 0 2px 3px rgba(0,0,0,.3);
-}
-
-/* the mockup is a straight top-down view of the switch, so the stick
-   itself (which stands upright off the base) can't read as a tall bar —
-   from above it's just its round cross-section, a small dot sitting
-   concentric with the base underneath it */
-.lever-stick{
+/* one circle, one flat colour — sized off width with aspect-ratio (not a
+   width/height percentage pair, which stretches it into an oval) and
+   centred in the well */
+.lever-dot{
   --lever-color: #FF6B6B;
-  /* sized off width with aspect-ratio (not height, which differs from
-     width by well) so this reads as an actual circle, not an ellipse */
   position:absolute; left:50%; top:50%;
-  width: 34%;
+  width: 62%;
   aspect-ratio: 1 / 1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background: var(--lever-color);
   box-shadow: 0 2px 3px rgba(0,0,0,.35), inset -1px -1px 2px rgba(0,0,0,.15), inset 1px 1px 0 rgba(255,255,255,.35);
 }
-.lever-stick.finish-glossy{
+.lever-dot.finish-glossy{
   background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--lever-color) 75%, #fff), var(--lever-color) 55%, color-mix(in srgb, var(--lever-color) 80%, #000) 100%);
 }
 
