@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Waveform — дизайнерські накладки на вимикачі</title>
-<meta name="description" content="Дофаміновий декор для дому: дизайнерські накладки на вимикачі світла. Обирайте кількість клавіш, візерунок і колір — збираємо накладку під ваш інтер'єр. Доставка по Україні, ЄС та США.">
+<meta name="description" content="Дофаміновий декор для дому: дизайнерські накладки на вимикачі світла. Обирайте форму (квадрат, круг, хмаринка, печиво), кількість секцій, візерунок і колір — збираємо накладку під ваш інтер'єр. Доставка по Україні, ЄС та США.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
@@ -54,37 +54,37 @@
       <div class="hero-text">
         <p class="eyebrow">дофаміновий декор для дому</p>
         <h1>Вимикач,<br>який вимикає <span class="highlight">нудьгу</span></h1>
-        <p class="hero-sub">3D-друковані накладки на вимикачі світла: квадратна, вертикальна чи горизонтальна рамка, будь-який колір, візерунок і кількість клавіш. Зберіть свою за 2 хвилини у конструкторі нижче.</p>
+        <p class="hero-sub">3D-друковані накладки на вимикачі світла: форма елемента (квадрат, круг, хмаринка чи печиво), окремий колір накладки й важелька, візерунок і кількість секцій. Зберіть свою за 2 хвилини у конструкторі нижче.</p>
         <div class="hero-actions">
           <a href="#configurator" class="btn btn-primary">Зібрати свою накладку</a>
           <a href="#catalog" class="btn btn-ghost">Переглянути колекції</a>
         </div>
         <div class="hero-stats">
-          <div><strong>1–4</strong><span>клавіші на вибір</span></div>
+          <div><strong>4</strong><span>форми елемента</span></div>
           <div><strong>12+</strong><span>кольорів</span></div>
           <div><strong>3–5 днів</strong><span>на друк</span></div>
         </div>
       </div>
-      <div class="hero-visual">
-        <div class="switch-frame frame-preview shape-square" data-hero-preview>
-          <div class="switch-plate pattern-dots shape-square" style="--plate-color:#FF6B6B; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr;">
-            <div class="switch-key key-glossy"></div>
-            <div class="switch-key key-glossy"></div>
-            <div class="switch-key key-glossy"></div>
-            <div class="switch-key key-glossy"></div>
+      <div class="hero-visual modules-row">
+        <div class="switch-frame shape-circle">
+          <div class="switch-plate pattern-dots shape-circle" style="--plate-color:#FF6B6B;">
+            <div class="switch-key shape-circle">
+              <div class="key-lever shape-circle finish-glossy" style="--lever-color:#FFF9F2;"></div>
+            </div>
           </div>
         </div>
-        <div class="switch-frame frame-preview frame-small shape-horizontal" data-hero-preview>
-          <div class="switch-plate pattern-solid shape-horizontal" style="--plate-color:#5EC8B8;">
-            <div class="switch-key"></div>
-            <div class="switch-key"></div>
+        <div class="switch-frame shape-cloud">
+          <div class="switch-plate pattern-solid shape-cloud" style="--plate-color:#5EC8B8;">
+            <div class="switch-key shape-cloud">
+              <div class="key-lever shape-cloud finish-glossy" style="--lever-color:#FFF9F2;"></div>
+            </div>
           </div>
         </div>
-        <div class="switch-frame frame-preview frame-small shape-vertical" data-hero-preview>
-          <div class="switch-plate pattern-stripes shape-vertical" style="--plate-color:#FFC857;">
-            <div class="switch-key"></div>
-            <div class="switch-key"></div>
-            <div class="switch-key"></div>
+        <div class="switch-frame shape-cookie">
+          <div class="switch-plate pattern-stripes shape-cookie" style="--plate-color:#FFC857;">
+            <div class="switch-key shape-cookie">
+              <div class="key-lever shape-cookie finish-glossy" style="--lever-color:#FFF9F2;"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -94,7 +94,7 @@
   <!-- TRUST -->
   <section class="trust-strip">
     <div class="container trust-inner">
-      <span>Підходить до стандартних рамок</span>
+      <span>Друк під будь-який розмір вимикача</span>
       <span>•</span>
       <span>Міцний PLA/PETG пластик</span>
       <span>•</span>
@@ -122,24 +122,22 @@
       <div class="section-head">
         <p class="eyebrow">конструктор</p>
         <h2>Зберіть накладку під себе</h2>
-        <p class="section-lead">П'ять кроків — і ми вже знаємо, що друкувати. Прев'ю оновлюється в реальному часі.</p>
+        <p class="section-lead">Шість кроків — і ми вже знаємо, що друкувати. Прев'ю оновлюється в реальному часі.</p>
       </div>
 
       <div class="configurator">
         <div class="configurator-preview">
           <div class="preview-sticky">
-            <div class="switch-frame frame-large shape-square" id="livePreviewFrame">
-              <div class="switch-plate" id="livePreviewPlate">
-                <!-- keys injected by JS -->
-              </div>
+            <div class="modules-row" id="livePreviewRow">
+              <!-- modules injected by JS -->
             </div>
             <div class="preview-meta">
               <div class="preview-row">
                 <span>Форма</span>
-                <strong id="metaShape">Квадратна</strong>
+                <strong id="metaShape">Квадрат</strong>
               </div>
               <div class="preview-row">
-                <span>Клавіш</span>
+                <span>Секцій</span>
                 <strong id="metaKeys">1</strong>
               </div>
               <div class="preview-row">
@@ -147,8 +145,12 @@
                 <strong id="metaPattern">Однотон</strong>
               </div>
               <div class="preview-row">
-                <span>Колір</span>
+                <span>Колір накладки</span>
                 <strong id="metaColor">Корал</strong>
+              </div>
+              <div class="preview-row">
+                <span>Колір важелька</span>
+                <strong id="metaLeverColor">Крем</strong>
               </div>
               <div class="preview-row">
                 <span>Покриття</span>
@@ -166,33 +168,38 @@
         <div class="configurator-controls">
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">1</span>Форма рамки</div>
+            <div class="step-label"><span class="step-num">1</span>Форма елемента</div>
             <div class="options-row" id="optShape"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">2</span>Кількість клавіш</div>
+            <div class="step-label"><span class="step-num">2</span>Кількість секцій</div>
             <div class="options-row" id="optKeys"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">3</span>Візерунок</div>
+            <div class="step-label"><span class="step-num">3</span>Візерунок накладки</div>
             <div class="options-row options-pattern" id="optPattern"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">4</span>Колір</div>
+            <div class="step-label"><span class="step-num">4</span>Колір накладки</div>
             <div class="options-row options-color" id="optColor"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">5</span>Покриття</div>
+            <div class="step-label"><span class="step-num">5</span>Колір важелька</div>
+            <div class="options-row options-color" id="optLeverColor"></div>
+          </div>
+
+          <div class="config-step">
+            <div class="step-label"><span class="step-num">6</span>Покриття</div>
             <div class="options-row" id="optFinish"></div>
           </div>
 
           <div class="config-step">
-            <div class="step-label"><span class="step-num">6</span>Коментар до замовлення <em>(необов'язково)</em></div>
-            <textarea id="orderComment" class="order-comment" rows="3" placeholder="Наприклад: під рамку Legrand Valena, стіни кольору шавлії"></textarea>
+            <div class="step-label"><span class="step-num">7</span>Коментар до замовлення <em>(необов'язково)</em></div>
+            <textarea id="orderComment" class="order-comment" rows="3" placeholder="Наприклад: ширина рамки 80×80мм, виступ від стіни 20мм"></textarea>
           </div>
 
           <button class="btn btn-primary btn-wide" id="orderBtn">Оформити замовлення — <span id="orderBtnPrice">790 ₴</span></button>
@@ -217,8 +224,8 @@
         </div>
         <div class="benefit-card">
           <div class="benefit-icon">📐</div>
-          <h3>Квадратні й прямокутні формати</h3>
-          <p>Друкуємо квадратну, вертикальну або горизонтальну рамку під стандартні одинарні й багатоклавішні вимикачі — європейські (Legrand, Schneider Electric, Werkel) та американські Decora.</p>
+          <h3>Квадрат, круг, хмаринка, печиво</h3>
+          <p>Друкуємо під точні розміри вашого вимикача чи розетки — плоского чи випуклого, з 1–4 секціями. Просто надішліть заміри, решту порахуємо ми.</p>
         </div>
         <div class="benefit-card">
           <div class="benefit-icon">🧵</div>
@@ -245,12 +252,12 @@
         <div class="step-card">
           <span class="step-index">01</span>
           <h3>Збираєте дизайн</h3>
-          <p>Обираєте форму рамки, кількість клавіш, візерунок і колір у конструкторі — або берете готову колекцію.</p>
+          <p>Обираєте форму елемента, кількість секцій, візерунок і кольори накладки та важелька у конструкторі — або берете готову колекцію.</p>
         </div>
         <div class="step-card">
           <span class="step-index">02</span>
           <h3>Надсилаєте заявку</h3>
-          <p>Заявка з параметрами йде нам у месенджер — уточнюємо модель рамки та адресу доставки.</p>
+          <p>Заявка з параметрами йде нам у месенджер — надсилаємо інструкцію, як заміряти ваш вимикач (ширину, висоту й виступ від стіни), і уточнюємо адресу доставки.</p>
         </div>
         <div class="step-card">
           <span class="step-index">03</span>

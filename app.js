@@ -2,12 +2,19 @@
    Waveform — configurator logic
    Плейсхолдер-ціни, курси валют і контакти: див. README.md,
    де описано, що саме потрібно замінити.
+
+   Модель товару: кожна секція вимикача — це окремий модуль
+   (рамка → накладка з візерунком → виріз → важелько), три
+   верхні шари мають однакову форму, а важелько фарбується
+   окремим кольором — так само, як у реальному конструкторі
+   printesso.com.
    ========================================================= */
 
 const SHAPES = [
-  { id: 'square',     name: 'Квадратна'     },
-  { id: 'vertical',   name: 'Вертикальна'   },
-  { id: 'horizontal', name: 'Горизонтальна' },
+  { id: 'square', name: 'Квадрат'   },
+  { id: 'circle', name: 'Круг'      },
+  { id: 'cloud',  name: 'Хмаринка'  },
+  { id: 'cookie', name: 'Печиво'    },
 ];
 
 const PATTERNS = [
@@ -39,7 +46,8 @@ const FINISHES = [
 
 // Базові ціни вказані в гривнях (UAH) — це "домашня" валюта прайсу,
 // з якої курсом перераховуються EUR і USD (див. CURRENCIES нижче).
-const KEY_BASE_PRICE = { 1: 790, 2: 990, 3: 1190, 4: 1390 };
+// Ціна залежить від кількості секцій — кожна секція друкується окремим модулем.
+const KEY_BASE_PRICE = { 1: 599, 2: 990, 3: 1390, 4: 1750 };
 
 // Курси — orієнтовні і застарівають, підставте актуальні перед публікацією
 // (або замініть на окремий прайс під кожен ринок замість автоконвертації).
@@ -50,28 +58,28 @@ const CURRENCIES = [
 ];
 
 const CATALOG = [
-  { name: 'Ранкова кава',    keys: 2, pattern: 'dots',     color: 'terracotta', shape: 'horizontal' },
-  { name: "М'ята свіжість",  keys: 1, pattern: 'solid',    color: 'mint',       shape: 'square'     },
-  { name: 'Дискотека',       keys: 3, pattern: 'terrazzo', color: 'lilac',      shape: 'vertical'   },
-  { name: 'Скандинавія',     keys: 1, pattern: 'marble',   color: 'cream',      shape: 'square'     },
-  { name: 'Захід сонця',     keys: 4, pattern: 'waves',    color: 'coral',      shape: 'square'     },
-  { name: 'Гірчичне поле',   keys: 4, pattern: 'stripes',  color: 'mustard',    shape: 'vertical'   },
-  { name: 'Нічне місто',     keys: 2, pattern: 'solid',    color: 'charcoal',   shape: 'horizontal' },
-  { name: 'Пудровий бриз',   keys: 1, pattern: 'dots',     color: 'blush',      shape: 'square'     },
+  { name: 'Ранкова кава',    keys: 2, pattern: 'dots',     color: 'terracotta', lever: 'cream',      shape: 'square' },
+  { name: "М'ята свіжість",  keys: 1, pattern: 'solid',    color: 'mint',       lever: 'cream',      shape: 'circle' },
+  { name: 'Дискотека',       keys: 3, pattern: 'terrazzo', color: 'lilac',      lever: 'cream',      shape: 'cookie' },
+  { name: 'Скандинавія',     keys: 1, pattern: 'marble',   color: 'cream',      lever: 'sage',       shape: 'square' },
+  { name: 'Захід сонця',     keys: 2, pattern: 'waves',    color: 'coral',      lever: 'cream',      shape: 'cloud'  },
+  { name: 'Гірчичне поле',   keys: 4, pattern: 'stripes',  color: 'mustard',    lever: 'cream',      shape: 'square' },
+  { name: 'Нічне місто',     keys: 2, pattern: 'solid',    color: 'charcoal',   lever: 'mustard',    shape: 'circle' },
+  { name: 'Пудровий бриз',   keys: 1, pattern: 'dots',     color: 'blush',      lever: 'cream',      shape: 'cookie' },
 ];
 
 const FAQ = [
   {
-    q: 'Як зрозуміти, скільки клавіш у мого вимикача?',
-    a: 'Порахуйте кількість окремих кнопок (клавіш) на панелі — зазвичай від 1 до 4. Якщо сумніваєтесь, надішліть нам фото вимикача в месенджері, і ми підкажемо.'
+    q: 'Як зрозуміти, скільки секцій у мого вимикача?',
+    a: 'Порахуйте кількість окремих клавіш або розеток на панелі — зазвичай від 1 до 4. Кожна клавіша чи розетка — це одна секція. Якщо сумніваєтесь, надішліть нам фото вимикача в месенджері, і ми підкажемо.'
   },
   {
-    q: 'Чи підійде накладка до моєї рамки?',
-    a: 'Друкуємо накладки під стандартні рамки популярних серій (Legrand, Schneider Electric, Werkel) та американські вимикачі Decora. При оформленні замовлення уточнимо модель рамки, щоб посадка була точною.'
+    q: 'Чи підійде накладка до мого вимикача?',
+    a: 'Друкуємо під точні розміри — плоскі й випуклі вимикачі, з 1–4 секціями, включно з розетками. При оформленні замовлення надішлемо інструкцію, як виміряти ширину, висоту й виступ від стіни, щоб накладка сіла ідеально.'
   },
   {
     q: 'З яких частин складається комплект і як його встановлювати?',
-    a: 'У комплекті дві частини: маленькі декоративні важельки та рамка з вирізами під клавіші. Важельки приклеюються прямо на існуючі клавіші вашого вимикача, а рамка після цього просто клацає зверху на штатні кріплення. Розбирати механізм вимикача чи викликати електрика не потрібно.'
+    a: 'У комплекті дві частини: маленькі декоративні важельки та рамка з вирізами під секції. Важельки приклеюються прямо на існуючі клавіші вашого вимикача, а рамка після цього просто клацає зверху на штатні кріплення. Розбирати механізм вимикача чи викликати електрика не потрібно.'
   },
   {
     q: 'З якого матеріалу друкуєте?',
@@ -83,7 +91,7 @@ const FAQ = [
   },
   {
     q: 'Чи можна замовити колір поза палітрою конструктора?',
-    a: 'Так, палітра в конструкторі — це основні варіанти. Надішліть референс або код кольору (HEX/RAL/Pantone) у повідомленні до замовлення — підберемо максимально близько.'
+    a: 'Так, палітра в конструкторі — це основні варіанти. Надішліть референс або код кольору (HEX/RAL/Pantone) у повідомленні до замовлення — підберемо максимально близько, окремо для накладки і окремо для важелька.'
   },
   {
     q: 'В якій валюті ціни і як відбувається оплата?',
@@ -93,10 +101,11 @@ const FAQ = [
 
 /* ---------------- state ---------------- */
 const state = {
-  shape: 'square', // квадратні "quadro"-рамки — основний акцент лінійки
+  shape: 'square',
   keys: 1,
   pattern: 'solid',
   color: 'coral',
+  leverColor: 'cream',
   finish: 'matte',
   currency: 'UAH',
 };
@@ -106,13 +115,6 @@ function getColor(id){ return COLORS.find(c => c.id === id); }
 function getPattern(id){ return PATTERNS.find(p => p.id === id); }
 function getFinish(id){ return FINISHES.find(f => f.id === id); }
 function getCurrency(code){ return CURRENCIES.find(c => c.code === code); }
-
-// Квадратні "quadro"-рамки вкладають клавіші в сітку, а не в один ряд —
-// підбираємо кількість колонок/рядків під кількість клавіш.
-function squareGrid(keys){
-  if (keys === 4) return { cols: 2, rows: 2 };
-  return { cols: keys, rows: 1 };
-}
 
 function calcPriceUAH(keys, patternId, finishId){
   const base = KEY_BASE_PRICE[keys] || KEY_BASE_PRICE[1];
@@ -127,28 +129,38 @@ function formatPrice(uahAmount){
   return cur.position === 'before' ? `${cur.symbol}${value}` : `${value} ${cur.symbol}`;
 }
 
-/* ---------------- rendering helpers ---------------- */
-function buildPlateEl(keys, patternCls, colorHex, finishId, shape){
+/* ---------------- rendering helpers ----------------
+   One module = one physical section: frame > plate (pattern+colour) >
+   key cutout > lever (its own colour). Frame/plate/key/lever all share
+   the same shape class so the module reads as one coherent silhouette. */
+function buildModuleEl(shape, patternCls, plateColorHex, leverColorHex, finishId, size){
+  const frame = document.createElement('div');
+  frame.className = `switch-frame shape-${shape}` + (size === 'large' ? ' frame-large' : '');
+
   const plate = document.createElement('div');
   plate.className = `switch-plate ${patternCls} shape-${shape}`;
-  plate.style.setProperty('--plate-color', colorHex);
-  if (shape === 'square'){
-    const { cols, rows } = squareGrid(keys);
-    plate.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-    plate.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-  }
-  for (let i = 0; i < keys; i++){
-    const key = document.createElement('div');
-    key.className = 'switch-key' + (finishId === 'glossy' ? ' finish-glossy key-glossy' : '');
-    plate.appendChild(key);
-  }
-  return plate;
+  plate.style.setProperty('--plate-color', plateColorHex);
+
+  const key = document.createElement('div');
+  key.className = `switch-key shape-${shape}`;
+
+  const lever = document.createElement('div');
+  lever.className = `key-lever shape-${shape}` + (finishId === 'glossy' ? ' finish-glossy' : '');
+  lever.style.setProperty('--lever-color', leverColorHex);
+
+  key.appendChild(lever);
+  plate.appendChild(key);
+  frame.appendChild(plate);
+  return frame;
 }
 
-function buildFrameEl(shape){
-  const frame = document.createElement('div');
-  frame.className = `switch-frame shape-${shape}`;
-  return frame;
+function buildModulesRow(count, shape, patternCls, plateColorHex, leverColorHex, finishId, size){
+  const row = document.createElement('div');
+  row.className = 'modules-row';
+  for (let i = 0; i < count; i++){
+    row.appendChild(buildModuleEl(shape, patternCls, plateColorHex, leverColorHex, finishId, size));
+  }
+  return row;
 }
 
 /* ---------------- currency switcher ---------------- */
@@ -179,10 +191,9 @@ function renderCatalog(){
     card.className = 'catalog-card';
 
     const color = getColor(item.color);
+    const lever = getColor(item.lever);
     const pattern = getPattern(item.pattern);
-    const frame = buildFrameEl(item.shape);
-    frame.appendChild(buildPlateEl(item.keys, pattern.cls, color.hex, 'matte', item.shape));
-    card.appendChild(frame);
+    card.appendChild(buildModulesRow(item.keys, item.shape, pattern.cls, color.hex, lever.hex, 'matte'));
 
     const h3 = document.createElement('h3');
     h3.textContent = item.name;
@@ -202,6 +213,7 @@ function renderCatalog(){
       state.keys = item.keys;
       state.pattern = item.pattern;
       state.color = item.color;
+      state.leverColor = item.lever;
       renderOptions();
       updatePreview();
       document.getElementById('configurator').scrollIntoView({ behavior: 'smooth' });
@@ -213,8 +225,21 @@ function renderCatalog(){
 }
 
 /* ---------------- configurator options ---------------- */
-function keyLabel(n){
-  return n === 1 ? '1 клавіша' : `${n} клавіші`;
+function sectionLabel(n){
+  return n === 1 ? '1 секція' : `${n} секції`;
+}
+
+function renderColorRow(container, selectedId, onPick){
+  container.innerHTML = '';
+  COLORS.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-color' + (selectedId === c.id ? ' active' : '');
+    btn.style.background = c.hex;
+    btn.title = c.name;
+    btn.setAttribute('aria-label', c.name);
+    btn.addEventListener('click', () => onPick(c.id));
+    container.appendChild(btn);
+  });
 }
 
 function renderOptions(){
@@ -229,18 +254,18 @@ function renderOptions(){
     shapeRow.appendChild(btn);
   });
 
-  // keys
+  // number of sections
   const keysRow = document.getElementById('optKeys');
   keysRow.innerHTML = '';
   [1, 2, 3, 4].forEach(n => {
     const btn = document.createElement('button');
     btn.className = 'opt-pill' + (state.keys === n ? ' active' : '');
-    btn.textContent = keyLabel(n);
+    btn.textContent = sectionLabel(n);
     btn.addEventListener('click', () => { state.keys = n; renderOptions(); updatePreview(); });
     keysRow.appendChild(btn);
   });
 
-  // pattern
+  // pattern (overlay only — the lever stays a plain colour, like the reference)
   const patternRow = document.getElementById('optPattern');
   patternRow.innerHTML = '';
   PATTERNS.forEach(p => {
@@ -257,17 +282,14 @@ function renderOptions(){
     patternRow.appendChild(btn);
   });
 
-  // color
-  const colorRow = document.getElementById('optColor');
-  colorRow.innerHTML = '';
-  COLORS.forEach(c => {
-    const btn = document.createElement('button');
-    btn.className = 'opt-color' + (state.color === c.id ? ' active' : '');
-    btn.style.background = c.hex;
-    btn.title = c.name;
-    btn.setAttribute('aria-label', c.name);
-    btn.addEventListener('click', () => { state.color = c.id; renderOptions(); updatePreview(); });
-    colorRow.appendChild(btn);
+  // overlay colour
+  renderColorRow(document.getElementById('optColor'), state.color, (id) => {
+    state.color = id; renderOptions(); updatePreview();
+  });
+
+  // lever colour — separate palette pick, same swatches
+  renderColorRow(document.getElementById('optLeverColor'), state.leverColor, (id) => {
+    state.leverColor = id; renderOptions(); updatePreview();
   });
 
   // finish
@@ -284,20 +306,20 @@ function renderOptions(){
 
 /* ---------------- live preview ---------------- */
 function updatePreview(){
-  const plateHolder = document.getElementById('livePreviewPlate');
   const color = getColor(state.color);
+  const lever = getColor(state.leverColor);
   const pattern = getPattern(state.pattern);
-  const newPlate = buildPlateEl(state.keys, pattern.cls, color.hex, state.finish, state.shape);
-  newPlate.id = 'livePreviewPlate';
-  plateHolder.replaceWith(newPlate);
 
-  const frameEl = document.getElementById('livePreviewFrame');
-  frameEl.className = `switch-frame frame-large shape-${state.shape}`;
+  const rowHolder = document.getElementById('livePreviewRow');
+  const newRow = buildModulesRow(state.keys, state.shape, pattern.cls, color.hex, lever.hex, state.finish, 'large');
+  newRow.id = 'livePreviewRow';
+  rowHolder.replaceWith(newRow);
 
   document.getElementById('metaShape').textContent = getShape(state.shape).name;
   document.getElementById('metaKeys').textContent = state.keys;
   document.getElementById('metaPattern').textContent = pattern.name;
   document.getElementById('metaColor').textContent = color.name;
+  document.getElementById('metaLeverColor').textContent = lever.name;
   document.getElementById('metaFinish').textContent = getFinish(state.finish).name;
 
   const priceUAH = calcPriceUAH(state.keys, state.pattern, state.finish);
@@ -347,20 +369,22 @@ const TELEGRAM_USERNAME = 'your_shop_username'; // TODO: замініть на �
 
 function buildSummary(){
   const color = getColor(state.color);
+  const lever = getColor(state.leverColor);
   const pattern = getPattern(state.pattern);
   const finish = getFinish(state.finish);
   const comment = document.getElementById('orderComment').value.trim();
   const priceUAH = calcPriceUAH(state.keys, state.pattern, state.finish);
   const lines = [
     'Заявка на накладку Waveform:',
-    `— Форма рамки: ${getShape(state.shape).name}`,
-    `— Клавіш: ${state.keys}`,
-    `— Візерунок: ${pattern.name}`,
-    `— Колір: ${color.name} (${color.hex})`,
+    `— Форма: ${getShape(state.shape).name}`,
+    `— Секцій: ${state.keys}`,
+    `— Візерунок накладки: ${pattern.name}`,
+    `— Колір накладки: ${color.name} (${color.hex})`,
+    `— Колір важелька: ${lever.name} (${lever.hex})`,
     `— Покриття: ${finish.name}`,
     `— Разом: ${formatPrice(priceUAH)} (валюта: ${state.currency})`,
   ];
-  if (comment) lines.push(`— Коментар: ${comment}`);
+  if (comment) lines.push(`— Коментар/заміри: ${comment}`);
   return lines.join('\n');
 }
 
