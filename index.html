@@ -91,19 +91,26 @@
             </div>
           </div>
         </div>
-        <!-- 2 секції, 1 клавіша — окремі корпуси, накладка ширша -->
-        <div class="switch-plate pattern-stripes shape-cookie" style="--plate-color:#FFC857; width:132px; height:100px;">
-          <div class="plate-section">
-            <div class="lever-well" style="width:24px; height:24px;">
-              <div class="key-lever">
-                <div class="lever-dot finish-glossy" style="--lever-color:#FFF9F2;"></div>
+        <!-- 2 секції, 1 клавіша — окремі корпуси, накладка ширша.
+             Wrapped in .plate-frame + .plate-shadow: filter:drop-shadow
+             on .switch-plate doesn't render together with the inline
+             clip-path печиво/хмаринка need, so those two shapes get
+             their shadow from this same-silhouette sibling instead. -->
+        <div class="plate-frame" style="width:132px; height:100px;">
+          <div class="plate-shadow" style="clip-path: path('M 50.00 7.00 L 54.00 7.00 L 58.00 7.00 L 62.00 7.00 L 66.00 7.00 L 70.00 7.00 L 74.00 7.00 L 78.00 7.00 L 82.00 7.00 L 84.77 10.38 L 87.18 13.17 L 89.49 14.75 L 92.06 14.90 L 95.17 13.82 L 98.90 12.05 L 103.09 10.33 L 107.36 9.41 L 111.19 9.83 L 114.07 11.78 L 115.70 15.10 L 116.07 19.32 L 115.50 23.83 L 114.57 28.03 L 113.99 31.53 L 114.36 34.22 L 116.04 36.25 L 118.98 37.98 L 122.78 39.83 L 126.70 42.12 L 129.94 44.96 L 131.76 48.26 L 131.76 51.74 L 129.94 55.04 L 126.70 57.88 L 122.78 60.17 L 118.98 62.02 L 116.04 63.75 L 114.36 65.78 L 113.99 68.47 L 114.57 71.97 L 115.50 76.17 L 116.07 80.68 L 115.70 84.90 L 114.07 88.22 L 111.19 90.17 L 107.36 90.59 L 103.09 89.67 L 98.90 87.95 L 95.17 86.18 L 92.06 85.10 L 89.49 85.25 L 87.18 86.83 L 84.77 89.62 L 82.00 93.00 L 50.00 93.00 L 46.77 96.17 L 43.21 98.33 L 39.61 98.87 L 36.36 97.57 L 33.75 94.63 L 31.92 90.61 L 30.72 86.26 L 29.79 82.34 L 28.64 79.40 L 26.79 77.66 L 23.96 76.96 L 20.16 76.87 L 15.73 76.77 L 11.28 76.12 L 7.51 74.53 L 5.06 71.92 L 4.30 68.46 L 5.19 64.56 L 7.33 60.64 L 10.01 57.05 L 12.41 53.95 L 13.81 51.26 L 13.81 48.74 L 12.41 46.05 L 10.01 42.95 L 7.33 39.36 L 5.19 35.44 L 4.30 31.54 L 5.06 28.08 L 7.51 25.47 L 11.28 23.88 L 15.73 23.23 L 20.16 23.13 L 23.96 23.04 L 26.79 22.34 L 28.64 20.60 L 29.79 17.66 L 30.72 13.74 L 31.92 9.39 L 33.75 5.37 L 36.36 2.43 L 39.61 1.13 L 43.21 1.67 L 46.77 3.83 L 50.00 7.00 Z');"></div>
+          <div class="switch-plate pattern-stripes shape-cookie" style="--plate-color:#FFC857; width:132px; height:100px; clip-path: path('M 50.00 7.00 L 54.00 7.00 L 58.00 7.00 L 62.00 7.00 L 66.00 7.00 L 70.00 7.00 L 74.00 7.00 L 78.00 7.00 L 82.00 7.00 L 84.77 10.38 L 87.18 13.17 L 89.49 14.75 L 92.06 14.90 L 95.17 13.82 L 98.90 12.05 L 103.09 10.33 L 107.36 9.41 L 111.19 9.83 L 114.07 11.78 L 115.70 15.10 L 116.07 19.32 L 115.50 23.83 L 114.57 28.03 L 113.99 31.53 L 114.36 34.22 L 116.04 36.25 L 118.98 37.98 L 122.78 39.83 L 126.70 42.12 L 129.94 44.96 L 131.76 48.26 L 131.76 51.74 L 129.94 55.04 L 126.70 57.88 L 122.78 60.17 L 118.98 62.02 L 116.04 63.75 L 114.36 65.78 L 113.99 68.47 L 114.57 71.97 L 115.50 76.17 L 116.07 80.68 L 115.70 84.90 L 114.07 88.22 L 111.19 90.17 L 107.36 90.59 L 103.09 89.67 L 98.90 87.95 L 95.17 86.18 L 92.06 85.10 L 89.49 85.25 L 87.18 86.83 L 84.77 89.62 L 82.00 93.00 L 50.00 93.00 L 46.77 96.17 L 43.21 98.33 L 39.61 98.87 L 36.36 97.57 L 33.75 94.63 L 31.92 90.61 L 30.72 86.26 L 29.79 82.34 L 28.64 79.40 L 26.79 77.66 L 23.96 76.96 L 20.16 76.87 L 15.73 76.77 L 11.28 76.12 L 7.51 74.53 L 5.06 71.92 L 4.30 68.46 L 5.19 64.56 L 7.33 60.64 L 10.01 57.05 L 12.41 53.95 L 13.81 51.26 L 13.81 48.74 L 12.41 46.05 L 10.01 42.95 L 7.33 39.36 L 5.19 35.44 L 4.30 31.54 L 5.06 28.08 L 7.51 25.47 L 11.28 23.88 L 15.73 23.23 L 20.16 23.13 L 23.96 23.04 L 26.79 22.34 L 28.64 20.60 L 29.79 17.66 L 30.72 13.74 L 31.92 9.39 L 33.75 5.37 L 36.36 2.43 L 39.61 1.13 L 43.21 1.67 L 46.77 3.83 L 50.00 7.00 Z');">
+            <div class="plate-section">
+              <div class="lever-well" style="width:24px; height:24px;">
+                <div class="key-lever">
+                  <div class="lever-dot finish-glossy" style="--lever-color:#FFF9F2;"></div>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="plate-section">
-            <div class="lever-well" style="width:24px; height:24px;">
-              <div class="key-lever">
-                <div class="lever-dot finish-glossy" style="--lever-color:#FFF9F2;"></div>
+            <div class="plate-section">
+              <div class="lever-well" style="width:24px; height:24px;">
+                <div class="key-lever">
+                  <div class="lever-dot finish-glossy" style="--lever-color:#FFF9F2;"></div>
+                </div>
               </div>
             </div>
           </div>

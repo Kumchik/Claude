@@ -176,17 +176,78 @@ const PLATE_SIZE = {
   },
 };
 
+// печиво/хмаринка silhouettes: two true polar flower/blob caps (radius
+// baseR+amp*cos(n*theta+phase), each sized to the plate's own HEIGHT so
+// the lobes stay round no matter how wide the plate gets for more
+// sections), joined by plain straight top/bottom edges — a "stadium with
+// flower caps". Computed per-plate from its actual pixel width/height
+// (not a static percentage clip-path) specifically because a fixed-shape
+// polygon stretched non-uniformly to fit a much-wider-than-tall box
+// turns smooth lobes into sharp spikes; this way widening the plate for
+// more sections only lengthens the flat middle, never distorts the caps.
+const SHAPE_CURVES = {
+  cookie: { baseR: 0.86, amp: 0.14, n: 7, phase: 0 },
+  cloud:  { baseR: 0.85, amp: 0.13, n: 4, phase: 0.3 },
+};
+
+function capsuleFlowerPath(w, h, baseR, amp, n, phase){
+  const nHalf = 45;
+  const polarPt = (theta) => {
+    const r = baseR + amp*Math.cos(n*theta + phase);
+    return [0.5 + 0.5*r*Math.cos(theta), 0.5 + 0.5*r*Math.sin(theta)];
+  };
+
+  const rightPts = [];
+  for (let i = 0; i <= nHalf; i++){
+    const theta = -Math.PI/2 + Math.PI*i/nHalf;
+    const [px, py] = polarPt(theta);
+    rightPts.push([(w - h) + px*h, py*h]);
+  }
+  const leftPts = [];
+  for (let i = 0; i <= nHalf; i++){
+    const theta = Math.PI/2 + Math.PI*i/nHalf;
+    const [px, py] = polarPt(theta);
+    leftPts.push([px*h, py*h]);
+  }
+  const topLeftSeam = leftPts[leftPts.length - 1];
+  const topRightSeam = rightPts[0];
+  const bottomRightSeam = rightPts[rightPts.length - 1];
+  const bottomLeftSeam = leftPts[0];
+
+  const midLine = (p0, p1) => {
+    const pts = [];
+    const length = p1[0] - p0[0];
+    if (length <= 1) return pts;
+    const steps = Math.max(Math.round(length / 4), 1);
+    for (let i = 1; i < steps; i++){
+      pts.push([p0[0] + length*(i/steps), p0[1]]);
+    }
+    return pts;
+  };
+
+  const pts = [topLeftSeam, ...midLine(topLeftSeam, topRightSeam), ...rightPts,
+               ...midLine(bottomRightSeam, bottomLeftSeam), ...leftPts];
+  return 'M ' + pts.map(p => `${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(' L ') + ' Z';
+}
+
 function buildPlateEl(shape, sections, clavishes, patternCls, plateColorHex, patternColorHex, leverColorHex, finishId, size){
   const dims = PLATE_SIZE[size === 'large' ? 'large' : 'base'];
   const table = shape === 'square' ? dims.rect : dims.compact;
   const leverDim = { w: dims.lever, h: dims.lever };
+  const plateWidth = table.widths[sections] || table.widths[1];
 
   const plate = document.createElement('div');
   plate.className = `switch-plate ${patternCls} shape-${shape}` + (size === 'large' ? ' plate-large' : '');
   plate.style.setProperty('--plate-color', plateColorHex);
   plate.style.setProperty('--pattern-color', patternColorHex);
-  plate.style.width = `${table.widths[sections] || table.widths[1]}px`;
+  plate.style.width = `${plateWidth}px`;
   plate.style.height = `${dims.height}px`;
+  let clipPath = null;
+  if (SHAPE_CURVES[shape]){
+    const c = SHAPE_CURVES[shape];
+    clipPath = `path('${capsuleFlowerPath(plateWidth, dims.height, c.baseR, c.amp, c.n, c.phase)}')`;
+    plate.style.clipPath = clipPath;
+  }
 
   for (let s = 0; s < sections; s++){
     const sectionEl = document.createElement('div');
@@ -211,7 +272,24 @@ function buildPlateEl(shape, sections, clavishes, patternCls, plateColorHex, pat
     }
     plate.appendChild(sectionEl);
   }
-  return plate;
+
+  if (!clipPath) return plate;
+
+  // filter:drop-shadow silently doesn't render together with an inline
+  // clip-path on the same element (observed in both Chromium and iOS
+  // Safari) — печиво/хмаринка get their shadow from a same-silhouette
+  // sibling instead, blurred and offset behind the plate in a wrapper
+  // sized to match it.
+  const frame = document.createElement('div');
+  frame.className = 'plate-frame' + (size === 'large' ? ' plate-large' : '');
+  frame.style.width = `${plateWidth}px`;
+  frame.style.height = `${dims.height}px`;
+  const shadow = document.createElement('div');
+  shadow.className = 'plate-shadow';
+  shadow.style.clipPath = clipPath;
+  frame.appendChild(shadow);
+  frame.appendChild(plate);
+  return frame;
 }
 
 /* ---------------- currency switcher ---------------- */
