@@ -145,8 +145,27 @@ export async function ordersStore(){
   return getStore({ name: 'orders', consistency: 'strong' });
 }
 
+/* Card orders waiting for payment also get a "pending/<id>" marker, so
+   the scheduled check (check-pending) only has to look at those. */
+export const pendingKey = id => `pending/${id}`;
+const FINAL = ['success', 'failure', 'expired', 'reversed'];
+
+/* Asks monobank for an invoice's current status (with our own token, so the
+   answer can be trusted). Returns the invoice object or null. */
+export async function fetchInvoice(invoiceId){
+  const res = await fetch(`${MONO_API}/api/merchant/invoice/status?invoiceId=${encodeURIComponent(invoiceId)}`, {
+    headers: { 'X-Token': process.env.MONO_TOKEN },
+  });
+  if (!res.ok){
+    console.error('monobank status error', res.status, await res.text());
+    return null;
+  }
+  return res.json();
+}
+
 /* Marks a card order paid and sends it to Telegram — exactly once, whichever
-   comes first: monobank's webhook or the customer landing back on the site. */
+   comes first: the scheduled check, monobank's webhook or the customer
+   landing back on the site. */
 export async function confirmPaid(store, order, amountKop, via){
   if (order.notified) return false;
   const paid = amountKop / 100;
@@ -156,8 +175,22 @@ export async function confirmPaid(store, order, amountKop, via){
   order.paidAt = new Date().toISOString();
   order.confirmedVia = via;
   await store.setJSON(order.id, order);
+  // keep it pending if Telegram failed, so the next check retries the message
+  if (sent) await store.delete(pendingKey(order.id));
   console.log(`order ${order.id} paid ${paid} UAH (via ${via}), telegram ${sent ? 'sent' : 'FAILED'}`);
   return sent;
+}
+
+/* Applies monobank's invoice status to an order. */
+export async function settle(store, order, inv, via){
+  if (inv.status === 'success') return confirmPaid(store, order, inv.finalAmount ?? inv.amount, via);
+  if (inv.status !== order.status){
+    order.status = inv.status;
+    order.updatedAt = new Date().toISOString();
+    await store.setJSON(order.id, order);
+  }
+  if (FINAL.includes(inv.status)) await store.delete(pendingKey(order.id));
+  return false;
 }
 
 /* monobank signs every webhook with ECDSA; the public key comes from

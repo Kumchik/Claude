@@ -1,7 +1,7 @@
 /* POST /api/create-order
    Card: creates a monobank invoice and returns its payment page URL.
    Cash on delivery: sends the order to Telegram straight away. */
-import { cardChargeUAH, isTestPrice, PRODUCT_NAME, FILAMENTS, MONO_API, json, validateOrder, newOrderId, orderText, notify, ordersStore } from '../lib/shop.mjs';
+import { cardChargeUAH, isTestPrice, PRODUCT_NAME, FILAMENTS, MONO_API, json, validateOrder, newOrderId, orderText, notify, ordersStore, pendingKey } from '../lib/shop.mjs';
 
 export const config = { path: '/api/create-order' };
 
@@ -53,7 +53,10 @@ export default async (req) => {
   const { invoiceId, pageUrl } = await res.json();
 
   const store = await ordersStore();
-  await store.setJSON(id, { ...order, id, invoiceId, test: isTestPrice(), status: 'created', createdAt: new Date().toISOString() });
+  const createdAt = new Date().toISOString();
+  await store.setJSON(id, { ...order, id, invoiceId, test: isTestPrice(), status: 'created', createdAt });
+  await store.setJSON(pendingKey(id), { id, createdAt });
+  console.log(`card order ${id} created, invoice ${invoiceId}, webhook ${site}/api/mono-webhook`);
 
   return json({ ok: true, orderId: id, payment: 'card', pageUrl });
 };

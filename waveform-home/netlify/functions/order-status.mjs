@@ -3,7 +3,7 @@
    Asks monobank directly, so it works even before the webhook arrives —
    and if the payment is confirmed but the webhook hasn't sent the order
    to Telegram yet, sends it from here (still only once). */
-import { MONO_API, json, ordersStore, confirmPaid } from '../lib/shop.mjs';
+import { json, ordersStore, fetchInvoice, settle } from '../lib/shop.mjs';
 
 export const config = { path: '/api/order-status' };
 
@@ -16,15 +16,10 @@ export default async (req) => {
 
   let status = order.status;
   if (!order.notified && process.env.MONO_TOKEN){
-    const res = await fetch(`${MONO_API}/api/merchant/invoice/status?invoiceId=${encodeURIComponent(order.invoiceId)}`, {
-      headers: { 'X-Token': process.env.MONO_TOKEN },
-    });
-    if (res.ok){
-      const inv = await res.json();
+    const inv = await fetchInvoice(order.invoiceId);
+    if (inv){
       status = inv.status;
-      if (status === 'success') await confirmPaid(store, order, inv.finalAmount ?? inv.amount, 'order-status');
-    } else {
-      console.error('monobank status error', res.status, await res.text());
+      await settle(store, order, inv, 'order-status');
     }
   }
   // only what the page needs — no customer details

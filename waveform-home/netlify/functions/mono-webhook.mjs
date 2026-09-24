@@ -10,7 +10,7 @@
    GET /api/mono-webhook just answers "ok" — open it in a browser to check
    the function is reachable. */
 import crypto from 'node:crypto';
-import { MONO_API, json, ordersStore, monoPublicKey, confirmPaid } from '../lib/shop.mjs';
+import { json, ordersStore, monoPublicKey, fetchInvoice, settle } from '../lib/shop.mjs';
 
 export const config = { path: '/api/mono-webhook' };
 
@@ -47,22 +47,9 @@ export default async (req) => {
   }
   if (order.notified) return json({ ok: true }); // already sent (events repeat)
 
-  const res = await fetch(`${MONO_API}/api/merchant/invoice/status?invoiceId=${encodeURIComponent(order.invoiceId)}`, {
-    headers: { 'X-Token': process.env.MONO_TOKEN },
-  });
-  if (!res.ok){
-    console.error('monobank status error', res.status, await res.text());
-    return json({ error: 'status check failed' }, 502); // non-2xx → monobank retries
-  }
-  const inv = await res.json();
+  const inv = await fetchInvoice(order.invoiceId);
+  if (!inv) return json({ error: 'status check failed' }, 502); // non-2xx → monobank retries
   console.log('invoice status from monobank', order.id, inv.status);
-
-  if (inv.status === 'success'){
-    await confirmPaid(store, order, inv.finalAmount ?? inv.amount, 'webhook');
-  } else if (inv.status !== order.status){
-    order.status = inv.status;
-    order.updatedAt = new Date().toISOString();
-    await store.setJSON(order.id, order);
-  }
+  await settle(store, order, inv, 'webhook');
   return json({ ok: true });
 };
