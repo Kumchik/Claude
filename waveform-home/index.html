@@ -108,98 +108,41 @@
       <div class="section-head">
         <p class="eyebrow">ваша Dune</p>
         <h2>Оберіть кольори під свій інтерʼєр</h2>
-        <p class="section-lead">Абажур і база з обручем фарбуються окремо — поєднуйте як хочете. Прев'ю оновлюється одразу, а кнопкою нижче можна «увімкнути» лампу.</p>
+        <p class="section-lead">Абажур і база з обручем фарбуються окремо — поєднуйте як хочете. Фото лампи перефарбовується одразу, а кнопкою під ним можна «увімкнути» світло.</p>
       </div>
 
       <div class="configurator">
         <div class="configurator-preview">
           <div class="preview-sticky">
             <div class="lamp-stage" id="lampStage">
-              <svg class="lamp-svg" id="lampSvg" viewBox="0 0 320 400" role="img" aria-label="Прев'ю лампи Dune в обраних кольорах">
-                <defs>
-                  <!-- dune relief: soft blurred wave ridges, drawn by app.js -->
-                  <filter id="ridgeBlur" x="-10%" y="-10%" width="120%" height="120%">
-                    <feGaussianBlur stdDeviation="2.6"/>
-                  </filter>
-                  <linearGradient id="shadeRound" x1="0" x2="1" y1="0" y2="0">
-                    <stop offset="0" stop-color="#000" stop-opacity=".32"/>
-                    <stop offset=".22" stop-color="#000" stop-opacity=".06"/>
-                    <stop offset=".55" stop-color="#fff" stop-opacity=".10"/>
-                    <stop offset=".85" stop-color="#000" stop-opacity=".10"/>
-                    <stop offset="1" stop-color="#000" stop-opacity=".34"/>
-                  </linearGradient>
-                  <linearGradient id="baseRound" x1="0" x2="1" y1="0" y2="0">
-                    <stop offset="0" stop-color="#000" stop-opacity=".35"/>
-                    <stop offset=".45" stop-color="#fff" stop-opacity=".08"/>
-                    <stop offset="1" stop-color="#000" stop-opacity=".4"/>
-                  </linearGradient>
-                  <radialGradient id="shadeGlow" cx=".5" cy=".62" r=".62">
-                    <stop offset="0" stop-color="#FFE3A8" stop-opacity=".95"/>
-                    <stop offset=".6" stop-color="#FFC978" stop-opacity=".55"/>
-                    <stop offset="1" stop-color="#FFB45C" stop-opacity=".25"/>
-                  </radialGradient>
-                  <radialGradient id="halo" cx=".5" cy=".5" r=".5">
-                    <stop offset="0" stop-color="#FFD48A" stop-opacity=".75"/>
-                    <stop offset="1" stop-color="#FFD48A" stop-opacity="0"/>
-                  </radialGradient>
-                  <clipPath id="shadeClip">
-                    <path d="M66,54 C62,120 56,210 62,306 Q160,326 258,306 C264,210 258,120 254,54 Q160,40 66,54 Z"/>
-                  </clipPath>
-                </defs>
-
-                <ellipse class="lamp-halo" cx="160" cy="190" rx="190" ry="200" fill="url(#halo)"/>
-                <ellipse cx="160" cy="388" rx="96" ry="9" fill="#2A2420" opacity=".18"/>
-
-                <!-- base -->
-                <g class="lamp-base">
-                  <path class="tint-base" d="M98,340 L86,382 Q160,394 234,382 L222,340 Z"/>
-                  <path d="M98,340 L86,382 Q160,394 234,382 L222,340 Z" fill="url(#baseRound)"/>
-                  <ellipse class="tint-base" cx="160" cy="340" rx="62" ry="8"/>
-                  <ellipse cx="160" cy="340" rx="62" ry="8" fill="#000" opacity=".12"/>
-                </g>
-
-                <!-- light spilling from under the shade onto the base -->
-                <ellipse class="lamp-underglow" cx="160" cy="330" rx="80" ry="14" fill="#FFD48A"/>
-
-                <!-- back half of the W hoop, behind the shade -->
-                <path class="hoop hoop-back" d="M62,322 C80,322 96,338 118,338 C138,338 146,322 160,322 C174,322 182,338 202,338 C224,338 240,322 258,322"/>
-
-                <!-- shade -->
-                <g clip-path="url(#shadeClip)">
-                  <rect class="tint-shade" x="40" y="30" width="240" height="310"/>
-                  <g class="shade-relief" id="shadeRelief" filter="url(#ridgeBlur)"></g>
-                  <rect class="shade-glow" x="40" y="30" width="240" height="310" fill="url(#shadeGlow)"/>
-                  <rect x="40" y="30" width="240" height="310" fill="url(#shadeRound)"/>
-                  <!-- the opening at the top -->
-                  <ellipse cx="160" cy="54" rx="94" ry="10" fill="#000" opacity=".14"/>
-                </g>
-
-                <!-- front half of the W hoop -->
-                <path class="hoop hoop-front" d="M62,322 C78,322 90,294 112,294 C134,294 140,338 160,338 C180,338 186,294 208,294 C230,294 242,322 258,322"/>
-                <path class="hoop-shine" d="M62,322 C78,322 90,294 112,294 C134,294 140,338 160,338 C180,338 186,294 208,294 C230,294 242,322 258,322"/>
-              </svg>
+              <!-- the real Dune photo, recoloured in place by app.js using
+                   img/dune-config-mask.png (red = абажур, green = база й обруч) -->
+              <img class="lamp-photo" id="lampPhoto" src="img/dune-config.jpg" width="700" height="987" alt="Лампа Dune в обраних кольорах">
+              <canvas class="lamp-canvas" id="lampCanvas" width="700" height="987" aria-hidden="true"></canvas>
             </div>
-            <button class="light-toggle" id="lightToggle" aria-pressed="false">
-              <span class="light-toggle-knob"></span>
-              <span class="light-toggle-label" id="lightToggleLabel">Увімкнути світло</span>
-            </button>
-            <div class="preview-meta">
-              <div class="preview-row">
-                <span>Модель</span>
-                <strong>Waveform Dune</strong>
-              </div>
-              <div class="preview-row">
-                <span>Абажур</span>
-                <strong id="metaShade">Пісок</strong>
-              </div>
-              <div class="preview-row">
-                <span>База й обруч</span>
-                <strong id="metaBase">Шоколад</strong>
-              </div>
-              <div class="preview-divider"></div>
-              <div class="preview-row preview-price">
-                <span>Вартість</span>
-                <strong id="metaPrice">за запитом</strong>
+            <div class="preview-side">
+              <button class="light-toggle" id="lightToggle" aria-pressed="false">
+                <span class="light-toggle-knob"></span>
+                <span class="light-toggle-label" id="lightToggleLabel">Увімкнути світло</span>
+              </button>
+              <div class="preview-meta">
+                <div class="preview-row">
+                  <span>Модель</span>
+                  <strong>Waveform Dune</strong>
+                </div>
+                <div class="preview-row">
+                  <span>Абажур</span>
+                  <strong id="metaShade">Пісок</strong>
+                </div>
+                <div class="preview-row">
+                  <span>База й обруч</span>
+                  <strong id="metaBase">Шоколад</strong>
+                </div>
+                <div class="preview-divider"></div>
+                <div class="preview-row preview-price">
+                  <span>Вартість</span>
+                  <strong id="metaPrice">за запитом</strong>
+                </div>
               </div>
             </div>
           </div>
