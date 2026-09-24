@@ -22,6 +22,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 const stage = document.getElementById('lampStage');
 const canvas = document.getElementById('lampCanvas');
@@ -47,8 +48,9 @@ function backdrop(inner, outer){
 }
 
 /* Shader tweaks on top of three.js' physical material.
-   - grain: the fine fuzzy texture of the printed base and hoop, as a
-     tiny bump (≈1 mm) on the surface. It fades out when a grain would be
+   - grain: the base and hoop are printed with fuzzy skin («Нечітка
+     оболонка»), a rough, pebbly surface. It is drawn as a two-scale bump
+     (≈1.5 mm and ≈0.6 mm) that fades out only when a grain would be
      smaller than a pixel, so it never shimmers.
    - glow: with the lamp on, light passing through the shade is brighter
      where the wall faces you and dimmer on the slopes of each wave, so
@@ -77,9 +79,10 @@ function tweakMaterial(mat, { grain = 0, glow = false }){
         }`)
       .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
         if (uGrain > 0.0) {
-          vec3 gp = vWPos * 900.0;
-          float fade = 1.0 - smoothstep(0.35, 0.9, length(fwidth(gp)));
-          float h = vnoise(gp) * uGrain * fade;
+          vec3 gp = vWPos * 650.0;
+          float fade = 1.0 - smoothstep(0.7, 1.8, length(fwidth(gp)));
+          float n = vnoise(gp) * 0.6 + vnoise(gp * 2.4 + 17.0) * 0.4;
+          float h = n * uGrain * fade;
           normal = bumpNormal(-vViewPosition, normal, vec2(dFdx(h), dFdy(h)));
         }`);
     if (glow){
@@ -139,18 +142,43 @@ function init(){
   scene.add(fill);
 
   // the bulb inside the shade — only on when the light toggle is on
-  const bulb = new THREE.PointLight(BULB, 0, 0.6, 1.5);
+  const bulb = new THREE.PointLight(BULB, 0, 0.4, 2);
   bulb.position.set(0, 0.13, 0);
   scene.add(bulb);
 
-  // floor that only shows the lamp's shadow
-  const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.2, 1.2),
-    new THREE.ShadowMaterial({ opacity: 0.2 })
+  // the lamp stands on a white display cube (top face at y = 0)
+  const CUBE = 0.34, CUBE_R = 0.006;
+  const cube = new THREE.Mesh(
+    new RoundedBoxGeometry(CUBE, CUBE, CUBE, 5, CUBE_R),
+    new THREE.MeshPhysicalMaterial({ color: 0xf3f1ec, roughness: 0.9, sheen: 0.2, sheenColor: 0xffffff })
   );
-  floor.rotation.x = -Math.PI / 2;
-  floor.receiveShadow = true;
-  scene.add(floor);
+  cube.position.y = -CUBE / 2;
+  cube.receiveShadow = true;
+  scene.add(cube);
+
+  // white power cable: comes out from under the base, runs across the top
+  // of the cube and drops over its front edge
+  const CABLE_R = 0.0022;
+  const top = CABLE_R, edgeZ = CUBE / 2, face = edgeZ + CABLE_R + 0.0004;
+  const cablePath = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0.0, top, -0.01),       // hidden under the base
+    new THREE.Vector3(-0.03, top, 0.03),
+    new THREE.Vector3(-0.065, top, 0.075),    // leaves the base rim
+    new THREE.Vector3(-0.085, top, 0.115),
+    new THREE.Vector3(-0.095, top, 0.15),
+    new THREE.Vector3(-0.099, top - 0.0005, edgeZ - 0.004),
+    new THREE.Vector3(-0.101, -0.004, face),  // over the rounded edge
+    new THREE.Vector3(-0.102, -0.03, face),
+    new THREE.Vector3(-0.104, -0.12, face),
+    new THREE.Vector3(-0.106, -0.3, face),
+  ], false, 'centripetal');
+  const cable = new THREE.Mesh(
+    new THREE.TubeGeometry(cablePath, 260, CABLE_R, 14, false),
+    new THREE.MeshPhysicalMaterial({ color: 0xf6f5f2, roughness: 0.42, clearcoat: 0.3, clearcoatRoughness: 0.5 })
+  );
+  cable.castShadow = true;
+  cable.receiveShadow = true;
+  scene.add(cable);
 
   const controls = new OrbitControls(camera, canvas);
   controls.enablePan = false;
@@ -158,7 +186,7 @@ function init(){
   controls.enableDamping = true;
   controls.rotateSpeed = 0.7;
   // turn around the lamp only; keep a slightly-above view like the photo
-  controls.minPolarAngle = controls.maxPolarAngle = THREE.MathUtils.degToRad(80);
+  controls.minPolarAngle = controls.maxPolarAngle = THREE.MathUtils.degToRad(77);
   controls.autoRotate = !reduceMotion;
   controls.autoRotateSpeed = 0.8;
   canvas.style.touchAction = 'pan-y'; // vertical swipes still scroll the page
@@ -175,8 +203,13 @@ function init(){
   const materials = { shade: plastic(), hoop: plastic(), base: plastic() };
   materials.shade.roughness = 0.72;
   tweakMaterial(materials.shade, { glow: true });
-  tweakMaterial(materials.hoop, { grain: 0.0006 });
-  tweakMaterial(materials.base, { grain: 0.0008 });
+  // fuzzy skin scatters light: rougher, no sheen
+  for (const part of ['hoop', 'base']){
+    materials[part].roughness = 0.88;
+    materials[part].sheen = 0.25;
+  }
+  tweakMaterial(materials.hoop, { grain: 0.001 });
+  tweakMaterial(materials.base, { grain: 0.0012 });
 
   // post-processing: ambient occlusion darkens the folds of the waves and
   // the contact points (hoop in the dents, lamp on the table) the way real
@@ -185,8 +218,8 @@ function init(){
   composer.setPixelRatio(dpr);
   composer.addPass(new RenderPass(scene, camera));
   const gtao = new GTAOPass(scene, camera, 1, 1);
-  gtao.updateGtaoMaterial({ radius: 0.008, distanceExponent: 1, thickness: 0.4, scale: 1, samples: 16 });
-  gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 16 });
+  gtao.updateGtaoMaterial({ radius: 0.008, distanceExponent: 1, thickness: 0.4, scale: 1, samples: 24 });
+  gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 10, rings: 3, samples: 24 });
   gtao.blendIntensity = 0.75;
   composer.addPass(gtao);
   const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.35, 0.8, 0.72);
@@ -207,7 +240,7 @@ function init(){
     // lit from inside: the shade glows in its own colour warmed by the bulb
     materials.shade.emissive.copy(shade).lerp(BULB, 0.55);
     materials.shade.emissiveIntensity = s.lightOn ? 0.8 : 0;
-    bulb.intensity = s.lightOn ? 0.35 : 0;
+    bulb.intensity = s.lightOn ? 0.18 : 0;
     key.intensity = s.lightOn ? 0.25 : 1.5;
     rim.intensity = s.lightOn ? 0.1 : 0.5;
     fill.intensity = s.lightOn ? 0.1 : 0.45;
@@ -223,10 +256,11 @@ function init(){
     renderer.setSize(w, h, false);
     composer.setSize(w, h);
     camera.aspect = w / h;
-    // keep the whole lamp (≈ 26 cm tall, 21 cm wide) in frame at any aspect
-    const fitH = 0.2 / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    // keep the whole lamp (≈ 26 cm tall, 21 cm wide) and the top of the
+    // cube with the cable going over its edge in frame, at any aspect
+    const fitH = 0.21 / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
     const fitW = fitH * Math.max(1, 0.8 / camera.aspect);
-    const dist = Math.max(fitH, fitW) * 0.88;
+    const dist = Math.max(fitH, fitW) * 0.92;
     const dir = camera.position.clone().sub(controls.target).normalize();
     camera.position.copy(controls.target).addScaledVector(dir, dist);
     camera.updateProjectionMatrix();
@@ -246,7 +280,7 @@ function init(){
     }
   });
 
-  controls.target.set(0, 0.125, 0);
+  controls.target.set(0, 0.1, 0);
   // start turned so the W of the hoop faces the viewer, as in the photo
   const az = THREE.MathUtils.degToRad(15);
   camera.position.set(Math.sin(az), 0.3, Math.cos(az)).add(controls.target);
