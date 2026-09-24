@@ -13,23 +13,32 @@ const PRODUCT_NAME = 'Waveform Dune';
 // Ціна в гривнях. null — показуємо «за запитом», доки не задана реальна.
 const PRICE_UAH = null;
 
-const SHADE_COLORS = [
-  { id: 'sand',   name: 'Пісок',     hex: '#EADBC6', original: true },
-  { id: 'milk',   name: 'Молочний',  hex: '#F6F1E8' },
-  { id: 'peach',  name: 'Персик',    hex: '#F1C8A6' },
-  { id: 'powder', name: 'Пудра',     hex: '#EAC3BE' },
-  { id: 'sage',   name: 'Шавлія',    hex: '#C8D0B6' },
-  { id: 'fog',    name: 'Туман',     hex: '#D5D6D8' },
+// Кольори філаменту, з якого друкуємо. Одна палітра і для абажура,
+// і для бази з обручем. hex — приблизний відтінок для прев'ю.
+const FILAMENTS = [
+  { id: 'white',        name: 'White',        hex: '#F4F4F2' },
+  { id: 'bone-white',   name: 'Bone White',   hex: '#EDE6CC' },
+  { id: 'beige',        name: 'Beige',        hex: '#E6CFC1' },
+  { id: 'oak',          name: 'Oak',          hex: '#BBAB9C' },
+  { id: 'chocolate',    name: 'Chocolate',    hex: '#6B3F2E' },
+  { id: 'black',        name: 'Black',        hex: '#232325' },
+  { id: 'sakura-pink',  name: 'Sakura Pink',  hex: '#F6B3BC' },
+  { id: 'magenta',      name: 'Magenta',      hex: '#E0409F' },
+  { id: 'red',          name: 'Red',          hex: '#D9283D' },
+  { id: 'sunny-orange', name: 'Sunny Orange', hex: '#EE6A26' },
+  { id: 'yellow',       name: 'Yellow',       hex: '#E6DB4E' },
+  { id: 'olive-green',  name: 'Olive Green',  hex: '#86A35C' },
+  { id: 'grass-green',  name: 'Grass Green',  hex: '#2E7D66' },
+  { id: 'mint-green',   name: 'Mint Green',   hex: '#9EEBCF' },
+  { id: 'sky-blue',     name: 'Sky Blue',     hex: '#8EC5EF' },
 ];
+const SHADE_COLORS = FILAMENTS;
+const BASE_COLORS = FILAMENTS;
 
-const BASE_COLORS = [
-  { id: 'chocolate',  name: 'Шоколад',   hex: '#6E4330', original: true },
-  { id: 'terracotta', name: 'Теракота',  hex: '#B0613F' },
-  { id: 'graphite',   name: 'Графіт',    hex: '#3A3836' },
-  { id: 'olive',      name: 'Олива',     hex: '#6D6E47' },
-  { id: 'sand',       name: 'Пісок',     hex: '#CDB592' },
-  { id: 'milk',       name: 'Молочний',  hex: '#EFE8DD' },
-];
+// Кольори, у яких лампа знята на фото конструктора: їх показуємо
+// без перефарбовування.
+const PHOTO_SHADE = 'bone-white';
+const PHOTO_BASE = 'chocolate';
 
 const FAQ = [
   {
@@ -62,8 +71,8 @@ const TELEGRAM_USERNAME = 'kumchik';
 
 /* ---------- state ---------- */
 const state = {
-  shade: SHADE_COLORS[0].id,
-  base: BASE_COLORS[0].id,
+  shade: PHOTO_SHADE,
+  base: PHOTO_BASE,
   lightOn: false,
 };
 
@@ -117,8 +126,8 @@ function updatePreview(){
 
   document.getElementById('metaShade').textContent = shade.name;
   document.getElementById('metaBase').textContent = base.name;
-  document.getElementById('shadeColorName').textContent = `— ${shade.name.toLowerCase()}`;
-  document.getElementById('baseColorName').textContent = `— ${base.name.toLowerCase()}`;
+  document.getElementById('shadeColorName').textContent = `— ${shade.name}`;
+  document.getElementById('baseColorName').textContent = `— ${base.name}`;
   document.getElementById('metaPrice').textContent = formatPrice();
   document.getElementById('orderBtn').textContent =
     PRICE_UAH == null ? 'Замовити Dune' : `Замовити Dune — ${formatPrice()}`;
@@ -131,7 +140,7 @@ function updatePreview(){
    masked pixel keeps its own brightness from the photo — so every wave,
    shadow and highlight stays exactly where it is — and only its colour
    is swapped: out = newColour × pixelLuminance / originalColourLuminance.
-   The colours marked `original` are the ones in the photo, so picking
+   PHOTO_SHADE / PHOTO_BASE are the colours in the photo, so picking
    them shows the untouched photo. */
 const GLOW = [255, 212, 138];
 const recolor = { ready: false, ctx: null, photo: null, mask: null, out: null };
@@ -182,8 +191,8 @@ function partPaint(color, orig){
 
 function drawLamp(){
   if (!recolor.ready) return;
-  const shade = partPaint(getShade(state.shade), SHADE_COLORS.find(c => c.original));
-  const base = partPaint(getBase(state.base), BASE_COLORS.find(c => c.original));
+  const shade = partPaint(getShade(state.shade), getShade(PHOTO_SHADE));
+  const base = partPaint(getBase(state.base), getBase(PHOTO_BASE));
   const on = state.lightOn;
   const src = recolor.photo, m = recolor.mask, dst = recolor.out.data;
 
