@@ -28,8 +28,6 @@ const stage = document.getElementById('lampStage');
 const canvas = document.getElementById('lampCanvas');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// warm bulb colour used for the "light on" state
-const BULB = new THREE.Color('#FFB866');
 
 // studio backdrop, painted into the scene itself (the post-processing
 // passes below need an opaque frame): warm paper by day, dim room at night
@@ -142,7 +140,7 @@ function init(){
   scene.add(fill);
 
   // the bulb inside the shade — only on when the light toggle is on
-  const bulb = new THREE.PointLight(BULB, 0, 0.4, 2);
+  const bulb = new THREE.PointLight(0xffffff, 0, 0.4, 2);
   bulb.position.set(0, 0.13, 0);
   scene.add(bulb);
 
@@ -156,21 +154,21 @@ function init(){
   cube.receiveShadow = true;
   scene.add(cube);
 
-  // white power cable: comes out from under the base, runs across the top
-  // of the cube and drops over its front edge
+  // white power cable: comes out from under the base at the back, runs
+  // across the top of the cube behind the lamp and drops over its back edge
   const CABLE_R = 0.0022;
-  const top = CABLE_R, edgeZ = CUBE / 2, face = edgeZ + CABLE_R + 0.0004;
+  const top = CABLE_R, edgeZ = -CUBE / 2, face = edgeZ - CABLE_R - 0.0004;
   const cablePath = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(0.0, top, -0.01),       // hidden under the base
-    new THREE.Vector3(-0.03, top, 0.03),
-    new THREE.Vector3(-0.065, top, 0.075),    // leaves the base rim
-    new THREE.Vector3(-0.085, top, 0.115),
-    new THREE.Vector3(-0.095, top, 0.15),
-    new THREE.Vector3(-0.099, top - 0.0005, edgeZ - 0.004),
-    new THREE.Vector3(-0.101, -0.004, face),  // over the rounded edge
-    new THREE.Vector3(-0.102, -0.03, face),
-    new THREE.Vector3(-0.104, -0.12, face),
-    new THREE.Vector3(-0.106, -0.3, face),
+    new THREE.Vector3(0.0, top, 0.01),        // hidden under the base
+    new THREE.Vector3(0.008, top, -0.04),
+    new THREE.Vector3(0.018, top, -0.085),    // leaves the base rim
+    new THREE.Vector3(0.03, top, -0.12),
+    new THREE.Vector3(0.036, top, -0.15),
+    new THREE.Vector3(0.038, top - 0.0005, edgeZ + 0.004),
+    new THREE.Vector3(0.039, -0.004, face),   // over the rounded edge
+    new THREE.Vector3(0.04, -0.03, face),
+    new THREE.Vector3(0.042, -0.12, face),
+    new THREE.Vector3(0.044, -0.3, face),
   ], false, 'centripetal');
   const cable = new THREE.Mesh(
     new THREE.TubeGeometry(cablePath, 260, CABLE_R, 14, false),
@@ -208,8 +206,8 @@ function init(){
     materials[part].roughness = 0.88;
     materials[part].sheen = 0.25;
   }
-  tweakMaterial(materials.hoop, { grain: 0.001 });
-  tweakMaterial(materials.base, { grain: 0.0012 });
+  tweakMaterial(materials.hoop, { grain: 0.0005 });
+  tweakMaterial(materials.base, { grain: 0.0006 });
 
   // post-processing: ambient occlusion darkens the folds of the waves and
   // the contact points (hoop in the dents, lamp on the table) the way real
@@ -222,7 +220,7 @@ function init(){
   gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 10, rings: 3, samples: 24 });
   gtao.blendIntensity = 0.75;
   composer.addPass(gtao);
-  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.35, 0.8, 0.72);
+  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.28, 0.8, 0.72);
   bloom.enabled = false;
   composer.addPass(bloom);
   composer.addPass(new OutputPass());
@@ -237,10 +235,12 @@ function init(){
     materials.shade.sheenColor.copy(shade).lerp(new THREE.Color(1, 1, 1), 0.5);
     materials.hoop.sheenColor.copy(base).lerp(new THREE.Color(1, 1, 1), 0.3);
     materials.base.sheenColor.copy(materials.hoop.sheenColor);
-    // lit from inside: the shade glows in its own colour warmed by the bulb
-    materials.shade.emissive.copy(shade).lerp(BULB, 0.55);
-    materials.shade.emissiveIntensity = s.lightOn ? 0.8 : 0;
-    bulb.intensity = s.lightOn ? 0.18 : 0;
+    // lit from inside: the light takes the colour of the shade it passes
+    // through — a Sakura Pink shade glows pink, Sky Blue glows blue
+    materials.shade.emissive.copy(shade);
+    materials.shade.emissiveIntensity = s.lightOn ? 0.64 : 0;
+    bulb.color.copy(shade);
+    bulb.intensity = s.lightOn ? 0.144 : 0;
     key.intensity = s.lightOn ? 0.25 : 1.5;
     rim.intensity = s.lightOn ? 0.1 : 0.5;
     fill.intensity = s.lightOn ? 0.1 : 0.45;
