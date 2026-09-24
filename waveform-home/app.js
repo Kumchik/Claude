@@ -35,8 +35,7 @@ const FILAMENTS = [
 const SHADE_COLORS = FILAMENTS;
 const BASE_COLORS = FILAMENTS;
 
-// Кольори, у яких лампа знята на фото конструктора: їх показуємо
-// без перефарбовування.
+// Кольори за замовчуванням — як на фото лампи.
 const PHOTO_SHADE = 'bone-white';
 const PHOTO_BASE = 'chocolate';
 
@@ -124,7 +123,9 @@ function renderOptions(){
 function updatePreview(){
   const shade = getShade(state.shade);
   const base = getBase(state.base);
-  drawLamp();
+  // the 3D model (lamp3d.js) may still be loading; it reads window.duneState itself once ready
+  window.duneState = { shade: shade.hex, base: base.hex, lightOn: state.lightOn };
+  if (window.dune3d) window.dune3d.update(window.duneState);
 
   document.getElementById('lampStage').classList.toggle('is-on', state.lightOn);
   const toggle = document.getElementById('lightToggle');
@@ -138,104 +139,6 @@ function updatePreview(){
   document.getElementById('metaPrice').textContent = formatPrice();
   document.getElementById('orderBtn').textContent =
     `Замовити Dune — ${formatPrice()}`;
-}
-
-/* ---------- photo recolour ----------
-   The preview is the real photo of Dune (img/dune-config.jpg), not a
-   drawing. img/dune-config-mask.png marks which pixels belong to the
-   абажур (red channel) and to the база + обруч W (green channel). Each
-   masked pixel keeps its own brightness from the photo — so every wave,
-   shadow and highlight stays exactly where it is — and only its colour
-   is swapped: out = newColour × pixelLuminance / originalColourLuminance.
-   PHOTO_SHADE / PHOTO_BASE are the colours in the photo, so picking
-   them shows the untouched photo. */
-const GLOW = [255, 212, 138];
-const recolor = { ready: false, ctx: null, photo: null, mask: null, out: null };
-
-const srgbLum = (r, g, b) => 0.299 * r + 0.587 * g + 0.114 * b;
-function hexToRgb(hex){
-  const n = parseInt(hex.slice(1), 16);
-  return [n >> 16, (n >> 8) & 255, n & 255];
-}
-
-function loadImage(src){
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = src;
-  });
-}
-
-async function initRecolor(){
-  try {
-    const [photo, mask] = await Promise.all([
-      loadImage('img/dune-config.jpg'),
-      loadImage('img/dune-config-mask.png'),
-    ]);
-    const canvas = document.getElementById('lampCanvas');
-    const w = canvas.width, h = canvas.height;
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    ctx.drawImage(mask, 0, 0, w, h);
-    recolor.mask = ctx.getImageData(0, 0, w, h).data;
-    ctx.drawImage(photo, 0, 0, w, h);
-    recolor.photo = ctx.getImageData(0, 0, w, h).data;
-    recolor.out = ctx.createImageData(w, h);
-    recolor.ctx = ctx;
-    recolor.ready = true;
-    document.getElementById('lampStage').classList.add('has-canvas');
-    drawLamp();
-  } catch (e) {
-    // canvas unavailable — the plain photo stays visible
-  }
-}
-
-function partPaint(color, orig){
-  const [r, g, b] = hexToRgb(color.hex);
-  const [or, og, ob] = hexToRgb(orig.hex);
-  return { keep: color.id === orig.id, r, g, b, k: 1 / srgbLum(or, og, ob) };
-}
-
-function drawLamp(){
-  if (!recolor.ready) return;
-  const shade = partPaint(getShade(state.shade), getShade(PHOTO_SHADE));
-  const base = partPaint(getBase(state.base), getBase(PHOTO_BASE));
-  const on = state.lightOn;
-  const src = recolor.photo, m = recolor.mask, dst = recolor.out.data;
-
-  for (let i = 0; i < src.length; i += 4){
-    let r = src[i], g = src[i + 1], b = src[i + 2];
-    const ws = m[i] / 255, wb = m[i + 1] / 255;
-    const lum = srgbLum(r, g, b);
-
-    if (ws > 0 && !shade.keep){
-      const f = lum * shade.k;
-      r += (Math.min(255, shade.r * f) - r) * ws;
-      g += (Math.min(255, shade.g * f) - g) * ws;
-      b += (Math.min(255, shade.b * f) - b) * ws;
-    }
-    if (wb > 0 && !base.keep){
-      const f = lum * base.k;
-      r += (Math.min(255, base.r * f) - r) * wb;
-      g += (Math.min(255, base.g * f) - g) * wb;
-      b += (Math.min(255, base.b * f) - b) * wb;
-    }
-    if (on){
-      if (ws > 0){
-        // light from inside: screen a warm tone over the shade
-        const a = 0.55 * ws;
-        r += (255 - (255 - r) * (255 - GLOW[0]) / 255 - r) * a;
-        g += (255 - (255 - g) * (255 - GLOW[1]) / 255 - g) * a;
-        b += (255 - (255 - b) * (255 - GLOW[2]) / 255 - b) * a;
-      } else {
-        // the room dims around the lit lamp
-        const d = wb > 0 ? 0.85 : 0.6;
-        r *= d; g *= d * 0.97; b *= d * 0.9;
-      }
-    }
-    dst[i] = r; dst[i + 1] = g; dst[i + 2] = b; dst[i + 3] = 255;
-  }
-  recolor.ctx.putImageData(recolor.out, 0, 0);
 }
 
 /* ---------- faq ---------- */
@@ -317,7 +220,6 @@ function initNav(){
 /* ---------- init ---------- */
 document.addEventListener('DOMContentLoaded', () => {
   renderOptions();
-  initRecolor();
   updatePreview();
   renderFaq();
   initNav();

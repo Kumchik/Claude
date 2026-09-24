@@ -108,17 +108,18 @@
       <div class="section-head">
         <p class="eyebrow">ваша Dune</p>
         <h2>Оберіть кольори під свій інтерʼєр</h2>
-        <p class="section-lead">Абажур і база з обручем фарбуються окремо — поєднуйте як хочете. Фото лампи перефарбовується одразу, а кнопкою під ним можна «увімкнути» світло.</p>
+        <p class="section-lead">Абажур і база з обручем фарбуються окремо — поєднуйте як хочете. Лампу можна покрутити, а кнопкою під нею — «увімкнути» світло.</p>
       </div>
 
       <div class="configurator">
         <div class="configurator-preview">
           <div class="preview-sticky">
             <div class="lamp-stage" id="lampStage">
-              <!-- the real Dune photo, recoloured in place by app.js using
-                   img/dune-config-mask.png (red = абажур, green = база й обруч) -->
-              <img class="lamp-photo" id="lampPhoto" src="img/dune-config.jpg" width="700" height="987" alt="Лампа Dune в обраних кольорах">
-              <canvas class="lamp-canvas" id="lampCanvas" width="700" height="987" aria-hidden="true"></canvas>
+              <!-- 3D model of Dune built from the real print files (models/dune.glb),
+                   drawn by lamp3d.js; the photo shows until it loads, or if WebGL is unavailable -->
+              <img class="lamp-photo" id="lampPhoto" src="img/dune-config.jpg" width="700" height="987" alt="Лампа Dune">
+              <canvas class="lamp-canvas" id="lampCanvas" aria-label="3D-модель лампи Dune в обраних кольорах. Потягніть, щоб повернути."></canvas>
+              <span class="lamp-hint" id="lampHint">Потягніть, щоб повернути</span>
             </div>
             <div class="preview-side">
               <button class="light-toggle" id="lightToggle" aria-pressed="false">
@@ -350,5 +351,12 @@
 </div>
 
 <script src="app.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+} }
+</script>
+<script type="module" src="lamp3d.js"></script>
 </body>
 </html>

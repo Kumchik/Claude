@@ -192,7 +192,8 @@ figure{ margin:0; }
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--night);
-  box-shadow: 0 30px 60px -30px rgba(30,25,22,0.55);
+  box-shadow: 0 30px 60px -30px rgba(30,25,22,0.45);
+  transition: background .5s ease;
   aspect-ratio: 700 / 987;
   /* tall enough to see the relief, short enough that the whole sticky
      preview (photo + toggle + summary) fits on screen */
@@ -201,11 +202,23 @@ figure{ margin:0; }
 }
 .lamp-photo, .lamp-canvas{
   position:absolute; inset:0; width:100%; height:100%;
-  object-fit: contain; display:block;
+  display:block;
 }
-.lamp-canvas{ opacity: 0; }
-.lamp-stage.has-canvas .lamp-canvas{ opacity: 1; }
-.lamp-stage.has-canvas .lamp-photo{ visibility: hidden; }
+.lamp-photo{ object-fit: cover; }
+.lamp-canvas{ opacity: 0; transition: opacity .4s ease; cursor: grab; touch-action: pan-y; }
+.lamp-canvas:active{ cursor: grabbing; }
+.lamp-stage.has-3d{ background: radial-gradient(120% 90% at 50% 30%, #FBF7F1 0%, #E6DACB 100%); }
+.lamp-stage.has-3d.is-on{ background: radial-gradient(120% 90% at 50% 40%, #4A3A2E 0%, #1E1916 75%); }
+.lamp-stage.has-3d .lamp-canvas{ opacity: 1; }
+.lamp-stage.has-3d .lamp-photo{ visibility: hidden; }
+.lamp-hint{
+  position:absolute; left:50%; bottom:10px; transform: translateX(-50%);
+  font-size:.72rem; font-weight:700; color: var(--ink-soft);
+  background: rgba(255,253,249,.8); padding: 4px 10px; border-radius: 999px;
+  pointer-events:none; opacity: 0; transition: opacity .4s ease; white-space: nowrap;
+}
+.lamp-stage.has-3d .lamp-hint{ opacity: 1; }
+.lamp-stage.has-3d.touched .lamp-hint{ opacity: 0; }
 
 .preview-side{ width: 100%; display:flex; flex-direction:column; align-items:center; gap: 16px; }
 .light-toggle{
