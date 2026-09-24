@@ -140,7 +140,24 @@ export const MONO_API = 'https://api.monobank.ua';
 export async function ordersStore(){
   if (globalThis.__ordersStore) return globalThis.__ordersStore; // local tests
   const { getStore } = await import('@netlify/blobs');
-  return getStore('orders');
+  // strong: monobank's webhook arrives seconds after the order is saved,
+  // and the default (eventual) consistency may not show it yet
+  return getStore({ name: 'orders', consistency: 'strong' });
+}
+
+/* Marks a card order paid and sends it to Telegram — exactly once, whichever
+   comes first: monobank's webhook or the customer landing back on the site. */
+export async function confirmPaid(store, order, amountKop, via){
+  if (order.notified) return false;
+  const paid = amountKop / 100;
+  const sent = await notify(orderText(order.id, order, `${order.test ? '🧪 ТЕСТОВА оплата' : '🟢 Оплачено'} ${paid} ₴`));
+  order.status = 'success';
+  order.notified = sent;
+  order.paidAt = new Date().toISOString();
+  order.confirmedVia = via;
+  await store.setJSON(order.id, order);
+  console.log(`order ${order.id} paid ${paid} UAH (via ${via}), telegram ${sent ? 'sent' : 'FAILED'}`);
+  return sent;
 }
 
 /* monobank signs every webhook with ECDSA; the public key comes from
