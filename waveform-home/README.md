@@ -77,6 +77,11 @@ Google Pay, картка) або **накладеним платежем**.
    `MONO_TOKEN`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, потім
    Deploys → Trigger deploy.
 
+**Перевірка оплати за 1 ₴.** Додайте в Netlify змінну `TEST_PRICE_UAH`
+зі значенням `1` і зробіть Trigger deploy — оплата карткою списуватиме
+1 ₴ замість ціни, а в Telegram прийде «🧪 ТЕСТОВА оплата». Після перевірки
+видаліть змінну й знову зробіть Trigger deploy.
+
 Ціна задана у двох місцях: `PRICE_UAH` в `app.js` (показ на сторінці) і
 в `netlify/lib/shop.mjs` (сума до оплати). Палітра `FILAMENTS` — теж.
 

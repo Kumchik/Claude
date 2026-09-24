@@ -1,7 +1,7 @@
 /* POST /api/create-order
    Card: creates a monobank invoice and returns its payment page URL.
    Cash on delivery: sends the order to Telegram straight away. */
-import { PRICE_UAH, PRODUCT_NAME, FILAMENTS, MONO_API, json, validateOrder, newOrderId, orderText, notify, ordersStore } from '../lib/shop.mjs';
+import { cardChargeUAH, isTestPrice, PRODUCT_NAME, FILAMENTS, MONO_API, json, validateOrder, newOrderId, orderText, notify, ordersStore } from '../lib/shop.mjs';
 
 export const config = { path: '/api/create-order' };
 
@@ -25,7 +25,8 @@ export default async (req) => {
   }
 
   const site = process.env.URL || new URL(req.url).origin;
-  const kop = PRICE_UAH * 100;
+  const kop = Math.round(cardChargeUAH() * 100);
+  if (isTestPrice()) console.warn(`TEST_PRICE_UAH is set: charging ${kop / 100} ₴ instead of the real price`);
   const res = await fetch(`${MONO_API}/api/merchant/invoice/create`, {
     method: 'POST',
     headers: { 'X-Token': process.env.MONO_TOKEN, 'content-type': 'application/json' },
@@ -34,7 +35,7 @@ export default async (req) => {
       ccy: 980,
       merchantPaymInfo: {
         reference: id,
-        destination: `${PRODUCT_NAME}, замовлення ${id}`,
+        destination: `${PRODUCT_NAME}, замовлення ${id}${isTestPrice() ? ' (тестова оплата)' : ''}`,
         basketOrder: [{
           name: `${PRODUCT_NAME} (абажур ${FILAMENTS[order.shade]}, база ${FILAMENTS[order.base]})`,
           qty: 1, sum: kop, total: kop, unit: 'шт.', code: 'dune',
@@ -52,7 +53,7 @@ export default async (req) => {
   const { invoiceId, pageUrl } = await res.json();
 
   const store = await ordersStore();
-  await store.setJSON(id, { ...order, id, invoiceId, status: 'created', createdAt: new Date().toISOString() });
+  await store.setJSON(id, { ...order, id, invoiceId, test: isTestPrice(), status: 'created', createdAt: new Date().toISOString() });
 
   return json({ ok: true, orderId: id, payment: 'card', pageUrl });
 };

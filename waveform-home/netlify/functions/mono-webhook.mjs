@@ -40,7 +40,7 @@ export default async (req) => {
 
   if (event.status === 'success'){
     const paid = (event.finalAmount ?? event.amount) / 100;
-    await notify(orderText(order.id, order, `🟢 Оплачено ${paid} ₴`));
+    await notify(orderText(order.id, order, `${order.test ? '🧪 ТЕСТОВА оплата' : '🟢 Оплачено'} ${paid} ₴`));
   }
   await store.setJSON(order.id, order);
   return json({ ok: true });

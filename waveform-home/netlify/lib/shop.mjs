@@ -11,6 +11,16 @@
 // Ціна — тут, на сервері, а не зі сторінки: клієнт не може її змінити.
 // Має збігатися з PRICE_UAH в app.js.
 export const PRICE_UAH = 2100;
+
+/* Test mode: while the TEST_PRICE_UAH env var is set in Netlify (e.g. 1),
+   card payments charge that amount instead of the real price, so the whole
+   flow can be checked with a real card for 1 ₴. Remove the variable and
+   redeploy to go back to the real price. */
+export function cardChargeUAH(){
+  const test = Number(process.env.TEST_PRICE_UAH);
+  return Number.isFinite(test) && test > 0 ? test : PRICE_UAH;
+}
+export const isTestPrice = () => cardChargeUAH() !== PRICE_UAH;
 export const PRODUCT_NAME = 'Waveform Dune';
 
 // Кольори філаменту: id → назва. Має збігатися з FILAMENTS в app.js.
