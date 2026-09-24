@@ -5,8 +5,8 @@
    три окремі деталі — shade (абажур), hoop (обруч W) і base (база),
    кожна фарбується цілком, тому колір не «залазить» на сусідні деталі.
    Модель спрощена й стиснута для сайту (~1 МБ), форма та хвилі ті самі.
-   Обруч розширено на 8 % по радіусу, щоб він, як на фото, лежав поверх
-   абажура, а не проходив крізь нього.
+   Обруч повернуто на 45° навколо вертикальної осі, щоб його нижні
+   точки лягали в ямки на стінках бази.
 
    app.js кладе вибрані кольори у window.duneState і викликає
    window.dune3d.update(), коли вони змінюються.
@@ -134,7 +134,7 @@ function init(){
 
   controls.target.set(0, 0.125, 0);
   // start turned so the W of the hoop faces the viewer, as in the photo
-  const az = THREE.MathUtils.degToRad(60);
+  const az = THREE.MathUtils.degToRad(15);
   camera.position.set(Math.sin(az), 0.3, Math.cos(az)).add(controls.target);
   new ResizeObserver(resize).observe(stage);
   resize();
