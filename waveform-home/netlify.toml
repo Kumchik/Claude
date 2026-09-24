@@ -1,0 +1,7 @@
+# Netlify: set "Base directory" to waveform-home when connecting the repo.
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"

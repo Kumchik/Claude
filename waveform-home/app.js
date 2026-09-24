@@ -62,7 +62,7 @@ const FAQ = [
   },
   {
     q: 'Як оплатити замовлення?',
-    a: 'Оплата не відбувається на сайті. Після заявки ми уточнимо деталі в месенджері, погодимо доставку, а тоді надішлемо реквізити.'
+    a: 'Два способи на вибір при оформленні. Карткою одразу на сайті — через захищену сторінку monobank: Apple Pay, Google Pay або картка будь-якого банку. Або накладеним платежем — оплата при отриманні на Новій пошті (Нова пошта бере свою комісію за переказ коштів).'
   },
 ];
 
@@ -163,42 +163,176 @@ function renderFaq(){
   });
 }
 
-/* ---------- order modal ---------- */
-function buildSummary(){
-  const lines = [
+/* ---------- checkout ----------
+   The form posts to the Netlify Functions in netlify/functions:
+   card → /api/create-order returns a monobank payment page and the
+   customer is sent there; monobank brings them back to ?order=… and
+   /api/order-status says whether it was paid. Cash on delivery → the
+   order goes straight to Telegram. Where those functions aren't
+   running (a plain static host, a preview), the customer gets a
+   Telegram message with the order instead, so no order is lost. */
+const $ = id => document.getElementById(id);
+
+function buildSummary(extra = []){
+  return [
     `Заявка на лампу ${PRODUCT_NAME}`,
     '',
     `Колір абажура: ${getShade(state.shade).name}`,
     `Колір бази та обруча W: ${getBase(state.base).name}`,
     `Вартість: ${formatPrice()}`,
-  ];
-  return lines.join('\n');
+    ...extra,
+  ].join('\n');
 }
 
-function openOrderModal(){
-  const summary = buildSummary();
-  document.getElementById('orderSummary').textContent = summary;
-  document.getElementById('sendTelegramBtn').href =
-    `https://t.me/${TELEGRAM_USERNAME}?text=${encodeURIComponent(summary)}`;
-  document.getElementById('orderModal').classList.add('open');
-  document.getElementById('modalClose').focus();
+const telegramLink = text => `https://t.me/${TELEGRAM_USERNAME}?text=${encodeURIComponent(text)}`;
+
+function openModal(){
+  $('orderModal').classList.add('open');
+  $('modalClose').focus();
 }
 
 function closeOrderModal(){
-  document.getElementById('orderModal').classList.remove('open');
-  document.getElementById('orderBtn').focus();
+  $('orderModal').classList.remove('open');
+  $('orderBtn').focus();
 }
 
-async function copySummary(){
-  const btn = document.getElementById('copySummaryBtn');
-  const text = document.getElementById('orderSummary').textContent;
+function showCheckout(){
+  $('checkoutItem').textContent =
+    `${PRODUCT_NAME} · абажур ${getShade(state.shade).name} · база ${getBase(state.base).name} · ${formatPrice()}`;
+  $('checkoutError').hidden = true;
+  $('checkoutView').hidden = false;
+  $('resultView').hidden = true;
+  syncSubmitLabel();
+  openModal();
+  $('coName').focus();
+}
+
+function showResult(title, text, actions = []){
+  $('resultTitle').textContent = title;
+  $('resultText').textContent = text;
+  const box = $('resultActions');
+  box.innerHTML = '';
+  actions.forEach(({ label, href, onClick, primary }) => {
+    const el = document.createElement(href ? 'a' : 'button');
+    el.className = 'btn ' + (primary ? 'btn-primary' : 'btn-ghost');
+    el.textContent = label;
+    if (href){ el.href = href; el.target = '_blank'; el.rel = 'noopener'; }
+    if (onClick) el.addEventListener('click', onClick);
+    box.appendChild(el);
+  });
+  $('checkoutView').hidden = true;
+  $('resultView').hidden = false;
+  openModal();
+}
+
+function payment(){
+  return $('checkoutForm').querySelector('input[name="payment"]:checked').value;
+}
+
+function syncSubmitLabel(){
+  $('checkoutSubmit').textContent = payment() === 'card'
+    ? `Оплатити ${formatPrice()}`
+    : 'Підтвердити замовлення';
+}
+
+function formError(msg, field){
+  $('checkoutError').textContent = msg;
+  $('checkoutError').hidden = false;
+  $('checkoutForm').querySelectorAll('input').forEach(i => i.removeAttribute('aria-invalid'));
+  if (field){ field.setAttribute('aria-invalid', 'true'); field.focus(); }
+}
+
+// the same checks the server makes, so most mistakes show up instantly
+function checkForm(){
+  const f = $('checkoutForm');
+  const v = name => f.elements[name].value.trim();
+  if (v('name').length < 3) return ['Вкажіть прізвище та імʼя отримувача.', f.elements.name];
+  if (!/^(380\d{9}|0\d{9})$/.test(v('phone').replace(/\D/g, ''))) return ['Вкажіть телефон у форматі +380XXXXXXXXX.', f.elements.phone];
+  if (v('city').length < 2) return ['Вкажіть місто.', f.elements.city];
+  if (!v('branch')) return ['Вкажіть відділення або поштомат Нової пошти.', f.elements.branch];
+  return null;
+}
+
+async function submitCheckout(e){
+  e.preventDefault();
+  const problem = checkForm();
+  if (problem) return formError(...problem);
+  $('checkoutError').hidden = true;
+
+  const f = $('checkoutForm');
+  const data = {
+    shade: state.shade, base: state.base, payment: payment(),
+    name: f.elements.name.value, phone: f.elements.phone.value,
+    city: f.elements.city.value, branch: f.elements.branch.value,
+    website: f.elements.website.value,
+  };
+  const btn = $('checkoutSubmit');
+  btn.disabled = true;
+  btn.textContent = data.payment === 'card' ? 'Переходимо до оплати…' : 'Надсилаємо…';
+
+  let res, body;
   try {
-    await navigator.clipboard.writeText(text);
-    btn.textContent = 'Скопійовано ✓';
-  } catch (e) {
-    btn.textContent = 'Виділіть текст вручну';
+    res = await fetch('/api/create-order', {
+      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(data),
+    });
+    body = await res.json();
+  } catch (err) {
+    res = null;
   }
-  setTimeout(() => { btn.textContent = 'Скопіювати текст'; }, 2000);
+  btn.disabled = false;
+  syncSubmitLabel();
+
+  if (!res || (!res.ok && !body?.error)){
+    // no checkout backend here: hand the order over via Telegram instead
+    const text = buildSummary(['', `Отримувач: ${data.name}`, `Телефон: ${data.phone}`,
+      `Нова пошта: ${data.city}, ${data.branch}`,
+      `Оплата: ${data.payment === 'card' ? 'карткою' : 'накладений платіж'}`]);
+    return showResult('Надішліть замовлення в Telegram',
+      'Онлайн-оформлення зараз недоступне. Натисніть кнопку — текст замовлення підставиться сам, залишиться тільки надіслати.',
+      [{ label: 'Надіслати в Telegram', href: telegramLink(text), primary: true }]);
+  }
+  if (!res.ok) return formError(body.error);
+
+  if (body.payment === 'card'){
+    window.location.href = body.pageUrl;
+    return;
+  }
+  showResult('Дякуємо, замовлення прийнято!',
+    `Номер замовлення ${body.orderId}. Ми напишемо або зателефонуємо, щоб підтвердити деталі. ` +
+    'Оплата — при отриманні на Новій пошті.',
+    [{ label: 'Готово', onClick: closeOrderModal, primary: true }]);
+}
+
+/* back from monobank: ?order=DN-…#order-result */
+async function checkReturnedOrder(){
+  const id = new URLSearchParams(location.search).get('order');
+  if (!id) return;
+  history.replaceState(null, '', location.pathname + '#configurator');
+  showResult('Перевіряємо оплату…', `Замовлення ${id}`);
+
+  for (let attempt = 0; attempt < 6; attempt++){
+    let status = null;
+    try {
+      const res = await fetch(`/api/order-status?order=${encodeURIComponent(id)}`);
+      if (res.ok) status = (await res.json()).status;
+    } catch (e) { /* retry below */ }
+
+    if (status === 'success'){
+      return showResult('Оплату отримано — дякуємо!',
+        `Замовлення ${id} оплачено. Ми вже почали роботу над вашою Dune і напишемо, коли відправимо її Новою поштою.`,
+        [{ label: 'Готово', onClick: closeOrderModal, primary: true }]);
+    }
+    if (['failure', 'expired', 'reversed'].includes(status)){
+      return showResult('Оплата не пройшла',
+        `Кошти за замовлення ${id} не списані. Спробуйте ще раз або оберіть накладений платіж.`,
+        [{ label: 'Спробувати ще раз', onClick: showCheckout, primary: true }]);
+    }
+    await new Promise(r => setTimeout(r, 2500));
+  }
+  showResult('Оплата ще обробляється',
+    `Банк ще не підтвердив оплату замовлення ${id}. Щойно вона пройде, ми отримаємо сповіщення й звʼяжемося з вами.`,
+    [{ label: 'Написати в Telegram', href: telegramLink(`Замовлення ${id}: питання щодо оплати`) },
+     { label: 'Готово', onClick: closeOrderModal, primary: true }]);
 }
 
 /* ---------- nav ---------- */
@@ -226,14 +360,22 @@ document.addEventListener('DOMContentLoaded', () => {
     state.lightOn = !state.lightOn;
     updatePreview();
   });
-  document.getElementById('orderBtn').addEventListener('click', openOrderModal);
-  document.getElementById('modalClose').addEventListener('click', closeOrderModal);
-  document.getElementById('orderModal').addEventListener('click', e => {
+  $('orderBtn').addEventListener('click', showCheckout);
+  $('modalClose').addEventListener('click', closeOrderModal);
+  $('orderModal').addEventListener('click', e => {
     if (e.target.id === 'orderModal') closeOrderModal();
   });
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && document.getElementById('orderModal').classList.contains('open')) closeOrderModal();
+    if (e.key === 'Escape' && $('orderModal').classList.contains('open')) closeOrderModal();
   });
-  document.getElementById('copySummaryBtn').addEventListener('click', copySummary);
+  $('checkoutForm').addEventListener('submit', submitCheckout);
+  $('checkoutForm').addEventListener('input', e => {
+    if (e.target.getAttribute('aria-invalid')){
+      e.target.removeAttribute('aria-invalid');
+      $('checkoutError').hidden = true;
+    }
+  });
+  $('checkoutForm').addEventListener('change', e => { if (e.target.name === 'payment') syncSubmitLabel(); });
+  checkReturnedOrder();
   document.getElementById('year').textContent = new Date().getFullYear();
 });

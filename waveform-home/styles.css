@@ -377,11 +377,36 @@ figure{ margin:0; }
 }
 .modal-close{ position:absolute; top:16px; right:16px; background: var(--bg-alt); border:none; width:32px; height:32px; border-radius:50%; font-size:.9rem; }
 .modal-sub{ font-size:.92rem; }
-.order-summary{
-  background: var(--bg-alt); border-radius: var(--radius-sm); padding: 16px;
-  font-family: 'Manrope', monospace; font-size:.85rem; white-space: pre-wrap; color: var(--ink);
-  margin: 0 0 20px;
+.modal{ max-height: calc(100vh - 40px); overflow-y: auto; }
+.checkout-item{
+  background: var(--bg-alt); border-radius: var(--radius-sm); padding: 12px 14px;
+  font-size: .9rem; color: var(--ink); margin: 0 0 18px;
 }
+#checkoutForm{ display:flex; flex-direction:column; gap: 14px; }
+.field{ display:flex; flex-direction:column; gap: 6px; min-width: 0; flex: 1; }
+.field label{ font-size: .82rem; font-weight: 700; color: var(--ink); }
+.field input{
+  width: 100%; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+  padding: 11px 13px; font: inherit; font-size: .95rem; background: #fff; color: var(--ink);
+}
+.field input:focus{ outline: none; border-color: var(--clay); }
+.field input[aria-invalid="true"]{ border-color: #C0392B; }
+.field-row{ display:flex; gap: 12px; }
+.hp{ position:absolute; left:-9999px; width:1px; height:1px; opacity:0; }
+.pay-options{ border: none; padding: 0; margin: 4px 0 0; display:flex; flex-direction:column; gap: 8px; }
+.pay-options legend{ font-size: .82rem; font-weight: 700; margin-bottom: 8px; padding: 0; }
+.pay-option{
+  display:flex; gap: 12px; align-items:flex-start; cursor:pointer;
+  border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px;
+  transition: border-color .15s ease, background .15s ease;
+}
+.pay-option:has(input:checked){ border-color: var(--clay); background: rgba(138,82,54,0.05); }
+.pay-option input{ margin-top: 3px; accent-color: var(--clay); flex-shrink: 0; }
+.pay-option strong{ display:block; font-size: .95rem; }
+.pay-option small{ display:block; font-size: .8rem; color: var(--ink-soft); line-height: 1.4; margin-top: 2px; }
+.form-error{ margin: 0; font-size: .86rem; font-weight: 600; color: #B03A2E; }
+#checkoutSubmit[disabled]{ opacity: .6; cursor: progress; transform: none; }
+@media (max-width: 480px){ .field-row{ flex-direction: column; } }
 .modal-actions{ display:flex; gap: 12px; flex-wrap:wrap; }
 .modal-actions .btn{ flex:1; }
 

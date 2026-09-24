@@ -163,7 +163,7 @@
           </div>
 
           <button class="btn btn-primary btn-wide" id="orderBtn">Замовити Dune — 2 100 ₴</button>
-          <p class="config-note">Оплата не списується на сайті — після заявки ми уточнимо деталі й доставку в месенджері.</p>
+          <p class="config-note">Оплата карткою на сайті через monobank (Apple Pay, Google Pay) або накладеним платежем на Новій пошті.</p>
         </div>
       </div>
     </div>
@@ -331,16 +331,59 @@
   </div>
 </footer>
 
-<!-- ORDER MODAL -->
+<!-- CHECKOUT -->
 <div class="modal-overlay" id="orderModal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <button class="modal-close" id="modalClose" aria-label="Закрити">✕</button>
-    <h3 id="modalTitle">Заявка майже готова</h3>
-    <p class="modal-sub">Скопіюйте зведення замовлення та надішліть нам у Telegram — або просто натисніть кнопку нижче, текст підставиться автоматично.</p>
-    <pre class="order-summary" id="orderSummary"></pre>
-    <div class="modal-actions">
-      <button class="btn btn-primary" id="copySummaryBtn">Скопіювати текст</button>
-      <a class="btn btn-ghost" id="sendTelegramBtn" href="#" target="_blank" rel="noopener">Надіслати в Telegram</a>
+
+    <div id="checkoutView">
+      <h3 id="modalTitle">Оформлення замовлення</h3>
+      <p class="checkout-item" id="checkoutItem"></p>
+      <form id="checkoutForm" novalidate>
+        <div class="field">
+          <label for="coName">Прізвище та імʼя отримувача</label>
+          <input id="coName" name="name" autocomplete="name" required maxlength="80" placeholder="Іваненко Марія">
+        </div>
+        <div class="field">
+          <label for="coPhone">Телефон</label>
+          <input id="coPhone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required maxlength="20" placeholder="+380 __ ___ __ __">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="coCity">Місто</label>
+            <input id="coCity" name="city" autocomplete="address-level2" required maxlength="80" placeholder="Київ">
+          </div>
+          <div class="field">
+            <label for="coBranch">Відділення / поштомат НП</label>
+            <input id="coBranch" name="branch" required maxlength="120" placeholder="№12">
+          </div>
+        </div>
+        <!-- honeypot: hidden from people, bots fill it in -->
+        <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <fieldset class="pay-options">
+          <legend>Спосіб оплати</legend>
+          <label class="pay-option">
+            <input type="radio" name="payment" value="card" checked>
+            <span><strong>Оплатити зараз карткою</strong>
+              <small>Apple Pay, Google Pay або карткою будь-якого банку — через monobank</small></span>
+          </label>
+          <label class="pay-option">
+            <input type="radio" name="payment" value="cod">
+            <span><strong>Накладений платіж</strong>
+              <small>Оплата при отриманні на Новій пошті. Нова пошта бере комісію за переказ коштів.</small></span>
+          </label>
+        </fieldset>
+
+        <p class="form-error" id="checkoutError" role="alert" hidden></p>
+        <button class="btn btn-primary btn-wide" id="checkoutSubmit" type="submit">Оплатити 2 100 ₴</button>
+      </form>
+    </div>
+
+    <div id="resultView" hidden>
+      <h3 id="resultTitle"></h3>
+      <p class="modal-sub" id="resultText"></p>
+      <div class="modal-actions" id="resultActions"></div>
     </div>
   </div>
 </div>

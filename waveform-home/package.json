@@ -1,0 +1,9 @@
+{
+  "name": "waveform-home",
+  "private": true,
+  "type": "module",
+  "description": "Waveform Dune shop: static site + Netlify Functions for monobank payments",
+  "dependencies": {
+    "@netlify/blobs": "^11.1.1"
+  }
+}

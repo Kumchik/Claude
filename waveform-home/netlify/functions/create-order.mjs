@@ -1,0 +1,58 @@
+/* POST /api/create-order
+   Card: creates a monobank invoice and returns its payment page URL.
+   Cash on delivery: sends the order to Telegram straight away. */
+import { PRICE_UAH, PRODUCT_NAME, FILAMENTS, MONO_API, json, validateOrder, newOrderId, orderText, notify, ordersStore } from '../lib/shop.mjs';
+
+export const config = { path: '/api/create-order' };
+
+export default async (req) => {
+  if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
+  let body;
+  try { body = await req.json(); } catch { return json({ error: 'Некоректний запит.' }, 400); }
+  const { order, error } = validateOrder(body);
+  if (error) return json({ error }, 400);
+
+  const id = newOrderId();
+
+  if (order.payment === 'cod'){
+    await notify(orderText(id, order, '🟡 Нове замовлення (накладений платіж)'));
+    return json({ ok: true, orderId: id, payment: 'cod' });
+  }
+
+  if (!process.env.MONO_TOKEN){
+    console.error('MONO_TOKEN is not set');
+    return json({ error: 'Оплата карткою тимчасово недоступна. Оберіть накладений платіж або напишіть нам у Telegram.' }, 503);
+  }
+
+  const site = process.env.URL || new URL(req.url).origin;
+  const kop = PRICE_UAH * 100;
+  const res = await fetch(`${MONO_API}/api/merchant/invoice/create`, {
+    method: 'POST',
+    headers: { 'X-Token': process.env.MONO_TOKEN, 'content-type': 'application/json' },
+    body: JSON.stringify({
+      amount: kop,
+      ccy: 980,
+      merchantPaymInfo: {
+        reference: id,
+        destination: `${PRODUCT_NAME}, замовлення ${id}`,
+        basketOrder: [{
+          name: `${PRODUCT_NAME} (абажур ${FILAMENTS[order.shade]}, база ${FILAMENTS[order.base]})`,
+          qty: 1, sum: kop, total: kop, unit: 'шт.', code: 'dune',
+        }],
+      },
+      redirectUrl: `${site}/?order=${id}#order-result`,
+      webHookUrl: `${site}/api/mono-webhook`,
+      validity: 3600,
+    }),
+  });
+  if (!res.ok){
+    console.error('monobank invoice error', res.status, await res.text());
+    return json({ error: 'Не вдалося створити оплату. Спробуйте ще раз або оберіть накладений платіж.' }, 502);
+  }
+  const { invoiceId, pageUrl } = await res.json();
+
+  const store = await ordersStore();
+  await store.setJSON(id, { ...order, id, invoiceId, status: 'created', createdAt: new Date().toISOString() });
+
+  return json({ ok: true, orderId: id, payment: 'card', pageUrl });
+};
