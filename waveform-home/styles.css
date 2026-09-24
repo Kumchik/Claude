@@ -232,6 +232,15 @@ figure{ margin:0; }
 .preview-row{ display:flex; justify-content:space-between; gap: 12px; font-size:.92rem; padding: 5px 0; color: var(--ink-soft); }
 .preview-row strong{ color: var(--ink); font-weight:700; text-align:right; }
 .preview-divider{ height:1px; background: var(--line); margin: 8px 0; }
+/* the colour's name is set in that colour; a small pill behind it keeps
+   it readable: dark under pale colours (White, Yellow…), light under
+   dark ones (Black, Chocolate…) */
+.preview-row .color-name{
+  padding: 1px 10px; border-radius: 999px;
+  background: var(--bg-alt);
+  transition: color .2s ease, background .2s ease;
+}
+.preview-row .color-name.is-light{ background: var(--ink); }
 .preview-price strong{ color: var(--clay); font-size:1.15rem; font-family:'Fraunces', serif; }
 
 .configurator-controls{
@@ -300,6 +309,7 @@ figure{ margin:0; }
 .catalog-body{ padding: 20px 22px 24px; display:flex; flex-direction:column; align-items:flex-start; gap: 4px; flex:1; }
 .catalog-body h3{ font-size: 1.35rem; margin:0; }
 .catalog-body p{ font-size:.92rem; margin: 0 0 14px; }
+.catalog-price{ font-family:'Fraunces', serif; font-size: 1.15rem; color: var(--clay); margin: -6px 0 14px; }
 .catalog-body .btn{ margin-top:auto; }
 .soon-visual{
   aspect-ratio: 4/5; display:flex; align-items:center; justify-content:center;

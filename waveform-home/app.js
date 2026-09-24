@@ -10,8 +10,8 @@
 
 const PRODUCT_NAME = 'Waveform Dune';
 
-// Ціна в гривнях. null — показуємо «за запитом», доки не задана реальна.
-const PRICE_UAH = null;
+// Ціна в гривнях — однакова для будь-яких кольорів.
+const PRICE_UAH = 2100;
 
 // Кольори філаменту, з якого друкуємо. Одна палітра і для абажура,
 // і для бази з обручем. hex — приблизний відтінок для прев'ю.
@@ -63,7 +63,7 @@ const FAQ = [
   },
   {
     q: 'Як оплатити замовлення?',
-    a: 'Оплата не відбувається на сайті. Після заявки ми уточнимо деталі в месенджері, погодимо вартість і доставку, а тоді надішлемо реквізити.'
+    a: 'Оплата не відбувається на сайті. Після заявки ми уточнимо деталі в месенджері, погодимо доставку, а тоді надішлемо реквізити.'
   },
 ];
 
@@ -80,7 +80,6 @@ function getShade(id){ return SHADE_COLORS.find(c => c.id === id); }
 function getBase(id){ return BASE_COLORS.find(c => c.id === id); }
 
 function formatPrice(){
-  if (PRICE_UAH == null) return 'за запитом';
   return `${PRICE_UAH.toLocaleString('uk-UA')} ₴`;
 }
 
@@ -92,6 +91,14 @@ function isLight(hex){
 }
 
 /* ---------- configurator ---------- */
+// the colour's name in the summary is written in that colour itself;
+// pale ones get a thin dark outline so they stay readable on the card
+function paintColorName(el, color){
+  el.textContent = color.name;
+  el.style.color = color.hex;
+  el.classList.toggle('is-light', isLight(color.hex));
+}
+
 function renderColorRow(container, colors, selectedId, onPick){
   container.innerHTML = '';
   colors.forEach(c => {
@@ -124,13 +131,13 @@ function updatePreview(){
   toggle.setAttribute('aria-pressed', state.lightOn ? 'true' : 'false');
   document.getElementById('lightToggleLabel').textContent = state.lightOn ? 'Вимкнути світло' : 'Увімкнути світло';
 
-  document.getElementById('metaShade').textContent = shade.name;
-  document.getElementById('metaBase').textContent = base.name;
+  paintColorName(document.getElementById('metaShade'), shade);
+  paintColorName(document.getElementById('metaBase'), base);
   document.getElementById('shadeColorName').textContent = `— ${shade.name}`;
   document.getElementById('baseColorName').textContent = `— ${base.name}`;
   document.getElementById('metaPrice').textContent = formatPrice();
   document.getElementById('orderBtn').textContent =
-    PRICE_UAH == null ? 'Замовити Dune' : `Замовити Dune — ${formatPrice()}`;
+    `Замовити Dune — ${formatPrice()}`;
 }
 
 /* ---------- photo recolour ----------
