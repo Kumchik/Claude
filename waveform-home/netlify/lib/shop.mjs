@@ -3,9 +3,11 @@
 
    Налаштування — змінні середовища в Netlify
    (Site configuration → Environment variables):
-     MONO_TOKEN          токен еквайрингу monobank (X-Token)
-     TELEGRAM_BOT_TOKEN  токен бота від @BotFather
-     TELEGRAM_CHAT_ID    ваш chat id, куди бот пише про замовлення
+     MONO_TOKEN             токен еквайрингу monobank (X-Token)
+     TELEGRAM_BOT_TOKEN     токен бота від @BotFather
+     TELEGRAM_CHAT_ID       ваш chat id, куди бот пише про замовлення
+     TELEGRAM_WEBHOOK_SECRET  секрет для /api/telegram-webhook (README)
+     ADMIN_PASSWORD         пароль для /admin.html (README, «Адмінка»)
    ========================================================= */
 
 // limits for one order
