@@ -592,3 +592,27 @@ body.no-scroll{ overflow: hidden; }
 @media (max-width: 640px){
   .back-to-top{ right: 14px; bottom: 14px; width: 42px; height: 42px; }
 }
+
+/* ---------- admin ---------- */
+.admin-form{ display:flex; flex-direction:column; gap: 18px; max-width: 480px; margin-top: 24px; }
+.admin-hint{ font-size:.88rem; color: var(--ink-soft); }
+.admin-subhead{ font-size: 1.15rem; margin: 12px 0 -4px; }
+.admin-colors{ display:flex; flex-direction:column; gap: 10px; }
+.admin-color-row{
+  display:flex; align-items:center; gap: 8px;
+  background: var(--card); border-radius: var(--radius-sm); padding: 8px 10px;
+  box-shadow: var(--shadow-card);
+}
+.admin-color-row .cr-hex-picker{
+  width: 34px; height: 34px; border: none; border-radius: 8px; padding: 0; flex-shrink: 0;
+  background: none; cursor: pointer;
+}
+.admin-color-row .cr-name{ flex: 1; min-width: 0; }
+.admin-color-row .cr-hex{ width: 84px; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.admin-color-row .cr-name, .admin-color-row .cr-hex{
+  border: 1.5px solid var(--line); border-radius: 8px; padding: 7px 9px;
+  font: inherit; font-size: .88rem; background: var(--bg);
+}
+.admin-color-row .cr-name:focus, .admin-color-row .cr-hex:focus{ outline: none; border-color: var(--clay); }
+.admin-color-row .cr-remove{ flex-shrink: 0; padding: .5em .8em; }
+.form-ok{ margin: 0; font-size: .86rem; font-weight: 600; color: #2E7D66; }

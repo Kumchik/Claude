@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Адмінка — Waveform</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+<body class="legal-body">
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">
+      <img class="logo-mark" src="favicon.svg" alt="" width="32" height="32">
+      <span>Waveform<span class="logo-dot">.</span></span>
+    </a>
+    <a href="index.html" class="btn btn-ghost btn-small">← До магазину</a>
+  </div>
+</header>
+
+<main class="legal">
+  <div class="container container-narrow">
+
+    <section id="loginView">
+      <h1>Адмінка</h1>
+      <p>Введіть пароль (Netlify → Environment variables → <code>ADMIN_PASSWORD</code>), щоб керувати ціною й кольорами.</p>
+      <form id="loginForm" class="admin-form">
+        <div class="field">
+          <label for="adminPw">Пароль</label>
+          <input type="password" id="adminPw" name="adminPw" autocomplete="current-password" required>
+        </div>
+        <p class="form-error" id="loginError" role="alert" hidden></p>
+        <button class="btn btn-primary btn-wide" type="submit">Увійти</button>
+      </form>
+    </section>
+
+    <section id="editView" hidden>
+      <h1>Товар і кольори</h1>
+      <p class="admin-hint">Зміни тут одразу видно на сайті — без публікації через Claude чи Netlify.</p>
+
+      <form id="catalogForm" class="admin-form">
+        <div class="field">
+          <label for="fProductName">Назва товару</label>
+          <input type="text" id="fProductName" name="productName" maxlength="60" required>
+        </div>
+        <div class="field">
+          <label for="fPrice">Ціна, ₴</label>
+          <input type="number" id="fPrice" name="price" min="1" max="1000000" step="1" required>
+        </div>
+
+        <h2 class="admin-subhead">Кольори філаменту</h2>
+        <p class="admin-hint">Одна палітра і для абажура, і для бази з обручем. Порядок тут — порядок на сайті.</p>
+        <div id="colorRows" class="admin-colors"></div>
+        <button type="button" class="btn btn-ghost btn-small" id="addColorBtn">+ Додати колір</button>
+
+        <p class="form-error" id="catalogError" role="alert" hidden></p>
+        <p class="form-ok" id="catalogOk" role="status" hidden>Збережено.</p>
+        <button class="btn btn-primary btn-wide" type="submit" id="catalogSave">Зберегти</button>
+      </form>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site-footer site-footer-slim">
+  <div class="container footer-bottom">
+    <span>© <span id="year"></span> Waveform</span>
+  </div>
+</footer>
+
+<template id="colorRowTpl">
+  <div class="admin-color-row">
+    <input type="color" class="cr-hex-picker" aria-label="Колір">
+    <input type="text" class="cr-name" placeholder="Назва (напр. Sky Blue)" maxlength="40">
+    <input type="text" class="cr-hex" placeholder="#8EC5EF" maxlength="7">
+    <button type="button" class="btn btn-ghost btn-small cr-remove" aria-label="Видалити колір">✕</button>
+  </div>
+</template>
+
+<script src="admin.js"></script>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

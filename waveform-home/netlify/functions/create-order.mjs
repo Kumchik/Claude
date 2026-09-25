@@ -1,7 +1,7 @@
 /* POST /api/create-order
    Card: creates a monobank invoice and returns its payment page URL.
    Cash on delivery: sends the order to Telegram straight away. */
-import { testPriceUAH, isTestPrice, PRODUCTS, itemTitle, MONO_API, json, validateOrder, newOrderId, orderText, notify, ordersStore, pendingKey } from '../lib/shop.mjs';
+import { testPriceUAH, isTestPrice, getCatalog, itemTitle, MONO_API, json, validateOrder, newOrderId, orderText, notify, ordersStore, pendingKey } from '../lib/shop.mjs';
 
 export const config = { path: '/api/create-order' };
 
@@ -9,7 +9,8 @@ export default async (req) => {
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
   let body;
   try { body = await req.json(); } catch { return json({ error: 'Некоректний запит.' }, 400); }
-  const { order, error } = validateOrder(body);
+  const catalog = await getCatalog();
+  const { order, error } = validateOrder(body, catalog);
   if (error) return json({ error }, 400);
 
   const id = newOrderId();
@@ -28,7 +29,7 @@ export default async (req) => {
   // one basket line per cart line, so the Checkbox receipt lists every lamp
   const test = testPriceUAH();
   let basketOrder = order.items.map((it, i) => {
-    const unit = PRODUCTS[it.product].price * 100;
+    const unit = it.unitPrice * 100;
     return { name: itemTitle(it), qty: it.qty, sum: unit, total: unit * it.qty, unit: 'шт.', code: `${it.product}-${i + 1}` };
   });
   let kop = order.total * 100;

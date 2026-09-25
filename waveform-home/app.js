@@ -8,14 +8,13 @@
    обручем у формі W, на який абажур спирається.
    ========================================================= */
 
-const PRODUCT_NAME = 'Waveform Dune';
-
-// Ціна в гривнях — однакова для будь-яких кольорів.
-const PRICE_UAH = 2100;
-
-// Кольори філаменту, з якого друкуємо. Одна палітра і для абажура,
-// і для бази з обручем. hex — приблизний відтінок для прев'ю.
-const FILAMENTS = [
+// Назва, ціна й палітра кольорів — за замовчуванням, поки не завантажиться
+// /api/catalog (loadCatalog() нижче). Ці ж значення на сервері: див.
+// DEFAULT_CATALOG в netlify/lib/shop.mjs. Змінюються через /admin.html —
+// див. README.md, розділ «Адмінка» — без правки коду.
+let PRODUCT_NAME = 'Waveform Dune';
+let PRICE_UAH = 2100;
+let FILAMENTS = [
   { id: 'white',        name: 'White',        hex: '#F4F4F2' },
   { id: 'bone-white',   name: 'Bone White',   hex: '#EDE6CC' },
   { id: 'beige',        name: 'Beige',        hex: '#E6CFC1' },
@@ -32,8 +31,30 @@ const FILAMENTS = [
   { id: 'mint-green',   name: 'Mint Green',   hex: '#9EEBCF' },
   { id: 'sky-blue',     name: 'Sky Blue',     hex: '#8EC5EF' },
 ];
-const SHADE_COLORS = FILAMENTS;
-const BASE_COLORS = FILAMENTS;
+let SHADE_COLORS = FILAMENTS;
+let BASE_COLORS = FILAMENTS;
+
+/* Заміняє значення вище на актуальні з сервера. Якщо функції недоступні
+   (звичайний статичний хостинг, прев'ю) — мовчки лишає значення за
+   замовчуванням вище, сайт далі працює. */
+async function loadCatalog(){
+  try {
+    const res = await fetch('/api/catalog');
+    if (!res.ok) return;
+    const cat = await res.json();
+    if (!cat || !Array.isArray(cat.filaments) || !cat.filaments.length) return;
+    PRODUCT_NAME = cat.productName || PRODUCT_NAME;
+    PRICE_UAH = Number(cat.price) || PRICE_UAH;
+    FILAMENTS = cat.filaments;
+    SHADE_COLORS = FILAMENTS;
+    BASE_COLORS = FILAMENTS;
+    // an admin may have removed the colour the page defaulted to
+    if (!getShade(state.shade)) state.shade = FILAMENTS[0].id;
+    if (!getBase(state.base)) state.base = FILAMENTS[0].id;
+  } catch (e){
+    console.warn('loadCatalog failed, using defaults', e);
+  }
+}
 
 // Кольори за замовчуванням — як на фото лампи.
 const PHOTO_SHADE = 'bone-white';
@@ -139,6 +160,7 @@ function updatePreview(){
   document.getElementById('shadeColorName').textContent = `— ${shade.name}`;
   document.getElementById('baseColorName').textContent = `— ${base.name}`;
   document.getElementById('metaPrice').textContent = formatPrice();
+  document.getElementById('catalogPrice').textContent = formatPrice();
   document.getElementById('addToCartBtn').textContent =
     `Додати в кошик — ${formatPrice()}`;
 }
@@ -572,7 +594,8 @@ function initNav(){
 }
 
 /* ---------- init ---------- */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadCatalog();
   renderOptions();
   updatePreview();
   renderFaq();
