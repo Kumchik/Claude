@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Waveform — унікальні речі для дому</title>
-<meta name="description" content="Waveform — лампи та органайзери власного виробництва: рельєфні форми, еко матеріали, тепле світло. Оберіть колір під свій інтерʼєр — доставка по всій Україні.">
-<meta property="og:type" content="website">
+<title>Waveform Dune — лампа з фактурою піщаної дюни</title>
+<meta name="description" content="Waveform Dune — настільна лампа у формі піщаної дюни: рельєфна поверхня, мʼякі хвилі й тепле світло. Власне виробництво та дизайн, еко матеріали. Оберіть колір абажура й бази — доставка по всій Україні.">
+<meta property="og:type" content="product">
 <meta property="og:site_name" content="Waveform">
 <meta property="og:locale" content="uk_UA">
-<meta property="og:title" content="Waveform — унікальні речі для дому">
-<meta property="og:description" content="Лампи та органайзери власного виробництва. Рельєфні форми, еко матеріали, доставка по всій Україні.">
-<meta property="og:url" content="https://waveform.com.ua/">
+<meta property="og:title" content="Waveform Dune — лампа з рельєфом піщаної дюни">
+<meta property="og:description" content="Тепле світло, мʼякі хвилі та фактура, яку хочеться розглядати. 15 кольорів абажура й бази, 2 100 ₴, доставка по всій Україні.">
+<meta property="og:url" content="https://waveform.com.ua/lamps.html">
 <meta property="og:image" content="https://waveform.com.ua/img/og-dune.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -23,7 +23,7 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <script src="seller.js"></script>
 </head>
-<body data-page="home">
+<body data-page="lamps">
 
 <header class="site-header">
   <div class="container header-inner">
@@ -32,11 +32,11 @@
       <span>Waveform<span class="logo-dot">.</span></span>
     </a>
     <nav class="main-nav" id="mainNav">
-      <a href="lamps.html">Лампи</a>
+      <a href="lamps.html" aria-current="page">Лампи</a>
       <a href="organizers.html">Органайзери</a>
       <a href="#contacts">Контакти</a>
     </nav>
-    <a href="#collections" class="btn btn-primary btn-small header-cta">Каталог</a>
+    <a href="#configurator" class="btn btn-primary btn-small header-cta">Конструктор</a>
     <button class="cart-btn" id="cartBtn" type="button" aria-label="Кошик" aria-controls="cartDrawer" aria-expanded="false">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 11.1a2 2 0 0 1-2 1.9H8.2a2 2 0 0 1-2-1.9L5 8Z"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/></svg>
       <span class="cart-count" id="cartCount" hidden>0</span>
@@ -53,12 +53,12 @@
   <section class="hero">
     <div class="container hero-inner">
       <div class="hero-text">
-        <p class="eyebrow">Waveform</p>
-        <h1>Речі для дому, які хочеться <em>розглядати</em></h1>
-        <p class="hero-sub">Лампи та органайзери власного виробництва: рельєфні форми, еко матеріали, увага до деталей. Кожен виріб можна підібрати під свій колір і настрій.</p>
+        <p class="eyebrow">Waveform Dune</p>
+        <h1>А що, якби до світла можна було <em>доторкнутися?</em></h1>
+        <p class="hero-sub">Ми перетворили цю думку на форму. Тепле світло, мʼякі хвилі та фактура, яку хочеться розглядати.</p>
         <div class="hero-actions">
-          <a href="lamps.html" class="btn btn-primary">Лампи Waveform</a>
-          <a href="organizers.html" class="btn btn-ghost">Органайзери</a>
+          <a href="#configurator" class="btn btn-primary">Обрати свої кольори</a>
+          <a href="#dune" class="btn btn-ghost">Детальніше про лампу</a>
         </div>
         <ul class="hero-points">
           <li>Унікальні форми для вашого простору</li>
@@ -89,81 +89,162 @@
     </div>
   </section>
 
-  <!-- COLLECTIONS -->
-  <section class="section section-alt" id="collections">
-    <div class="container">
-      <div class="section-head">
-        <p class="eyebrow">колекції</p>
-        <h2>Оберіть напрямок</h2>
+  <!-- ABOUT DUNE -->
+  <section class="section" id="dune">
+    <div class="container about-inner">
+      <div class="about-photos">
+        <figure class="about-photo">
+          <img src="img/dune-off.jpg" width="270" height="360" loading="lazy" alt="Dune вимкнена: білий рельєфний абажур">
+          <figcaption>Вдень — скульптура</figcaption>
+        </figure>
+        <figure class="about-photo about-photo-on">
+          <img src="img/dune-on.jpg" width="270" height="360" loading="lazy" alt="Dune увімкнена: абажур світиться теплим світлом">
+          <figcaption>Увечері — тепле світло</figcaption>
+        </figure>
       </div>
-      <div class="catalog-grid">
-        <article class="catalog-card">
-          <img src="img/dune-hero-700.jpg" width="700" height="933" loading="lazy" alt="Лампа Waveform Dune">
-          <div class="catalog-body">
-            <h3>Лампи</h3>
-            <p>Настільна лампа Dune з рельєфом піщаної дюни — оберіть кольори абажура й бази в живому 3D-конструкторі.</p>
-            <a href="lamps.html" class="btn btn-primary btn-small">Перейти до ламп</a>
-          </div>
-        </article>
-        <article class="catalog-card catalog-card-soon">
-          <div class="soon-visual" aria-hidden="true">
-            <svg viewBox="0 0 64 64"><path d="M8,36 C14,36 16,24 22,24 C28,24 30,40 36,40 C42,40 44,28 50,28 C53,28 55,31 56,32"/></svg>
-          </div>
-          <div class="catalog-body">
-            <h3>Органайзери</h3>
-            <p>Функціональні аксесуари для дому — для чаю, бʼюті-засобів, підставки та інше.</p>
-            <a href="organizers.html" class="btn btn-primary btn-small">Перейти до органайзерів</a>
-          </div>
-        </article>
+      <div class="about-text">
+        <p class="eyebrow">про лампу</p>
+        <h2>Dune — більше, ніж джерело світла</h2>
+        <p class="about-lead">Dune — лампа, що працює не лише як джерело світла, а як окремий акцент в інтерʼєрі.</p>
+        <p>Рельєфна поверхня та плавні хвилі створюють виразну гру світла й тіні, наповнюючи інтерʼєр теплом, глибиною та характером.</p>
+        <p>Форму ми підгледіли в піщаних дюнах: вітер лишає на них мʼякі хвилі — такі самі хвилі біжать по абажуру Dune. Абажур спирається на хвилястий обруч у формі W, який тримає його над базою, ніби той ледь торкається землі.</p>
+        <div class="about-parts">
+          <div><strong>Абажур</strong><span>рельєф піщаної дюни</span></div>
+          <div><strong>Обруч W</strong><span>хвиля, що тримає абажур</span></div>
+          <div><strong>База</strong><span>стійка основа лампи</span></div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- BENEFITS -->
-  <section class="section" id="benefits">
+  <!-- CATALOG + CONFIGURATOR -->
+  <!-- Dune завжди перша картка, плюс товари з тієї ж категорії, якщо в
+       адмінці для неї обрали категорію (renderLampsGrid() в app.js).
+       Клік по картці Dune прокручує до конструктора нижче. Інші товари
+       поки без живого 3D — відкриваються в модалці. -->
+  <section class="section section-alt" id="configurator">
     <div class="container">
       <div class="section-head">
-        <p class="eyebrow">чому waveform</p>
-        <h2>Кожен виріб — з увагою до деталей</h2>
+        <p class="eyebrow">каталог</p>
+        <h2>Лампи Waveform</h2>
+        <p class="section-lead">Починаємо з Dune. Нові моделі вже в роботі.</p>
       </div>
-      <div class="benefits-grid">
-        <div class="benefit-card">
-          <div class="benefit-icon" aria-hidden="true">
-            <svg viewBox="0 0 32 32"><path d="M3,20 C8,20 9,12 14,12 C19,12 20,20 25,20 C27,20 28,18 29,17"/></svg>
-          </div>
-          <h3>Унікальні форми</h3>
-          <p>Предмети, яких немає в масмаркеті, — для вашого простору.</p>
+      <div class="catalog-grid" id="catalogGrid"></div>
+
+      <div class="dune-builder" id="duneBuilder">
+        <div class="section-head">
+          <p class="eyebrow">ваша Dune</p>
+          <h2>Оберіть кольори під свій інтерʼєр</h2>
+          <p class="section-lead">Абажур і база з обручем фарбуються окремо — поєднуйте як хочете. Лампу можна покрутити, а кнопкою під нею — «увімкнути» світло.</p>
         </div>
-        <div class="benefit-card">
-          <div class="benefit-icon" aria-hidden="true">
-            <svg viewBox="0 0 32 32"><path d="M8,24 C8,12 16,6 26,6 C26,16 20,24 8,24 Z M8,24 L18,14"/></svg>
+
+        <div class="configurator">
+        <div class="configurator-preview">
+          <div class="preview-sticky">
+            <div class="lamp-stage" id="lampStage">
+              <!-- 3D model of Dune built from the real print files (models/dune.glb),
+                   drawn by lamp3d.js; the photo shows until it loads, or if WebGL is unavailable -->
+              <img class="lamp-photo" id="lampPhoto" src="img/dune-config.jpg" width="700" height="987" alt="Лампа Dune">
+              <canvas class="lamp-canvas" id="lampCanvas" aria-label="3D-модель лампи Dune в обраних кольорах. Потягніть, щоб повернути."></canvas>
+              <span class="lamp-hint" id="lampHint">Потягніть, щоб повернути</span>
+            </div>
+            <div class="preview-side">
+              <button class="light-toggle" id="lightToggle" aria-pressed="false">
+                <span class="light-toggle-knob"></span>
+                <span class="light-toggle-label" id="lightToggleLabel">Увімкнути світло</span>
+              </button>
+              <div class="preview-meta">
+                <div class="preview-row">
+                  <span>Модель</span>
+                  <strong>Waveform Dune</strong>
+                </div>
+                <div class="preview-row">
+                  <span>Абажур</span>
+                  <strong class="color-name" id="metaShade">Bone White</strong>
+                </div>
+                <div class="preview-row">
+                  <span>База й обруч</span>
+                  <strong class="color-name" id="metaBase">Chocolate</strong>
+                </div>
+                <div class="preview-divider"></div>
+                <div class="preview-row preview-price">
+                  <span>Вартість</span>
+                  <strong id="metaPrice">2 100 ₴</strong>
+                </div>
+              </div>
+            </div>
           </div>
-          <h3>Еко матеріали</h3>
-          <p>Обираємо матеріали, які безпечні для дому і для природи.</p>
         </div>
-        <div class="benefit-card">
-          <div class="benefit-icon" aria-hidden="true">
-            <svg viewBox="0 0 32 32"><path d="M6,26 L6,12 L16,6 L26,12 L26,26 Z M12,26 L12,18 L20,18 L20,26"/></svg>
+
+        <div class="configurator-controls">
+          <div class="config-step">
+            <div class="step-label"><span class="step-num">1</span>Колір абажура <em id="shadeColorName"></em></div>
+            <div class="options-row" id="optShade"></div>
+            <p class="step-hint">Світлі відтінки пропускають більше тепла й найкраще показують рельєф хвиль.</p>
           </div>
-          <h3>Власне виробництво та дизайн</h3>
-          <p>Від ескізу до готового виробу — усе робимо самі й контролюємо кожну деталь.</p>
-        </div>
-        <div class="benefit-card">
-          <div class="benefit-icon" aria-hidden="true">
-            <svg viewBox="0 0 32 32"><path d="M3,10 L19,10 L19,22 L3,22 Z M19,14 L25,14 L29,18 L29,22 L19,22 M9,25 A2.5,2.5 0 1 0 9,20 M23,25 A2.5,2.5 0 1 0 23,20"/></svg>
+
+          <div class="config-step">
+            <div class="step-label"><span class="step-num">2</span>Колір бази та обруча W <em id="baseColorName"></em></div>
+            <div class="options-row" id="optBase"></div>
+            <p class="step-hint">База й хвилястий обруч, на який спирається абажур, — одного кольору.</p>
           </div>
-          <h3>Доставка по всій Україні</h3>
-          <p>Надійно пакуємо й відправляємо в будь-яке місто.</p>
+
+          <button class="btn btn-primary btn-wide" id="addToCartBtn" type="button">Додати в кошик — 2 100 ₴</button>
+          <p class="config-note">Оплата карткою на сайті через monobank (Apple Pay, Google Pay) або накладеним платежем на Новій пошті.</p>
         </div>
       </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">як замовити</p>
+        <h2>Від вибору кольору до світла у вашому домі</h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <span class="step-index">01</span>
+          <h3>Обираєте кольори</h3>
+          <p>Колір абажура й колір бази з обручем — у блоці вище.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-index">02</span>
+          <h3>Надсилаєте заявку</h3>
+          <p>Заявка з вашими кольорами приходить нам у Telegram — уточнюємо деталі й адресу.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-index">03</span>
+          <h3>Виготовляємо</h3>
+          <p>Робимо вашу Dune на власному виробництві у вибраних кольорах.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-index">04</span>
+          <h3>Доставляємо</h3>
+          <p>Надійно пакуємо й відправляємо по всій Україні.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section section-alt" id="faq">
+    <div class="container container-narrow">
+      <div class="section-head">
+        <p class="eyebrow">питання та відповіді</p>
+        <h2>Якщо сумніваєтесь — почитайте тут</h2>
+      </div>
+      <div class="faq-list" id="faqList"></div>
     </div>
   </section>
 
   <!-- CONTACTS / CTA -->
   <section class="section cta-section" id="contacts">
     <div class="container cta-inner">
-      <h2>Маєте питання?</h2>
-      <p>Напишіть нам — підкажемо, що обрати, і розповімо про терміни виготовлення.</p>
+      <h2>Хочете Dune у своєму кольорі?</h2>
+      <p>Напишіть нам — підкажемо поєднання кольорів під ваш інтерʼєр і розповімо про терміни.</p>
       <div class="cta-actions">
         <a href="https://t.me/waveform_orders_bot" class="btn btn-primary" target="_blank" rel="noopener">Написати в Telegram</a>
         <a href="tel:+380978572847" class="btn btn-ghost-invert">+380 97 857 2847</a>
@@ -185,9 +266,9 @@
     </div>
     <div class="footer-col">
       <h4>Навігація</h4>
-      <a href="lamps.html">Лампи</a>
+      <a href="#dune">Про Dune</a>
       <a href="organizers.html">Органайзери</a>
-      <a href="#contacts">Контакти</a>
+      <a href="#faq">Питання</a>
     </div>
     <div class="footer-col">
       <h4>Контакти</h4>
@@ -219,12 +300,12 @@
   <ul class="cart-list" id="cartList"></ul>
   <div class="cart-empty" id="cartEmpty">
     <p>Кошик порожній.</p>
-    <button class="btn btn-ghost btn-small" id="cartEmptyBack" type="button">До каталогу</button>
+    <button class="btn btn-ghost btn-small" id="cartEmptyBack" type="button">Обрати кольори</button>
   </div>
   <div class="cart-foot" id="cartFoot">
     <div class="cart-total"><span>Разом</span><strong id="cartTotal">0 ₴</strong></div>
     <button class="btn btn-primary btn-wide" id="cartCheckout" type="button">Оформити замовлення</button>
-    <button class="btn btn-ghost btn-wide" id="cartContinue" type="button">Продовжити покупки</button>
+    <button class="btn btn-ghost btn-wide" id="cartContinue" type="button">Додати ще лампу</button>
   </div>
 </aside>
 
@@ -289,7 +370,7 @@
         </label>
 
         <p class="form-error" id="checkoutError" role="alert" hidden></p>
-        <button class="btn btn-primary btn-wide" id="checkoutSubmit" type="submit">Оплатити</button>
+        <button class="btn btn-primary btn-wide" id="checkoutSubmit" type="submit">Оплатити 2 100 ₴</button>
       </form>
     </div>
 
@@ -327,5 +408,12 @@
 </button>
 
 <script src="app.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+} }
+</script>
+<script type="module" src="lamp3d.js"></script>
 </body>
 </html>

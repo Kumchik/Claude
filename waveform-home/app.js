@@ -100,7 +100,23 @@ function cartLineInfo(it){
 const PHOTO_SHADE = 'bone-white';
 const PHOTO_BASE = 'chocolate';
 
-const FAQ = [
+// Універсальні питання (доставка/оплата) — однакові для обох ліній
+// товару; сторінка з ними об'єднує їх зі своїм набором нижче.
+const FAQ_COMMON = [
+  {
+    q: 'Як доставляєте?',
+    a: 'Доставляємо по всій Україні. Кожен виріб надійно пакуємо, щоб він доїхав цілим.'
+  },
+  {
+    q: 'Скільки часу займає виготовлення?',
+    a: 'Точні терміни залежать від обраних кольорів і черги замовлень — ми назвемо їх одразу після заявки.'
+  },
+  {
+    q: 'Як оплатити замовлення?',
+    a: 'Два способи на вибір при оформленні. Карткою одразу на сайті — через захищену сторінку monobank: Apple Pay, Google Pay або картка будь-якого банку. Або накладеним платежем — оплата при отриманні на Новій пошті (Нова пошта бере свою комісію за переказ коштів).'
+  },
+];
+const FAQ_LAMPS = [
   {
     q: 'Які кольори можна обрати?',
     a: 'Абажур і база з обручем W фарбуються окремо, тож їх можна поєднувати як завгодно. У конструкторі — основні варіанти; якщо хочете інший відтінок, напишіть нам у Telegram або надішліть фото інтерʼєру — підберемо.'
@@ -113,19 +129,18 @@ const FAQ = [
     q: 'Яке світло дає Dune?',
     a: 'Тепле й мʼяке. Абажур розсіює світло, а рельєф хвиль створює на поверхні гру світла й тіні — лампа добре виглядає і вдень як декор, і ввечері як джерело затишного світла.'
   },
-  {
-    q: 'Як доставляєте?',
-    a: 'Доставляємо по всій Україні. Кожну лампу надійно пакуємо, щоб рельєф абажура доїхав цілим.'
-  },
-  {
-    q: 'Скільки часу займає виготовлення?',
-    a: 'Точні терміни залежать від обраних кольорів і черги замовлень — ми назвемо їх одразу після заявки.'
-  },
-  {
-    q: 'Як оплатити замовлення?',
-    a: 'Два способи на вибір при оформленні. Карткою одразу на сайті — через захищену сторінку monobank: Apple Pay, Google Pay або картка будь-якого банку. Або накладеним платежем — оплата при отриманні на Новій пошті (Нова пошта бере свою комісію за переказ коштів).'
-  },
+  ...FAQ_COMMON,
 ];
+const FAQ_ORGANIZERS = [
+  {
+    q: 'З чого зроблені органайзери?',
+    a: 'Ми використовуємо еко матеріали й виготовляємо кожен органайзер на власному виробництві.'
+  },
+  ...FAQ_COMMON,
+];
+// <body data-page="lamps|organizers"> в кожному HTML-файлі каже, який
+// набір показати; за замовчуванням — лампи.
+const FAQ = document.body.dataset.page === 'organizers' ? FAQ_ORGANIZERS : FAQ_LAMPS;
 
 // Username бота (без @), не особистого акаунта — клієнти пишуть сюди,
 // а бот пересилає повідомлення в групу продавця (netlify/functions/telegram-webhook.mjs).
@@ -200,8 +215,7 @@ function updatePreview(){
   document.getElementById('shadeColorName').textContent = `— ${shade.name}`;
   document.getElementById('baseColorName').textContent = `— ${base.name}`;
   document.getElementById('metaPrice').textContent = formatPrice();
-  // Dune's catalog card (if shown) is rebuilt by renderCatalog() on every
-  // tab switch, so it may not be in the DOM at any given moment
+  // catalogPrice lives on lamps.html only (Dune's catalog card)
   const catalogPriceEl = document.getElementById('catalogPrice');
   if (catalogPriceEl) catalogPriceEl.textContent = formatPrice();
   document.getElementById('addToCartBtn').textContent =
@@ -211,6 +225,7 @@ function updatePreview(){
 /* ---------- faq ---------- */
 function renderFaq(){
   const list = document.getElementById('faqList');
+  if (!list) return; // немає на index.html
   FAQ.forEach((item, i) => {
     const el = document.createElement('div');
     el.className = 'faq-item';
@@ -230,16 +245,13 @@ function renderFaq(){
   });
 }
 
-/* ---------- каталог: вкладки категорій + картки товарів ----------
-   Поки в адмінці немає жодної категорії, розділ виглядає так, як завжди
-   виглядав: картка Dune і заглушка "Нові форми". Щойно категорія
-   з'являється, замість цього — вкладки категорій; Dune потрапляє в ту з
-   них, яку для неї обрали в адмінці (fCategory / duneCategoryId), клік
-   по її картці веде до звичайного конструктора нижче на сторінці.
-   Кожен звичайний товар — картка з фото, ціною й кнопкою "Детальніше",
-   що відкриває модалку (галерея, опис, колір, кількість, у кошик). */
-let activeCategoryId = null;
-
+/* ---------- каталог: картки товарів на lamps.html / organizers.html ----------
+   Два окремих розділи сайту (сторінки), не вкладки: lamps.html завжди
+   показує Dune і, якщо є, інші товари з тієї ж категорії, що обрана для
+   Dune в адмінці (fCategory / duneCategoryId); organizers.html — усі
+   товари з будь-якої іншої категорії. Кожен звичайний товар — картка з
+   фото, ціною й кнопкою "Детальніше", що відкриває модалку (галерея,
+   опис, колір, кількість, у кошик). */
 function buildCard({ name, description, price, photoSrc }, buttonLabel, onClick){
   const card = document.createElement('article');
   card.className = 'catalog-card';
@@ -293,42 +305,23 @@ function buildSoonCard(){
   return card;
 }
 
-function renderCatalog(){
-  const tabsBox = $('catTabs');
+// lamps.html: Dune завжди перша картка, плюс товари з тієї ж категорії
+function renderLampsGrid(){
   const grid = $('catalogGrid');
-  const lead = $('catalogLead');
-  tabsBox.innerHTML = '';
+  if (!grid) return;
   grid.innerHTML = '';
+  grid.appendChild(buildDuneCard());
+  catalogProducts.filter(p => duneCategoryId && p.categoryId === duneCategoryId).forEach(p => grid.appendChild(buildProductCard(p)));
+}
 
-  if (!catalogCategories.length){
-    tabsBox.hidden = true;
-    lead.textContent = "Починаємо з Dune. Нові форми вже в роботі — стежте за нами в Instagram.";
-    grid.append(buildDuneCard(), buildSoonCard());
-    return;
-  }
-
-  tabsBox.hidden = false;
-  lead.textContent = 'Оберіть категорію.';
-  if (!activeCategoryId || !catalogCategories.some(c => c.id === activeCategoryId)){
-    activeCategoryId = catalogCategories[0].id;
-  }
-  catalogCategories.forEach(cat => {
-    const tab = document.createElement('button');
-    tab.type = 'button';
-    tab.className = 'cat-tab' + (cat.id === activeCategoryId ? ' active' : '');
-    tab.textContent = cat.name;
-    tab.addEventListener('click', () => { activeCategoryId = cat.id; renderCatalog(); });
-    tabsBox.appendChild(tab);
-  });
-
-  if (activeCategoryId === duneCategoryId) grid.appendChild(buildDuneCard());
-  catalogProducts.filter(p => p.categoryId === activeCategoryId).forEach(p => grid.appendChild(buildProductCard(p)));
-  if (!grid.children.length){
-    const empty = document.createElement('p');
-    empty.style.cssText = 'grid-column:1/-1; text-align:center';
-    empty.textContent = 'У цій категорії поки немає товарів.';
-    grid.appendChild(empty);
-  }
+// organizers.html: усе, що не в категорії Dune; заглушка, якщо ще нічого не додано
+function renderOrganizersGrid(){
+  const grid = $('organizersGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  const items = catalogProducts.filter(p => !duneCategoryId || p.categoryId !== duneCategoryId);
+  if (!items.length){ grid.appendChild(buildSoonCard()); return; }
+  items.forEach(p => grid.appendChild(buildProductCard(p)));
 }
 
 let pmState = { productId: null, color: null, qty: 1 };
@@ -793,11 +786,12 @@ function initNovaPoshta(){
     it => { branch.value = it.label; });
 }
 
-/* back from monobank: ?order=DN-…#order-result */
+/* back from monobank: ?order=DN-…#order-result (always the homepage —
+   see redirectUrl in create-order.mjs) */
 async function checkReturnedOrder(){
   const id = new URLSearchParams(location.search).get('order');
   if (!id) return;
-  history.replaceState(null, '', location.pathname + '#configurator');
+  history.replaceState(null, '', location.pathname + '#top');
   showResult('Перевіряємо оплату…', `Замовлення ${id}`);
 
   for (let attempt = 0; attempt < 6; attempt++){
@@ -844,29 +838,36 @@ function initNav(){
 document.addEventListener('DOMContentLoaded', async () => {
   await loadCatalog();
   cart = loadCart();
-  renderOptions();
-  renderCatalog();
-  updatePreview();
+
+  // конструктор Dune є тільки на lamps.html
+  if ($('optShade')){
+    renderOptions();
+    updatePreview();
+  }
+  renderLampsGrid();
+  renderOrganizersGrid();
   renderFaq();
   initNav();
 
-  document.getElementById('lightToggle').addEventListener('click', () => {
-    state.lightOn = !state.lightOn;
-    updatePreview();
-  });
+  if ($('lightToggle')){
+    $('lightToggle').addEventListener('click', () => {
+      state.lightOn = !state.lightOn;
+      updatePreview();
+    });
+  }
   renderCart();
-  $('addToCartBtn').addEventListener('click', addToCart);
+  if ($('addToCartBtn')) $('addToCartBtn').addEventListener('click', addToCart);
   $('cartBtn').addEventListener('click', () => cartOpen() ? closeCart() : openCart());
   $('cartClose').addEventListener('click', () => closeCart());
   $('cartOverlay').addEventListener('click', () => closeCart());
   $('cartCheckout').addEventListener('click', showCheckout);
   $('cartContinue').addEventListener('click', () => {
     closeCart(false);
-    document.getElementById('configurator').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('top').scrollIntoView({ behavior: 'smooth' });
   });
   $('cartEmptyBack').addEventListener('click', () => {
     closeCart(false);
-    document.getElementById('configurator').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('top').scrollIntoView({ behavior: 'smooth' });
   });
   // another tab changed the cart
   window.addEventListener('storage', e => { if (e.key === CART_KEY){ cart = loadCart(); renderCart(); } });
