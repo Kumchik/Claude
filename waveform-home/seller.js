@@ -19,7 +19,7 @@ window.SELLER = {
   email: 'kumchikproduction@gmail.com',
   telegram: '@kumchik',
   // скільки робочих днів займає виготовлення лампи після підтвердження
-  productionDays: '[N]',
+  productionDays: '2–5',
   // дата, з якої діють умови (оновлюйте при зміні тексту)
   effectiveDate: '25.09.2026',
 };
