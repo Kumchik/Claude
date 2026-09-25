@@ -182,6 +182,16 @@ export async function ordersStore(){
   return getStore({ name: 'orders', consistency: 'strong' });
 }
 
+/* Maps a forwarded message in the staff group back to the customer it came
+   from, so a Reply in the group can be copied back to them (see
+   telegram-webhook.mjs). Separate store from orders — different lifetime,
+   different keys. */
+export async function relayStore(){
+  if (globalThis.__relayStore) return globalThis.__relayStore; // local tests
+  const { getStore } = await import('@netlify/blobs');
+  return getStore({ name: 'telegram-relay', consistency: 'strong' });
+}
+
 /* Card orders waiting for payment also get a "pending/<id>" marker, so
    the scheduled check (check-pending) only has to look at those. */
 export const pendingKey = id => `pending/${id}`;

@@ -66,7 +66,9 @@ const FAQ = [
   },
 ];
 
-const TELEGRAM_USERNAME = 'kumchik';
+// Username бота (без @), не особистого акаунта — клієнти пишуть сюди,
+// а бот пересилає повідомлення в групу продавця (netlify/functions/telegram-webhook.mjs).
+const TELEGRAM_USERNAME = 'waveform_orders_bot';
 
 /* ---------- state ---------- */
 const state = {
