@@ -32,13 +32,11 @@
       <span>Waveform<span class="logo-dot">.</span></span>
     </a>
     <nav class="main-nav" id="mainNav">
-      <a href="#dune">Dune</a>
-      <a href="#configurator">Кольори</a>
-      <a href="#catalog">Колекція</a>
+      <a href="#configurator">Каталог</a>
       <a href="#faq">Питання</a>
       <a href="#contacts">Контакти</a>
     </nav>
-    <a href="#configurator" class="btn btn-primary btn-small header-cta">Обрати колір</a>
+    <a href="#configurator" class="btn btn-primary btn-small header-cta">Конструктор</a>
     <button class="cart-btn" id="cartBtn" type="button" aria-label="Кошик" aria-controls="cartDrawer" aria-expanded="false">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 11.1a2 2 0 0 1-2 1.9H8.2a2 2 0 0 1-2-1.9L5 8Z"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/></svg>
       <span class="cart-count" id="cartCount" hidden>0</span>
@@ -119,16 +117,32 @@
     </div>
   </section>
 
-  <!-- CONFIGURATOR -->
+  <!-- CATALOG + CONFIGURATOR -->
+  <!-- Спочатку категорії й товари (renderCatalog() в app.js), потім
+       конструктор конкретного товару нижче. Поки немає жодної категорії
+       в адмінці — показує тільки Dune і заглушку "Нові форми" (як і
+       завжди). Щойно зʼявляється категорія — рендерить вкладки категорій
+       (Dune потрапляє в ту, яку обрали для неї в адмінці); клік по її
+       картці прокручує до конструктора нижче. Інші товари поки без
+       живого 3D — відкриваються в модалці. -->
   <section class="section section-alt" id="configurator">
     <div class="container">
       <div class="section-head">
-        <p class="eyebrow">ваша Dune</p>
-        <h2>Оберіть кольори під свій інтерʼєр</h2>
-        <p class="section-lead">Абажур і база з обручем фарбуються окремо — поєднуйте як хочете. Лампу можна покрутити, а кнопкою під нею — «увімкнути» світло.</p>
+        <p class="eyebrow">каталог</p>
+        <h2>Колекція Waveform</h2>
+        <p class="section-lead" id="catalogLead">Починаємо з Dune. Нові форми вже в роботі — стежте за нами в Instagram.</p>
       </div>
+      <div class="cat-tabs" id="catTabs" hidden></div>
+      <div class="catalog-grid" id="catalogGrid"></div>
 
-      <div class="configurator">
+      <div class="dune-builder" id="duneBuilder">
+        <div class="section-head">
+          <p class="eyebrow">ваша Dune</p>
+          <h2>Оберіть кольори під свій інтерʼєр</h2>
+          <p class="section-lead">Абажур і база з обручем фарбуються окремо — поєднуйте як хочете. Лампу можна покрутити, а кнопкою під нею — «увімкнути» світло.</p>
+        </div>
+
+        <div class="configurator">
         <div class="configurator-preview">
           <div class="preview-sticky">
             <div class="lamp-stage" id="lampStage">
@@ -183,6 +197,7 @@
           <p class="config-note">Оплата карткою на сайті через monobank (Apple Pay, Google Pay) або накладеним платежем на Новій пошті.</p>
         </div>
       </div>
+      </div>
     </div>
   </section>
 
@@ -223,23 +238,6 @@
           <p>Надійно пакуємо й відправляємо в будь-яке місто.</p>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- CATALOG -->
-  <!-- Наповнюється renderCatalog() в app.js. Поки немає жодної категорії
-       в адмінці — показує тільки Dune і заглушку "Нові форми" (як і було
-       завжди). Щойно зʼявляється категорія — рендерить вкладки категорій
-       (Dune потрапляє в ту, яку обрали для неї в адмінці). -->
-  <section class="section section-alt" id="catalog">
-    <div class="container">
-      <div class="section-head">
-        <p class="eyebrow">колекція</p>
-        <h2>Колекція Waveform</h2>
-        <p class="section-lead" id="catalogLead">Починаємо з Dune. Нові форми вже в роботі — стежте за нами в Instagram.</p>
-      </div>
-      <div class="cat-tabs" id="catTabs" hidden></div>
-      <div class="catalog-grid" id="catalogGrid"></div>
     </div>
   </section>
 
@@ -313,8 +311,7 @@
     <div class="footer-col">
       <h4>Навігація</h4>
       <a href="#dune">Про Dune</a>
-      <a href="#configurator">Кольори</a>
-      <a href="#catalog">Колекція</a>
+      <a href="#configurator">Каталог</a>
       <a href="#faq">Питання</a>
     </div>
     <div class="footer-col">

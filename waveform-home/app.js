@@ -266,7 +266,7 @@ function buildDuneCard(){
   const { card, priceEl } = buildCard(
     { name: PRODUCT_NAME, description: 'Настільна лампа з рельєфом піщаної дюни', price: PRICE_UAH, photoSrc: 'img/dune-hero-700.jpg' },
     'Обрати кольори',
-    () => document.getElementById('configurator').scrollIntoView({ behavior: 'smooth' }));
+    () => document.getElementById('duneBuilder').scrollIntoView({ behavior: 'smooth' }));
   priceEl.id = 'catalogPrice'; // updatePreview() keeps this in sync with the chosen colours
   return card;
 }
