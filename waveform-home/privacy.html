@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Політика конфіденційності — Waveform</title>
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<script src="seller.js"></script>
+</head>
+<body class="legal-body">
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">
+      <img class="logo-mark" src="favicon.svg" alt="" width="32" height="32">
+      <span>Waveform<span class="logo-dot">.</span></span>
+    </a>
+    <a href="index.html" class="btn btn-ghost btn-small">← До магазину</a>
+  </div>
+</header>
+
+<main class="legal">
+  <div class="container container-narrow">
+    <nav class="legal-nav" aria-label="Документи">
+      <a href="offer.html">Публічна оферта</a>
+      <a href="returns.html">Обмін і повернення</a>
+      <a href="privacy.html" aria-current="page">Конфіденційність</a>
+    </nav>
+    <h1>Політика конфіденційності</h1>
+    <p class="legal-meta">Редакція від <span data-seller="effectiveDate"></span></p>
+
+    <p class="legal-lead">Ми збираємо лише ті дані, без яких неможливо виготовити й доставити ваше замовлення, і не продаємо їх третім особам.</p>
+
+    <h2>1. Хто обробляє дані</h2>
+    <p>Володільцем персональних даних є <span data-seller="name"></span> (реквізити — нижче). Обробка здійснюється відповідно до Закону України «Про захист персональних даних».</p>
+
+    <h2>2. Які дані ми збираємо</h2>
+    <ul>
+      <li>прізвище та імʼя отримувача, номер телефону;</li>
+      <li>місто та відділення або поштомат «Нової пошти»;</li>
+      <li>обрані кольори, спосіб оплати та номер замовлення;</li>
+      <li>технічні дані (IP-адреса, тип браузера), які автоматично фіксує хостинг сайту в журналах.</li>
+    </ul>
+    <p>Дані платіжної картки ми <strong>не отримуємо</strong>: їх обробляє банк на своїй захищеній сторінці оплати.</p>
+
+    <h2>3. Навіщо</h2>
+    <ul>
+      <li>щоб виготовити, оплатити та доставити ваше замовлення;</li>
+      <li>щоб звʼязатися з вами щодо замовлення;</li>
+      <li>для обліку та виконання вимог законодавства (зокрема щодо розрахункових документів).</li>
+    </ul>
+
+    <h2>4. Кому передаються дані</h2>
+    <p>Лише тим сервісам, без яких замовлення не виконати:</p>
+    <ul>
+      <li><strong>ТОВ «Нова Пошта»</strong> — для доставки;</li>
+      <li><strong>monobank (АТ «Універсал Банк»)</strong> — для прийому онлайн-оплати, а також сервіс Checkbox — для формування фіскальних чеків;</li>
+      <li><strong>Netlify</strong> — хостинг сайту, де тимчасово зберігаються замовлення з оплатою карткою;</li>
+      <li><strong>Telegram</strong> — через нього Продавець отримує повідомлення про нові замовлення.</li>
+    </ul>
+    <p>Сервери Netlify і Telegram можуть розташовуватися за межами України.</p>
+
+    <h2>5. Cookie та сторонні сервіси</h2>
+    <p>Сайт не використовує рекламних чи аналітичних cookie. Для відображення сторінки завантажуються шрифти Google Fonts та бібліотека 3D-графіки з jsDelivr — ці сервіси можуть отримувати технічні дані вашого браузера (зокрема IP-адресу).</p>
+
+    <h2>6. Скільки зберігаються дані</h2>
+    <p>Дані зберігаються протягом часу, потрібного для виконання замовлення та гарантійних зобовʼязань, а також протягом строків, визначених законодавством про бухгалтерський облік.</p>
+
+    <h2>7. Ваші права</h2>
+    <p>Ви маєте право знати, які ваші дані обробляються, отримати до них доступ, вимагати їх виправлення чи видалення, відкликати згоду на обробку, а також звернутися зі скаргою до Уповноваженого Верховної Ради України з прав людини або до суду. Для цього напишіть нам за контактами нижче.</p>
+
+    <h2>8. Зміни політики</h2>
+    <p>Ми можемо оновлювати цю Політику; актуальна редакція завжди розміщена на цій сторінці.</p>
+
+    <section class="legal-seller">
+      <h2>Реквізити продавця</h2>
+      <dl>
+        <dt>Продавець</dt><dd data-seller="name"></dd>
+        <dt>РНОКПП</dt><dd data-seller="ipn"></dd>
+        <dt>Адреса</dt><dd data-seller="address"></dd>
+        <dt>Телефон</dt><dd data-seller="phone"></dd>
+        <dt>Email</dt><dd data-seller="email"></dd>
+        <dt>Telegram</dt><dd data-seller="telegram"></dd>
+      </dl>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer site-footer-slim">
+  <div class="container footer-bottom">
+    <span>© <span id="year"></span> Waveform · <span data-seller="shortName"></span></span>
+    <span class="footer-legal">
+      <a href="offer.html">Публічна оферта</a>
+      <a href="returns.html">Обмін і повернення</a>
+      <a href="privacy.html">Конфіденційність</a>
+    </span>
+  </div>
+</footer>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

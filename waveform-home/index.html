@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
+<script src="seller.js"></script>
 </head>
 <body>
 
@@ -322,12 +323,16 @@
       <a href="mailto:kumchikproduction@gmail.com">kumchikproduction@gmail.com</a>
     </div>
     <div class="footer-col">
-      <h4>Соцмережі</h4>
+      <h4>Покупцям</h4>
+      <a href="offer.html">Публічна оферта</a>
+      <a href="returns.html">Обмін і повернення</a>
+      <a href="privacy.html">Конфіденційність</a>
       <a href="https://www.instagram.com/kumchik_3d?igsi=NGRycjRiYXFycHZy" target="_blank" rel="noopener">Instagram</a>
     </div>
   </div>
   <div class="container footer-bottom">
     <span>© <span id="year"></span> Waveform. Усі права захищені.</span>
+    <span><span data-seller="name"></span> · РНОКПП <span data-seller="ipn"></span></span>
   </div>
 </footer>
 
@@ -374,6 +379,13 @@
               <small>Оплата при отриманні на Новій пошті. Нова пошта бере комісію за переказ коштів.</small></span>
           </label>
         </fieldset>
+
+        <label class="agree">
+          <input type="checkbox" name="agree" id="coAgree" required>
+          <span>Я погоджуюсь з умовами <a href="offer.html" target="_blank">публічної оферти</a>,
+            <a href="returns.html" target="_blank">обміну і повернення</a> та
+            <a href="privacy.html" target="_blank">політикою конфіденційності</a>.</span>
+        </label>
 
         <p class="form-error" id="checkoutError" role="alert" hidden></p>
         <button class="btn btn-primary btn-wide" id="checkoutSubmit" type="submit">Оплатити 2 100 ₴</button>

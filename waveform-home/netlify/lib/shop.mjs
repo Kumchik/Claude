@@ -80,6 +80,7 @@ export function validateOrder(body){
   if (order.city.length < 2) return { error: 'Вкажіть місто.' };
   if (order.branch.length < 1) return { error: 'Вкажіть відділення або поштомат Нової пошти.' };
   if (!PAYMENT[order.payment]) return { error: 'Оберіть спосіб оплати.' };
+  if (body.agree !== true) return { error: 'Підтвердьте згоду з умовами оферти, щоб оформити замовлення.' };
   return { order };
 }
 

@@ -250,6 +250,7 @@ function checkForm(){
   if (!/^(380\d{9}|0\d{9})$/.test(v('phone').replace(/\D/g, ''))) return ['Вкажіть телефон у форматі +380XXXXXXXXX.', f.elements.phone];
   if (v('city').length < 2) return ['Вкажіть місто.', f.elements.city];
   if (!v('branch')) return ['Вкажіть відділення або поштомат Нової пошти.', f.elements.branch];
+  if (!f.elements.agree.checked) return ['Підтвердьте згоду з умовами оферти, щоб оформити замовлення.', f.elements.agree];
   return null;
 }
 
@@ -265,6 +266,7 @@ async function submitCheckout(e){
     name: f.elements.name.value, phone: f.elements.phone.value,
     city: f.elements.city.value, branch: f.elements.branch.value,
     website: f.elements.website.value,
+    agree: f.elements.agree.checked,
   };
   const btn = $('checkoutSubmit');
   btn.disabled = true;

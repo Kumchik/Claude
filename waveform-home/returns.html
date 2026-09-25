@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Обмін і повернення — Waveform</title>
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<script src="seller.js"></script>
+</head>
+<body class="legal-body">
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">
+      <img class="logo-mark" src="favicon.svg" alt="" width="32" height="32">
+      <span>Waveform<span class="logo-dot">.</span></span>
+    </a>
+    <a href="index.html" class="btn btn-ghost btn-small">← До магазину</a>
+  </div>
+</header>
+
+<main class="legal">
+  <div class="container container-narrow">
+    <nav class="legal-nav" aria-label="Документи">
+      <a href="offer.html">Публічна оферта</a>
+      <a href="returns.html" aria-current="page">Обмін і повернення</a>
+      <a href="privacy.html">Конфіденційність</a>
+    </nav>
+    <h1>Обмін і повернення</h1>
+    <p class="legal-meta">Редакція від <span data-seller="effectiveDate"></span></p>
+
+    <p class="legal-lead">Кожна лампа Waveform друкується під конкретне замовлення — у кольорах, які ви обрали. Тому умови повернення відрізняються від звичайного магазину. Нижче — коротко і чесно.</p>
+
+    <h2>1. Товар належної якості</h2>
+    <p>1.1. Товар виготовляється за індивідуальним замовленням Покупця (у кольорах, обраних Покупцем). Відповідно до законодавства про захист прав споживачів, право на відмову від дистанційного договору та обмін товару належної якості не поширюється на товари, виготовлені за специфікаціями споживача або персоналізовані.</p>
+    <p>1.2. Тому товар належної якості, виготовлений за вашим замовленням, обміну та поверненню не підлягає.</p>
+    <p>1.3. Ви можете скасувати замовлення, доки Продавець не розпочав його виготовлення, — у такому разі кошти повертаються в повному обсязі. Щоб скасувати замовлення, якнайшвидше напишіть нам, вказавши номер замовлення.</p>
+
+    <h2>2. Товар з недоліками</h2>
+    <p>2.1. Якщо товар має виробничий недолік (наприклад, тріщину, розшарування друку, несправність електричної частини), ви маєте право за своїм вибором вимагати заміни товару, безоплатного усунення недоліків, зменшення ціни або повернення сплачених коштів — у строки та в порядку, встановлені законодавством про захист прав споживачів.</p>
+    <p>2.2. Щоб заявити про недолік, напишіть нам у Telegram, на email або зателефонуйте: вкажіть номер замовлення, опишіть недолік і додайте фото. Ми відповімо в найкоротший строк і погодимо, як його усунути.</p>
+    <p>2.3. Витрати на пересилання товару з недоліком несе Продавець.</p>
+    <p>2.4. Незначні відмінності відтінку від зображення на екрані та природні відмінності рельєфу між виробами не є недоліком (див. п. 2.3 <a href="offer.html">Оферти</a>).</p>
+
+    <h2>3. Пошкодження під час доставки</h2>
+    <p>3.1. Оглядайте посилку у відділенні «Нової пошти» під час отримання. Якщо товар пошкоджено, складіть акт з працівником «Нової пошти» та повідомте нас — ми допоможемо вирішити питання з перевізником і виготовимо заміну.</p>
+
+    <h2>4. Повернення коштів</h2>
+    <p>4.1. Кошти повертаються тим самим способом, яким було здійснено оплату: за оплату карткою — на картку через платіжний сервіс monobank; за накладений платіж — на рахунок, погоджений з Покупцем.</p>
+    <p>4.2. Строк повернення коштів — відповідно до законодавства. Строк зарахування на картку залежить від банку, що її випустив.</p>
+
+    <section class="legal-seller">
+      <h2>Реквізити продавця</h2>
+      <dl>
+        <dt>Продавець</dt><dd data-seller="name"></dd>
+        <dt>РНОКПП</dt><dd data-seller="ipn"></dd>
+        <dt>Адреса</dt><dd data-seller="address"></dd>
+        <dt>Телефон</dt><dd data-seller="phone"></dd>
+        <dt>Email</dt><dd data-seller="email"></dd>
+        <dt>Telegram</dt><dd data-seller="telegram"></dd>
+      </dl>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer site-footer-slim">
+  <div class="container footer-bottom">
+    <span>© <span id="year"></span> Waveform · <span data-seller="shortName"></span></span>
+    <span class="footer-legal">
+      <a href="offer.html">Публічна оферта</a>
+      <a href="returns.html">Обмін і повернення</a>
+      <a href="privacy.html">Конфіденційність</a>
+    </span>
+  </div>
+</footer>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
