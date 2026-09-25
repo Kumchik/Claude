@@ -78,8 +78,8 @@ const state = {
 function getShade(id){ return SHADE_COLORS.find(c => c.id === id); }
 function getBase(id){ return BASE_COLORS.find(c => c.id === id); }
 
-function formatPrice(){
-  return `${PRICE_UAH.toLocaleString('uk-UA')} ₴`;
+function formatPrice(uah = PRICE_UAH){
+  return `${uah.toLocaleString('uk-UA')} ₴`;
 }
 
 // white tick on dark swatches, dark tick on light ones
@@ -137,8 +137,8 @@ function updatePreview(){
   document.getElementById('shadeColorName').textContent = `— ${shade.name}`;
   document.getElementById('baseColorName').textContent = `— ${base.name}`;
   document.getElementById('metaPrice').textContent = formatPrice();
-  document.getElementById('orderBtn').textContent =
-    `Замовити Dune — ${formatPrice()}`;
+  document.getElementById('addToCartBtn').textContent =
+    `Додати в кошик — ${formatPrice()}`;
 }
 
 /* ---------- faq ---------- */
@@ -163,6 +163,109 @@ function renderFaq(){
   });
 }
 
+/* ---------- cart ----------
+   Lines are { product, shade, base, qty }; the same lamp added twice
+   becomes one line with a bigger quantity. The cart is kept in this
+   browser (localStorage) so it survives a reload or a closed tab. Prices
+   shown here are for display only: the server recounts the total. */
+const CART_KEY = 'waveform-cart-v1';
+const MAX_QTY = 10;
+let cart = loadCart();
+
+function loadCart(){
+  try {
+    const saved = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+    return Array.isArray(saved) ? saved.filter(it =>
+      it && it.product === 'dune' && getShade(it.shade) && getBase(it.base) &&
+      Number.isInteger(it.qty) && it.qty >= 1 && it.qty <= MAX_QTY) : [];
+  } catch (e) { return []; }
+}
+function saveCart(){
+  try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) { /* private mode */ }
+}
+const cartCount = () => cart.reduce((n, it) => n + it.qty, 0);
+const cartTotal = () => cart.reduce((sum, it) => sum + PRICE_UAH * it.qty, 0);
+
+function addToCart(){
+  const same = cart.find(it => it.shade === state.shade && it.base === state.base);
+  if (same) same.qty = Math.min(MAX_QTY, same.qty + 1);
+  else cart.push({ product: 'dune', shade: state.shade, base: state.base, qty: 1 });
+  saveCart();
+  renderCart();
+  const badge = $('cartCount');
+  badge.classList.remove('bump'); void badge.offsetWidth; badge.classList.add('bump');
+  openCart();
+}
+
+function setQty(i, qty){
+  if (qty < 1) cart.splice(i, 1);
+  else cart[i].qty = Math.min(MAX_QTY, qty);
+  saveCart();
+  renderCart();
+}
+
+function clearCart(){
+  cart = [];
+  saveCart();
+  renderCart();
+}
+
+function renderCart(){
+  const n = cartCount();
+  $('cartCount').textContent = n;
+  $('cartCount').hidden = n === 0;
+  $('cartBtn').setAttribute('aria-label', n ? `Кошик: ${n} шт.` : 'Кошик');
+  $('cartEmpty').hidden = n > 0;
+  $('cartFoot').hidden = n === 0;
+  $('cartTotal').textContent = formatPrice(cartTotal());
+
+  const list = $('cartList');
+  list.innerHTML = '';
+  cart.forEach((it, i) => {
+    const shade = getShade(it.shade), base = getBase(it.base);
+    const li = document.createElement('li');
+    li.className = 'cart-line';
+    li.innerHTML = `
+      <div class="cart-swatch" aria-hidden="true"><span class="sw-shade"></span><span class="sw-base"></span></div>
+      <div class="cart-info"><strong></strong><small class="c-shade"></small><small class="c-base"></small>
+        <button type="button" class="cart-remove">Видалити</button></div>
+      <div class="cart-side"><span class="cart-line-price"></span>
+        <div class="qty"><button type="button" class="q-minus"></button><output></output><button type="button" class="q-plus"></button></div></div>`;
+    li.querySelector('.sw-shade').style.background = shade.hex;
+    li.querySelector('.sw-base').style.background = base.hex;
+    li.querySelector('strong').textContent = PRODUCT_NAME;
+    li.querySelector('.c-shade').textContent = `Абажур: ${shade.name}`;
+    li.querySelector('.c-base').textContent = `База й обруч: ${base.name}`;
+    li.querySelector('.cart-line-price').textContent = formatPrice(PRICE_UAH * it.qty);
+    li.querySelector('output').textContent = it.qty;
+    const minus = li.querySelector('.q-minus'), plus = li.querySelector('.q-plus');
+    minus.textContent = '−'; plus.textContent = '+';
+    minus.setAttribute('aria-label', it.qty === 1 ? 'Видалити позицію' : 'Менше');
+    plus.setAttribute('aria-label', 'Більше');
+    plus.disabled = it.qty >= MAX_QTY;
+    minus.addEventListener('click', () => setQty(i, it.qty - 1));
+    plus.addEventListener('click', () => setQty(i, it.qty + 1));
+    li.querySelector('.cart-remove').addEventListener('click', () => setQty(i, 0));
+    list.appendChild(li);
+  });
+}
+
+function openCart(){
+  $('cartDrawer').hidden = false;
+  $('cartOverlay').hidden = false;
+  $('cartBtn').setAttribute('aria-expanded', 'true');
+  document.body.classList.add('no-scroll');
+  (cart.length ? $('cartCheckout') : $('cartClose')).focus();
+}
+function closeCart(focusBack = true){
+  $('cartDrawer').hidden = true;
+  $('cartOverlay').hidden = true;
+  $('cartBtn').setAttribute('aria-expanded', 'false');
+  document.body.classList.remove('no-scroll');
+  if (focusBack) $('cartBtn').focus();
+}
+const cartOpen = () => !$('cartDrawer').hidden;
+
 /* ---------- checkout ----------
    The form posts to the Netlify Functions in netlify/functions:
    card → /api/create-order returns a monobank payment page and the
@@ -175,11 +278,10 @@ const $ = id => document.getElementById(id);
 
 function buildSummary(extra = []){
   return [
-    `Заявка на лампу ${PRODUCT_NAME}`,
+    'Заявка на замовлення Waveform',
     '',
-    `Колір абажура: ${getShade(state.shade).name}`,
-    `Колір бази та обруча W: ${getBase(state.base).name}`,
-    `Вартість: ${formatPrice()}`,
+    ...cart.map((it, i) => `${i + 1}. ${PRODUCT_NAME} × ${it.qty}: абажур ${getShade(it.shade).name}, база ${getBase(it.base).name}`),
+    `Разом: ${formatPrice(cartTotal())}`,
     ...extra,
   ].join('\n');
 }
@@ -193,12 +295,27 @@ function openModal(){
 
 function closeOrderModal(){
   $('orderModal').classList.remove('open');
-  $('orderBtn').focus();
+  $('cartBtn').focus();
 }
 
 function showCheckout(){
-  $('checkoutItem').textContent =
-    `${PRODUCT_NAME} · абажур ${getShade(state.shade).name} · база ${getBase(state.base).name} · ${formatPrice()}`;
+  if (!cart.length) return openCart();
+  if (cartOpen()) closeCart(false);
+  const box = $('checkoutItem');
+  box.innerHTML = '<ul></ul><div class="co-total"><span>Разом</span><span></span></div>';
+  cart.forEach(it => {
+    const li = document.createElement('li');
+    const left = document.createElement('span');
+    left.textContent = `${PRODUCT_NAME} × ${it.qty}`;
+    const sub = document.createElement('small');
+    sub.textContent = `абажур ${getShade(it.shade).name} · база ${getBase(it.base).name}`;
+    left.appendChild(sub);
+    const price = document.createElement('span');
+    price.textContent = formatPrice(PRICE_UAH * it.qty);
+    li.append(left, price);
+    box.querySelector('ul').appendChild(li);
+  });
+  box.querySelector('.co-total span:last-child').textContent = formatPrice(cartTotal());
   $('checkoutError').hidden = true;
   $('checkoutView').hidden = false;
   $('resultView').hidden = true;
@@ -233,7 +350,7 @@ function syncSubmitLabel(){
   // the e-receipt email only applies to card payments (monobank sends it)
   $('emailField').hidden = payment() !== 'card';
   $('checkoutSubmit').textContent = payment() === 'card'
-    ? `Оплатити ${formatPrice()}`
+    ? `Оплатити ${formatPrice(cartTotal())}`
     : 'Підтвердити замовлення';
 }
 
@@ -266,7 +383,8 @@ async function submitCheckout(e){
 
   const f = $('checkoutForm');
   const data = {
-    shade: state.shade, base: state.base, payment: payment(),
+    items: cart.map(({ product, shade, base, qty }) => ({ product, shade, base, qty })),
+    payment: payment(),
     name: f.elements.name.value, phone: f.elements.phone.value,
     city: f.elements.city.value, branch: f.elements.branch.value,
     website: f.elements.website.value,
@@ -304,6 +422,7 @@ async function submitCheckout(e){
     window.location.href = body.pageUrl;
     return;
   }
+  clearCart();
   showResult('Дякуємо, замовлення прийнято!',
     `Номер замовлення ${body.orderId}. Ми напишемо або зателефонуємо, щоб підтвердити деталі. ` +
     'Оплата — при отриманні на Новій пошті.',
@@ -418,8 +537,9 @@ async function checkReturnedOrder(){
     } catch (e) { /* retry below */ }
 
     if (status === 'success'){
+      clearCart();
       return showResult('Оплату отримано — дякуємо!',
-        `Замовлення ${id} оплачено. Ми вже почали роботу над вашою Dune і напишемо, коли відправимо її Новою поштою.`,
+        `Замовлення ${id} оплачено. Ми вже почали роботу над вашим замовленням і напишемо, коли відправимо його Новою поштою.`,
         [{ label: 'Готово', onClick: closeOrderModal, primary: true }]);
     }
     if (['failure', 'expired', 'reversed'].includes(status)){
@@ -460,13 +580,30 @@ document.addEventListener('DOMContentLoaded', () => {
     state.lightOn = !state.lightOn;
     updatePreview();
   });
-  $('orderBtn').addEventListener('click', showCheckout);
+  renderCart();
+  $('addToCartBtn').addEventListener('click', addToCart);
+  $('cartBtn').addEventListener('click', () => cartOpen() ? closeCart() : openCart());
+  $('cartClose').addEventListener('click', () => closeCart());
+  $('cartOverlay').addEventListener('click', () => closeCart());
+  $('cartCheckout').addEventListener('click', showCheckout);
+  $('cartContinue').addEventListener('click', () => {
+    closeCart(false);
+    document.getElementById('configurator').scrollIntoView({ behavior: 'smooth' });
+  });
+  $('cartEmptyBack').addEventListener('click', () => {
+    closeCart(false);
+    document.getElementById('configurator').scrollIntoView({ behavior: 'smooth' });
+  });
+  // another tab changed the cart
+  window.addEventListener('storage', e => { if (e.key === CART_KEY){ cart = loadCart(); renderCart(); } });
   $('modalClose').addEventListener('click', closeOrderModal);
   $('orderModal').addEventListener('click', e => {
     if (e.target.id === 'orderModal') closeOrderModal();
   });
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && $('orderModal').classList.contains('open')) closeOrderModal();
+    if (e.key !== 'Escape') return;
+    if ($('orderModal').classList.contains('open')) closeOrderModal();
+    else if (cartOpen()) closeCart();
   });
   $('checkoutForm').addEventListener('submit', submitCheckout);
   initNovaPoshta();

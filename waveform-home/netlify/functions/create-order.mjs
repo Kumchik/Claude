@@ -1,7 +1,7 @@
 /* POST /api/create-order
    Card: creates a monobank invoice and returns its payment page URL.
    Cash on delivery: sends the order to Telegram straight away. */
-import { cardChargeUAH, isTestPrice, PRODUCT_NAME, FILAMENTS, MONO_API, json, validateOrder, newOrderId, orderText, notify, ordersStore, pendingKey } from '../lib/shop.mjs';
+import { testPriceUAH, isTestPrice, PRODUCTS, itemTitle, MONO_API, json, validateOrder, newOrderId, orderText, notify, ordersStore, pendingKey } from '../lib/shop.mjs';
 
 export const config = { path: '/api/create-order' };
 
@@ -25,8 +25,18 @@ export default async (req) => {
   }
 
   const site = process.env.URL || new URL(req.url).origin;
-  const kop = Math.round(cardChargeUAH() * 100);
-  if (isTestPrice()) console.warn(`TEST_PRICE_UAH is set: charging ${kop / 100} ₴ instead of the real price`);
+  // one basket line per cart line, so the Checkbox receipt lists every lamp
+  const test = testPriceUAH();
+  let basketOrder = order.items.map((it, i) => {
+    const unit = PRODUCTS[it.product].price * 100;
+    return { name: itemTitle(it), qty: it.qty, sum: unit, total: unit * it.qty, unit: 'шт.', code: `${it.product}-${i + 1}` };
+  });
+  let kop = order.total * 100;
+  if (test){
+    kop = Math.round(test * 100);
+    basketOrder = [{ name: 'Тестова оплата', qty: 1, sum: kop, total: kop, unit: 'шт.', code: 'test' }];
+    console.warn(`TEST_PRICE_UAH is set: charging ${test} ₴ instead of ${order.total} ₴`);
+  }
   const res = await fetch(`${MONO_API}/api/merchant/invoice/create`, {
     method: 'POST',
     headers: { 'X-Token': process.env.MONO_TOKEN, 'content-type': 'application/json' },
@@ -37,11 +47,8 @@ export default async (req) => {
         reference: id,
         // monobank emails the electronic (fiscal) receipt here after payment
         ...(order.email ? { customerEmails: [order.email] } : {}),
-        destination: `${PRODUCT_NAME}, замовлення ${id}${isTestPrice() ? ' (тестова оплата)' : ''}`,
-        basketOrder: [{
-          name: `${PRODUCT_NAME} (абажур ${FILAMENTS[order.shade]}, база ${FILAMENTS[order.base]})`,
-          qty: 1, sum: kop, total: kop, unit: 'шт.', code: 'dune',
-        }],
+        destination: `Waveform, замовлення ${id}${test ? ' (тестова оплата)' : ''}`,
+        basketOrder,
       },
       redirectUrl: `${site}/?order=${id}#order-result`,
       webHookUrl: `${site}/api/mono-webhook`,

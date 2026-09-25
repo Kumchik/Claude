@@ -8,20 +8,26 @@
      TELEGRAM_CHAT_ID    ваш chat id, куди бот пише про замовлення
    ========================================================= */
 
-// Ціна — тут, на сервері, а не зі сторінки: клієнт не може її змінити.
-// Має збігатися з PRICE_UAH в app.js.
-export const PRICE_UAH = 2100;
+// Товари й ціни — тут, на сервері, а не зі сторінки: клієнт не може їх
+// змінити. Мають збігатися з PRICE_UAH / PRODUCT_NAME в app.js.
+export const PRODUCTS = {
+  dune: { name: 'Waveform Dune', price: 2100 },
+};
+export const PRICE_UAH = PRODUCTS.dune.price;
+export const PRODUCT_NAME = PRODUCTS.dune.name;
+
+// limits for one order
+const MAX_LINES = 20, MAX_QTY = 10;
 
 /* Test mode: while the TEST_PRICE_UAH env var is set in Netlify (e.g. 1),
-   card payments charge that amount instead of the real price, so the whole
-   flow can be checked with a real card for 1 ₴. Remove the variable and
-   redeploy to go back to the real price. */
-export function cardChargeUAH(){
+   a card payment charges that amount for the whole order instead of the
+   real total, so the flow can be checked with a real card for 1 ₴. Remove
+   the variable and redeploy to go back to real prices. */
+export function testPriceUAH(){
   const test = Number(process.env.TEST_PRICE_UAH);
-  return Number.isFinite(test) && test > 0 ? test : PRICE_UAH;
+  return Number.isFinite(test) && test > 0 ? test : null;
 }
-export const isTestPrice = () => cardChargeUAH() !== PRICE_UAH;
-export const PRODUCT_NAME = 'Waveform Dune';
+export const isTestPrice = () => testPriceUAH() !== null;
 
 // Кольори філаменту: id → назва. Має збігатися з FILAMENTS в app.js.
 export const FILAMENTS = {
@@ -63,9 +69,31 @@ export function validateOrder(body){
   // honeypot: a hidden field real people never fill
   if (body.website) return { error: 'Некоректний запит.' };
 
+  // cart lines; an older single-lamp request (shade/base, no items) still works
+  const rawItems = Array.isArray(body.items) ? body.items
+    : [{ product: 'dune', shade: body.shade, base: body.base, qty: 1 }];
+  if (!rawItems.length) return { error: 'Кошик порожній.' };
+  if (rawItems.length > MAX_LINES) return { error: 'Забагато позицій в одному замовленні.' };
+  const items = [];
+  for (const raw of rawItems){
+    const it = {
+      product: clean(raw?.product || 'dune', 20),
+      shade: clean(raw?.shade, 40),
+      base: clean(raw?.base, 40),
+      qty: Number(raw?.qty),
+    };
+    if (!PRODUCTS[it.product]) return { error: 'Невідомий товар у кошику.' };
+    if (!FILAMENTS[it.shade] || !FILAMENTS[it.base]) return { error: 'Оберіть кольори лампи.' };
+    if (!Number.isInteger(it.qty) || it.qty < 1 || it.qty > MAX_QTY) return { error: `Кількість однієї позиції — від 1 до ${MAX_QTY}.` };
+    // the same lamp twice → one line with the quantities added up
+    const same = items.find(x => x.product === it.product && x.shade === it.shade && x.base === it.base);
+    if (same) same.qty = Math.min(MAX_QTY, same.qty + it.qty);
+    else items.push(it);
+  }
+
   const order = {
-    shade: clean(body.shade, 40),
-    base: clean(body.base, 40),
+    items,
+    total: items.reduce((sum, it) => sum + PRODUCTS[it.product].price * it.qty, 0),
     name: clean(body.name, 80),
     phone: clean(body.phone, 30),
     city: clean(body.city, 80),
@@ -73,7 +101,6 @@ export function validateOrder(body){
     payment: clean(body.payment, 10),
     email: clean(body.email, 120).toLowerCase(),
   };
-  if (!FILAMENTS[order.shade] || !FILAMENTS[order.base]) return { error: 'Оберіть кольори лампи.' };
   if (order.name.length < 3) return { error: 'Вкажіть прізвище та імʼя отримувача.' };
   const digits = order.phone.replace(/\D/g, '');
   if (!/^(380\d{9}|0\d{9})$/.test(digits)) return { error: 'Вкажіть телефон у форматі +380XXXXXXXXX.' };
@@ -98,13 +125,17 @@ export function newOrderId(){
   return `DN-${ymd}-${rnd}`;
 }
 
+export const itemTitle = it =>
+  `${PRODUCTS[it.product].name} (абажур ${FILAMENTS[it.shade]}, база ${FILAMENTS[it.base]})`;
+
 export function orderText(id, o, status){
   return [
     `${status} · замовлення ${id}`,
     '',
-    `${PRODUCT_NAME} — ${PRICE_UAH} ₴`,
-    `Абажур: ${FILAMENTS[o.shade]}`,
-    `База та обруч W: ${FILAMENTS[o.base]}`,
+    ...o.items.map((it, i) =>
+      `${i + 1}. ${PRODUCTS[it.product].name} × ${it.qty} — ${PRODUCTS[it.product].price * it.qty} ₴\n` +
+      `   Абажур: ${FILAMENTS[it.shade]}, база та обруч W: ${FILAMENTS[it.base]}`),
+    `Разом: ${o.total} ₴`,
     '',
     `Отримувач: ${o.name}`,
     `Телефон: ${o.phone}`,
