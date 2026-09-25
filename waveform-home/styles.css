@@ -364,6 +364,68 @@ figure{ margin:0; }
 .footer-col a:hover{ color:#fff; }
 .footer-bottom{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; padding-top: 22px; font-size:.78rem; color: rgba(255,255,255,0.4); }
 
+/* ---------- cart ---------- */
+.cart-btn{
+  position: relative; flex-shrink: 0; width: 42px; height: 42px; border-radius: 50%;
+  border: 1.5px solid var(--line); background: var(--card); color: var(--ink);
+  display:flex; align-items:center; justify-content:center;
+}
+.cart-btn svg{ width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+.cart-btn:hover{ border-color: var(--clay); }
+.cart-count{
+  position:absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; padding: 0 5px;
+  border-radius: 999px; background: var(--clay); color: #fff; font-size: .72rem; font-weight: 800;
+  display:flex; align-items:center; justify-content:center; font-variant-numeric: tabular-nums;
+}
+.cart-count[hidden]{ display:none; }
+.cart-count.bump{ animation: cartBump .35s ease; }
+@keyframes cartBump{ 50%{ transform: scale(1.35); } }
+
+.cart-overlay{ position:fixed; inset:0; background: rgba(30,25,22,.45); z-index: 90; }
+.cart-overlay[hidden]{ display:none; }
+.cart-drawer{
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 95;
+  width: min(420px, 100%); background: var(--bg);
+  display:flex; flex-direction:column;
+  box-shadow: -20px 0 50px -20px rgba(30,25,22,.4);
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.cart-drawer[hidden]{ display:none; }
+.cart-head{ display:flex; align-items:center; justify-content:space-between; padding: 22px 22px 12px; }
+.cart-head h3{ margin:0; font-size: 1.5rem; }
+.cart-close{ position: static; }
+.cart-list{ flex: 1; overflow-y: auto; padding: 4px 22px; display:flex; flex-direction:column; gap: 12px; }
+.cart-line{
+  display:grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items:center;
+  background: var(--card); border-radius: var(--radius-md); padding: 12px; box-shadow: var(--shadow-card);
+}
+.cart-swatch{ position: relative; width: 52px; height: 52px; }
+.cart-swatch span{ position:absolute; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); }
+.cart-swatch .sw-shade{ width: 38px; height: 38px; top: 0; left: 0; }
+.cart-swatch .sw-base{ width: 26px; height: 26px; right: 0; bottom: 0; }
+.cart-info{ min-width: 0; }
+.cart-info strong{ display:block; font-size: .95rem; }
+.cart-info small{ display:block; color: var(--ink-soft); font-size: .8rem; line-height: 1.35; }
+.cart-side{ display:flex; flex-direction:column; align-items:flex-end; gap: 8px; }
+.cart-line-price{ font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.qty{ display:flex; align-items:center; border: 1.5px solid var(--line); border-radius: 999px; overflow:hidden; }
+.qty button{ width: 30px; height: 30px; border:none; background: none; font-size: 1.05rem; font-weight: 700; color: var(--ink); }
+.qty button:hover:not([disabled]){ background: var(--bg-alt); }
+.qty button[disabled]{ opacity: .35; cursor: default; }
+.qty output{ min-width: 22px; text-align:center; font-weight: 700; font-variant-numeric: tabular-nums; }
+.cart-remove{ border:none; background:none; color: var(--ink-soft); font-size: .78rem; text-decoration: underline; padding: 0; }
+.cart-remove:hover{ color: #B03A2E; }
+.cart-empty{ padding: 40px 22px; text-align:center; }
+.cart-empty[hidden], .cart-foot[hidden]{ display:none; }
+.cart-foot{ padding: 16px 22px 22px; border-top: 1px solid var(--line); display:flex; flex-direction:column; gap: 10px; }
+.cart-total{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom: 4px; }
+.cart-total strong{ font-family: 'Fraunces', serif; font-size: 1.5rem; color: var(--clay); font-variant-numeric: tabular-nums; }
+.checkout-item ul{ margin: 0 0 6px; padding: 0; display:flex; flex-direction:column; gap: 6px; }
+.checkout-item li{ display:flex; justify-content:space-between; gap: 12px; }
+.checkout-item li small{ display:block; color: var(--ink-soft); font-size: .8rem; }
+.checkout-item .co-total{ display:flex; justify-content:space-between; border-top: 1px solid var(--line); padding-top: 8px; font-weight: 800; }
+body.no-scroll{ overflow: hidden; }
+
 /* ---------- legal pages ---------- */
 .legal{ padding: 48px 0 80px; }
 .legal h1{ font-size: clamp(1.9rem, 4vw, 2.6rem); margin-top: 28px; }

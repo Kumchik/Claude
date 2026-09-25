@@ -39,6 +39,10 @@
       <a href="#contacts">Контакти</a>
     </nav>
     <a href="#configurator" class="btn btn-primary btn-small header-cta">Обрати колір</a>
+    <button class="cart-btn" id="cartBtn" type="button" aria-label="Кошик" aria-controls="cartDrawer" aria-expanded="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 11.1a2 2 0 0 1-2 1.9H8.2a2 2 0 0 1-2-1.9L5 8Z"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/></svg>
+      <span class="cart-count" id="cartCount" hidden>0</span>
+    </button>
     <button class="burger" id="burgerBtn" aria-label="Меню" aria-expanded="false" aria-controls="mainNav">
       <span></span><span></span><span></span>
     </button>
@@ -175,7 +179,7 @@
             <p class="step-hint">База й хвилястий обруч, на який спирається абажур, — одного кольору.</p>
           </div>
 
-          <button class="btn btn-primary btn-wide" id="orderBtn">Замовити Dune — 2 100 ₴</button>
+          <button class="btn btn-primary btn-wide" id="addToCartBtn" type="button">Додати в кошик — 2 100 ₴</button>
           <p class="config-note">Оплата карткою на сайті через monobank (Apple Pay, Google Pay) або накладеним платежем на Новій пошті.</p>
         </div>
       </div>
@@ -348,6 +352,25 @@
   </div>
 </footer>
 
+<!-- CART -->
+<div class="cart-overlay" id="cartOverlay" hidden></div>
+<aside class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle" hidden>
+  <div class="cart-head">
+    <h3 id="cartTitle">Кошик</h3>
+    <button class="modal-close cart-close" id="cartClose" type="button" aria-label="Закрити кошик">✕</button>
+  </div>
+  <ul class="cart-list" id="cartList"></ul>
+  <div class="cart-empty" id="cartEmpty">
+    <p>Кошик порожній.</p>
+    <button class="btn btn-ghost btn-small" id="cartEmptyBack" type="button">Обрати кольори</button>
+  </div>
+  <div class="cart-foot" id="cartFoot">
+    <div class="cart-total"><span>Разом</span><strong id="cartTotal">0 ₴</strong></div>
+    <button class="btn btn-primary btn-wide" id="cartCheckout" type="button">Оформити замовлення</button>
+    <button class="btn btn-ghost btn-wide" id="cartContinue" type="button">Додати ще лампу</button>
+  </div>
+</aside>
+
 <!-- CHECKOUT -->
 <div class="modal-overlay" id="orderModal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -355,7 +378,7 @@
 
     <div id="checkoutView">
       <h3 id="modalTitle">Оформлення замовлення</h3>
-      <p class="checkout-item" id="checkoutItem"></p>
+      <div class="checkout-item" id="checkoutItem"></div>
       <form id="checkoutForm" novalidate>
         <div class="field">
           <label for="coName">Прізвище та імʼя отримувача</label>
