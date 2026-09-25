@@ -96,6 +96,44 @@ Instagram, Viber тощо. Якщо підключите свій домен, з
 Замовлення з оплатою карткою зберігаються в Netlify Blobs до оплати, тому
 неоплачені спроби не засмічують Telegram.
 
+## Telegram: чат із клієнтами, а не з особистим акаунтом
+
+Замовлення падають у групу продавця (`TELEGRAM_CHAT_ID`), а не в
+особистий акаунт. Але щоб клієнти могли написати першими — кнопка
+«Написати в Telegram» на сайті веде не на особистий акаунт, а на бота.
+`netlify/functions/telegram-webhook.mjs` зʼєднує це в двосторонній чат:
+
+- клієнт пише боту в приватні → бот пересилає повідомлення в групу
+  продавця (видно, від кого) і раз пише клієнту «дякуємо, відповімо
+  тут»;
+- хтось у групі робить **Reply** (саме Reply, не нове повідомлення) на
+  переслане повідомлення → відповідь автоматично йде клієнту від імені
+  бота — для клієнта це виглядає як звичайний чат із магазином.
+
+Відповідність «переслане повідомлення → клієнт» зберігається в окремому
+Netlify Blobs-сховищі (`relayStore` у `shop.mjs`), тому працює, доки
+повідомлення видно в історії групи.
+
+### Налаштування бота (один раз)
+
+1. У `@BotFather` вже є бот (той самий, чий токен у `TELEGRAM_BOT_TOKEN`).
+   Додайте його в групу продавця (ту, чий id у `TELEGRAM_CHAT_ID`) і
+   дайте право читати всі повідомлення: `@BotFather` → `/mybots` →
+   виберіть бота → **Bot Settings → Group Privacy → Turn off**
+   (інакше бот не побачить Reply в групі).
+2. Придумайте секретний рядок (будь-який довгий випадковий текст) і
+   додайте його в Netlify: Site configuration → Environment variables →
+   `TELEGRAM_WEBHOOK_SECRET`.
+3. У браузері відкрийте (підставивши свій токен і секрет):
+   `https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/setWebhook?url=https://waveform.com.ua/api/telegram-webhook&secret_token=<TELEGRAM_WEBHOOK_SECRET>`
+   Успіх — відповідь `{"ok":true,"result":true,...}`.
+4. У `app.js` (`TELEGRAM_USERNAME`), `index.html` (посилання «Написати в
+   Telegram» і в підвалі) та `seller.js` (`telegram`) замініть
+   `ВАШ_БОТ_username` на реальний username бота (без @, з @BotFather).
+5. Перевірка: напишіть боту з іншого акаунта — повідомлення має зʼявитись
+   у групі; зробіть Reply на нього в групі — відповідь має прийти тому
+   акаунту.
+
 ### Налаштування (один раз)
 
 1. **Netlify**: Add new site → Import from GitHub → репозиторій
@@ -108,8 +146,9 @@ Instagram, Viber тощо. Якщо підключите свій домен, з
    напишіть йому будь-що, а свій chat id дізнайтеся, наприклад, у
    @userinfobot.
 4. У Netlify: Site configuration → Environment variables — додайте
-   `MONO_TOKEN`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, потім
-   Deploys → Trigger deploy.
+   `MONO_TOKEN`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`,
+   `TELEGRAM_WEBHOOK_SECRET` (див. розділ «Telegram: чат із клієнтами»
+   нижче), потім Deploys → Trigger deploy.
 
 **Перевірка оплати за 1 ₴.** Додайте в Netlify змінну `TEST_PRICE_UAH`
 зі значенням `1` і зробіть Trigger deploy — оплата карткою списуватиме
@@ -154,8 +193,10 @@ Instagram, Viber тощо. Якщо підключите свій домен, з
    тезах. Варто додати їх у FAQ (`FAQ` в `app.js`) або окремим блоком.
 4. **Фото** — у `img/dune-off.jpg` і `img/dune-on.jpg` лежать мініатюри
    270×360. Замініть їх на повнорозмірні фото.
-5. **Контакти** — ті самі, що на сайті з вимикачами (Telegram `@kumchik`,
-   телефон, email, Instagram).
+5. **Контакти** — телефон, email, Instagram на сайті, а Telegram — не
+   особистий акаунт, а бот (`ВАШ_БОТ_username` в `app.js`, `index.html`,
+   `seller.js`); налаштування — розділ «Telegram: чат із клієнтами»
+   вище.
 
 ## Локальний перегляд
 
