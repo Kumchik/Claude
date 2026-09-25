@@ -127,9 +127,10 @@ Netlify Blobs-сховищі (`relayStore` у `shop.mjs`), тому працює
 3. У браузері відкрийте (підставивши свій токен і секрет):
    `https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/setWebhook?url=https://waveform.com.ua/api/telegram-webhook&secret_token=<TELEGRAM_WEBHOOK_SECRET>`
    Успіх — відповідь `{"ok":true,"result":true,...}`.
-4. У `app.js` (`TELEGRAM_USERNAME`), `index.html` (посилання «Написати в
-   Telegram» і в підвалі) та `seller.js` (`telegram`) замініть
-   `ВАШ_БОТ_username` на реальний username бота (без @, з @BotFather).
+4. Username бота — `waveform_orders_bot` — уже прописаний у `app.js`
+   (`TELEGRAM_USERNAME`), `index.html` (посилання «Написати в Telegram»
+   і в підвалі) та `seller.js` (`telegram`). Якщо колись заведете
+   іншого бота — заміните його там же.
 5. Перевірка: напишіть боту з іншого акаунта — повідомлення має зʼявитись
    у групі; зробіть Reply на нього в групі — відповідь має прийти тому
    акаунту.
@@ -194,7 +195,7 @@ Netlify Blobs-сховищі (`relayStore` у `shop.mjs`), тому працює
 4. **Фото** — у `img/dune-off.jpg` і `img/dune-on.jpg` лежать мініатюри
    270×360. Замініть їх на повнорозмірні фото.
 5. **Контакти** — телефон, email, Instagram на сайті, а Telegram — не
-   особистий акаунт, а бот (`ВАШ_БОТ_username` в `app.js`, `index.html`,
+   особистий акаунт, а бот (`waveform_orders_bot` в `app.js`, `index.html`,
    `seller.js`); налаштування — розділ «Telegram: чат із клієнтами»
    вище.
 

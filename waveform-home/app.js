@@ -68,8 +68,7 @@ const FAQ = [
 
 // Username бота (без @), не особистого акаунта — клієнти пишуть сюди,
 // а бот пересилає повідомлення в групу продавця (netlify/functions/telegram-webhook.mjs).
-// ЗАМІНІТЬ на реальний username вашого бота з @BotFather.
-const TELEGRAM_USERNAME = 'ВАШ_БОТ_username';
+const TELEGRAM_USERNAME = 'waveform_orders_bot';
 
 /* ---------- state ---------- */
 const state = {
