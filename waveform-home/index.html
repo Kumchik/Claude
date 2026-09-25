@@ -258,6 +258,12 @@
     </div>
   </section>
 
+  <!-- Товари, додані через /admin.html — приховано, поки catalogProducts
+       порожній; заповнюється renderDynamicCatalog() в app.js -->
+  <section class="section section-alt" id="more-products" hidden>
+    <div class="container" id="moreProductsContainer"></div>
+  </section>
+
   <!-- HOW IT WORKS -->
   <section class="section" id="how">
     <div class="container">
@@ -441,6 +447,27 @@
       <p class="modal-sub" id="resultText"></p>
       <div class="modal-actions" id="resultActions"></div>
     </div>
+  </div>
+</div>
+
+<!-- товар, доданий через /admin.html — фото, опис, необов'язковий колір;
+     заповнюється openProductModal() в app.js -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
+    <button class="modal-close" id="pmClose" aria-label="Закрити">✕</button>
+    <div class="pm-photos" id="pmPhotos"></div>
+    <h3 id="pmTitle"></h3>
+    <p class="modal-sub" id="pmDescription"></p>
+    <div class="pm-colors" id="pmColors"></div>
+    <div class="pm-row">
+      <div class="qty" id="pmQty">
+        <button type="button" class="q-minus" aria-label="Менше">−</button>
+        <output>1</output>
+        <button type="button" class="q-plus" aria-label="Більше">+</button>
+      </div>
+      <span class="pm-price" id="pmPrice"></span>
+    </div>
+    <button class="btn btn-primary btn-wide" id="pmAdd" type="button">Додати в кошик</button>
   </div>
 </div>
 

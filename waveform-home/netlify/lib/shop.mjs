@@ -13,6 +13,9 @@
 // limits for one order
 const MAX_LINES = 20, MAX_QTY = 10;
 const MAX_FILAMENTS = 40;
+const MAX_CATEGORIES = 20;
+const MAX_PRODUCTS = 60;
+const MAX_PHOTOS = 12;
 
 /* Товар (назва, ціна) і палітра філаменту — раніше були захардкоджені
    тут і в app.js; тепер живуть у Netlify Blobs і редагуються через
@@ -39,6 +42,13 @@ export const DEFAULT_CATALOG = {
     { id: 'mint-green',   name: 'Mint Green',   hex: '#9EEBCF' },
     { id: 'sky-blue',     name: 'Sky Blue',     hex: '#8EC5EF' },
   ],
+  // Waveform Dune (вище) лишається окремим, особливим товаром — з живим
+  // 3D-конструктором на головній сторінці, не з цього списку. Тут —
+  // додаткові товари, які можна заводити через /admin.html без 3D-моделі:
+  // фото-галерея, ціна, опис, необов'язкова палітра кольорів (один колір
+  // на вибір; порожня — товар без вибору кольору).
+  categories: [],
+  products: [],
 };
 
 export async function catalogStore(){
@@ -54,7 +64,12 @@ export async function getCatalog(){
   try {
     const store = await catalogStore();
     const saved = await store.get('config', { type: 'json' });
-    if (saved && Array.isArray(saved.filaments) && saved.filaments.length) return saved;
+    if (saved && Array.isArray(saved.filaments) && saved.filaments.length){
+      // a catalog saved before categories/products existed still works
+      if (!Array.isArray(saved.categories)) saved.categories = [];
+      if (!Array.isArray(saved.products)) saved.products = [];
+      return saved;
+    }
   } catch (e){
     console.error('getCatalog failed, using defaults', e);
   }
@@ -64,6 +79,28 @@ export async function getCatalog(){
 const HEX = /^#[0-9a-f]{6}$/i;
 const SLUG = /^[a-z0-9-]{1,40}$/;
 
+/* Shared by Dune's palette and every generic product's palette. filaments
+   may be empty for a product (no colour choice) — pass allowEmpty. */
+function checkFilaments(raw, allowEmpty, label){
+  if (!Array.isArray(raw)) return { error: `${label}: некоректні дані кольорів.` };
+  if (!allowEmpty && !raw.length) return { error: `${label}: додайте хоча б один колір.` };
+  if (raw.length > MAX_FILAMENTS) return { error: `${label}: забагато кольорів (максимум ${MAX_FILAMENTS}).` };
+  const filaments = [];
+  const seen = new Set();
+  for (const f of raw){
+    const id = clean(f?.id, 40).toLowerCase();
+    const name = clean(f?.name, 40);
+    const hex = clean(f?.hex, 7);
+    if (!SLUG.test(id)) return { error: `${label}: некоректний ідентифікатор кольору «${id}».` };
+    if (name.length < 1) return { error: `${label}: у кожного кольору має бути назва.` };
+    if (!HEX.test(hex)) return { error: `${label}: некоректний HEX-код кольору для «${name}».` };
+    if (seen.has(id)) return { error: `${label}: колір з ідентифікатором «${id}» повторюється.` };
+    seen.add(id);
+    filaments.push({ id, name, hex });
+  }
+  return { filaments };
+}
+
 /* Checks a catalog edit from /admin.html. Returns { catalog } or { error }. */
 export function validateCatalog(body){
   if (!body || typeof body !== 'object') return { error: 'Некоректні дані.' };
@@ -71,22 +108,47 @@ export function validateCatalog(body){
   const price = Number(body.price);
   if (productName.length < 2) return { error: 'Вкажіть назву товару.' };
   if (!Number.isFinite(price) || price < 1 || price > 1_000_000) return { error: 'Вкажіть коректну ціну.' };
-  if (!Array.isArray(body.filaments) || !body.filaments.length) return { error: 'Додайте хоча б один колір.' };
-  if (body.filaments.length > MAX_FILAMENTS) return { error: `Забагато кольорів (максимум ${MAX_FILAMENTS}).` };
-  const filaments = [];
-  const seen = new Set();
-  for (const raw of body.filaments){
+  const duneColors = checkFilaments(body.filaments, false, 'Waveform Dune');
+  if (duneColors.error) return duneColors;
+
+  const categories = [];
+  const rawCategories = Array.isArray(body.categories) ? body.categories : [];
+  if (rawCategories.length > MAX_CATEGORIES) return { error: `Забагато категорій (максимум ${MAX_CATEGORIES}).` };
+  const catIds = new Set();
+  for (const raw of rawCategories){
     const id = clean(raw?.id, 40).toLowerCase();
-    const name = clean(raw?.name, 40);
-    const hex = clean(raw?.hex, 7);
-    if (!SLUG.test(id)) return { error: `Некоректний ідентифікатор кольору: «${id}».` };
-    if (name.length < 1) return { error: 'У кожного кольору має бути назва.' };
-    if (!HEX.test(hex)) return { error: `Некоректний HEX-код кольору для «${name}».` };
-    if (seen.has(id)) return { error: `Колір з ідентифікатором «${id}» повторюється.` };
-    seen.add(id);
-    filaments.push({ id, name, hex });
+    const name = clean(raw?.name, 60);
+    if (!SLUG.test(id)) return { error: `Некоректний ідентифікатор категорії: «${id}».` };
+    if (name.length < 1) return { error: 'У кожної категорії має бути назва.' };
+    if (catIds.has(id)) return { error: `Категорія з ідентифікатором «${id}» повторюється.` };
+    catIds.add(id);
+    categories.push({ id, name });
   }
-  return { catalog: { productName, price, filaments } };
+
+  const products = [];
+  const rawProducts = Array.isArray(body.products) ? body.products : [];
+  if (rawProducts.length > MAX_PRODUCTS) return { error: `Забагато товарів (максимум ${MAX_PRODUCTS}).` };
+  const prodIds = new Set(['dune']); // reserved — that's Waveform Dune above
+  for (const raw of rawProducts){
+    const id = clean(raw?.id, 40).toLowerCase();
+    const name = clean(raw?.name, 80);
+    const categoryId = clean(raw?.categoryId, 40).toLowerCase();
+    const pPrice = Number(raw?.price);
+    const description = clean(raw?.description, 600);
+    if (!SLUG.test(id)) return { error: `Некоректний ідентифікатор товару: «${id}».` };
+    if (prodIds.has(id)) return { error: `Товар з ідентифікатором «${id}» повторюється.` };
+    prodIds.add(id);
+    if (name.length < 2) return { error: `Вкажіть назву товару «${id}».` };
+    if (!catIds.has(categoryId)) return { error: `Товар «${name}»: оберіть категорію.` };
+    if (!Number.isFinite(pPrice) || pPrice < 1 || pPrice > 1_000_000) return { error: `Товар «${name}»: вкажіть коректну ціну.` };
+    const photos = (Array.isArray(raw?.photos) ? raw.photos : []).map(p => clean(p, 60)).filter(Boolean);
+    if (photos.length > MAX_PHOTOS) return { error: `Товар «${name}»: забагато фото (максимум ${MAX_PHOTOS}).` };
+    const colors = checkFilaments(raw?.filaments, true, `Товар «${name}»`);
+    if (colors.error) return colors;
+    products.push({ id, name, categoryId, price: pPrice, description, photos, filaments: colors.filaments });
+  }
+
+  return { catalog: { productName, price, filaments: duneColors.filaments, categories, products } };
 }
 
 export async function saveCatalog(catalog){
@@ -129,6 +191,7 @@ export function validateOrder(body, catalog){
   if (body.website) return { error: 'Некоректний запит.' };
 
   const filamentMap = new Map(catalog.filaments.map(f => [f.id, f]));
+  const productMap = new Map((catalog.products || []).map(p => [p.id, p]));
 
   // cart lines; an older single-lamp request (shade/base, no items) still works
   const rawItems = Array.isArray(body.items) ? body.items
@@ -137,24 +200,44 @@ export function validateOrder(body, catalog){
   if (rawItems.length > MAX_LINES) return { error: 'Забагато позицій в одному замовленні.' };
   const items = [];
   for (const raw of rawItems){
-    const product = clean(raw?.product || 'dune', 20);
-    const shade = clean(raw?.shade, 40);
-    const base = clean(raw?.base, 40);
+    const product = clean(raw?.product || 'dune', 40);
     const qty = Number(raw?.qty);
-    if (product !== 'dune') return { error: 'Невідомий товар у кошику.' };
-    const shadeF = filamentMap.get(shade), baseF = filamentMap.get(base);
-    if (!shadeF || !baseF) return { error: 'Оберіть кольори лампи.' };
     if (!Number.isInteger(qty) || qty < 1 || qty > MAX_QTY) return { error: `Кількість однієї позиції — від 1 до ${MAX_QTY}.` };
-    // the same lamp twice → one line with the quantities added up
-    const same = items.find(x => x.product === product && x.shade === shade && x.base === base);
+
+    let key, item;
+    if (product === 'dune'){
+      const shade = clean(raw?.shade, 40), base = clean(raw?.base, 40);
+      const shadeF = filamentMap.get(shade), baseF = filamentMap.get(base);
+      if (!shadeF || !baseF) return { error: 'Оберіть кольори лампи.' };
+      key = `dune:${shade}:${base}`;
+      item = {
+        product, shade, base, qty,
+        productName: catalog.productName,
+        shadeName: shadeF.name,
+        baseName: baseF.name,
+        unitPrice: catalog.price,
+      };
+    } else {
+      const p = productMap.get(product);
+      if (!p) return { error: 'Невідомий товар у кошику.' };
+      let color = '', colorF = null;
+      if (p.filaments.length){
+        color = clean(raw?.color, 40);
+        colorF = p.filaments.find(f => f.id === color);
+        if (!colorF) return { error: `Оберіть колір для «${p.name}».` };
+      }
+      key = `${product}:${color}`;
+      item = {
+        product, color, qty,
+        productName: p.name,
+        colorName: colorF ? colorF.name : '',
+        unitPrice: p.price,
+      };
+    }
+    // the same product+colour twice → one line with the quantities added up
+    const same = items.find(x => (x.product === 'dune' ? `dune:${x.shade}:${x.base}` : `${x.product}:${x.color}`) === key);
     if (same) same.qty = Math.min(MAX_QTY, same.qty + qty);
-    else items.push({
-      product, shade, base, qty,
-      productName: catalog.productName,
-      shadeName: shadeF.name,
-      baseName: baseF.name,
-      unitPrice: catalog.price,
-    });
+    else items.push(item);
   }
 
   const order = {
@@ -191,16 +274,21 @@ export function newOrderId(){
   return `DN-${ymd}-${rnd}`;
 }
 
-export const itemTitle = it =>
-  `${it.productName} (абажур ${it.shadeName}, база ${it.baseName})`;
+export const itemTitle = it => it.product === 'dune'
+  ? `${it.productName} (абажур ${it.shadeName}, база ${it.baseName})`
+  : it.colorName ? `${it.productName} (колір ${it.colorName})` : it.productName;
+
+const itemColorLine = it => it.product === 'dune'
+  ? `   Абажур: ${it.shadeName}, база та обруч W: ${it.baseName}`
+  : it.colorName ? `   Колір: ${it.colorName}` : null;
 
 export function orderText(id, o, status){
   return [
     `${status} · замовлення ${id}`,
     '',
     ...o.items.map((it, i) =>
-      `${i + 1}. ${it.productName} × ${it.qty} — ${it.unitPrice * it.qty} ₴\n` +
-      `   Абажур: ${it.shadeName}, база та обруч W: ${it.baseName}`),
+      `${i + 1}. ${it.productName} × ${it.qty} — ${it.unitPrice * it.qty} ₴` +
+      (itemColorLine(it) ? `\n${itemColorLine(it)}` : '')),
     `Разом: ${o.total} ₴`,
     '',
     `Отримувач: ${o.name}`,
@@ -256,6 +344,15 @@ export async function relayStore(){
   if (globalThis.__relayStore) return globalThis.__relayStore; // local tests
   const { getStore } = await import('@netlify/blobs');
   return getStore({ name: 'telegram-relay', consistency: 'strong' });
+}
+
+// Product photos uploaded from /admin.html — see admin-photo.mjs / product-photo.mjs.
+export const MAX_PHOTO_BYTES = 4 * 1024 * 1024;
+export const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+export async function photosStore(){
+  if (globalThis.__photosStore) return globalThis.__photosStore; // local tests
+  const { getStore } = await import('@netlify/blobs');
+  return getStore({ name: 'product-photos', consistency: 'strong' });
 }
 
 /* Card orders waiting for payment also get a "pending/<id>" marker, so

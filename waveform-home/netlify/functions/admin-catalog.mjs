@@ -25,6 +25,6 @@ export default async (req) => {
   if (error) return json({ error }, 400);
 
   await saveCatalog(catalog);
-  console.log(`admin-catalog: saved (price ${catalog.price} ₴, ${catalog.filaments.length} colours)`);
+  console.log(`admin-catalog: saved (Dune ${catalog.price} ₴/${catalog.filaments.length} colours, ${catalog.categories.length} categories, ${catalog.products.length} products)`);
   return json({ ok: true, catalog });
 };

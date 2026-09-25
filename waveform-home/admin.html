@@ -39,10 +39,13 @@
     </section>
 
     <section id="editView" hidden>
-      <h1>Товар і кольори</h1>
+      <h1>Адмінка</h1>
       <p class="admin-hint">Зміни тут одразу видно на сайті — без публікації через Claude чи Netlify.</p>
 
-      <form id="catalogForm" class="admin-form">
+      <form id="catalogForm" class="admin-form admin-form-wide">
+
+        <h2 class="admin-subhead">Waveform Dune</h2>
+        <p class="admin-hint">Особливий товар із живим 3D на головній сторінці — фото сюди не додаються.</p>
         <div class="field">
           <label for="fProductName">Назва товару</label>
           <input type="text" id="fProductName" name="productName" maxlength="60" required>
@@ -51,15 +54,23 @@
           <label for="fPrice">Ціна, ₴</label>
           <input type="number" id="fPrice" name="price" min="1" max="1000000" step="1" required>
         </div>
-
-        <h2 class="admin-subhead">Кольори філаменту</h2>
-        <p class="admin-hint">Одна палітра і для абажура, і для бази з обручем. Порядок тут — порядок на сайті.</p>
+        <p class="admin-hint">Кольори філаменту — одна палітра і для абажура, і для бази з обручем. Порядок тут — порядок на сайті.</p>
         <div id="colorRows" class="admin-colors"></div>
         <button type="button" class="btn btn-ghost btn-small" id="addColorBtn">+ Додати колір</button>
 
+        <h2 class="admin-subhead">Категорії</h2>
+        <p class="admin-hint">Кожна категорія — окремий розділ на сайті з товарами нижче.</p>
+        <div id="categoryRows" class="admin-categories"></div>
+        <button type="button" class="btn btn-ghost btn-small" id="addCategoryBtn">+ Додати категорію</button>
+
+        <h2 class="admin-subhead">Товари</h2>
+        <p class="admin-hint">Без 3D — фото, ціна, опис і, за бажанням, один колір на вибір.</p>
+        <div id="productRows" class="admin-products"></div>
+        <button type="button" class="btn btn-ghost btn-small" id="addProductBtn">+ Додати товар</button>
+
         <p class="form-error" id="catalogError" role="alert" hidden></p>
         <p class="form-ok" id="catalogOk" role="status" hidden>Збережено.</p>
-        <button class="btn btn-primary btn-wide" type="submit" id="catalogSave">Зберегти</button>
+        <button class="btn btn-primary btn-wide" type="submit" id="catalogSave">Зберегти все</button>
       </form>
     </section>
 
@@ -78,6 +89,52 @@
     <input type="text" class="cr-name" placeholder="Назва (напр. Sky Blue)" maxlength="40">
     <input type="text" class="cr-hex" placeholder="#8EC5EF" maxlength="7">
     <button type="button" class="btn btn-ghost btn-small cr-remove" aria-label="Видалити колір">✕</button>
+  </div>
+</template>
+
+<template id="categoryRowTpl">
+  <div class="admin-category-row">
+    <input type="text" class="cat-name" placeholder="Назва категорії (напр. Вази)" maxlength="60">
+    <button type="button" class="btn btn-ghost btn-small cat-remove" aria-label="Видалити категорію">✕</button>
+  </div>
+</template>
+
+<template id="productRowTpl">
+  <div class="admin-product">
+    <div class="admin-product-head">
+      <input type="text" class="pr-name" placeholder="Назва товару" maxlength="80">
+      <button type="button" class="btn btn-ghost btn-small pr-remove" aria-label="Видалити товар">✕</button>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Категорія</label>
+        <select class="pr-category"></select>
+      </div>
+      <div class="field">
+        <label>Ціна, ₴</label>
+        <input type="number" class="pr-price" min="1" max="1000000" step="1">
+      </div>
+    </div>
+    <div class="field">
+      <label>Опис <em class="optional">(необовʼязково)</em></label>
+      <textarea class="pr-description" maxlength="600" rows="2"></textarea>
+    </div>
+    <div class="admin-photos"></div>
+    <label class="btn btn-ghost btn-small pr-photo-add">
+      + Додати фото
+      <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="pr-photo-input" hidden>
+    </label>
+    <p class="admin-hint pr-photo-status" hidden></p>
+    <p class="admin-hint">Колір (необовʼязково — якщо в товару лише один вигляд, кольори не додавайте)</p>
+    <div class="admin-colors pr-colors"></div>
+    <button type="button" class="btn btn-ghost btn-small pr-add-color">+ Додати колір</button>
+  </div>
+</template>
+
+<template id="productPhotoTpl">
+  <div class="admin-photo">
+    <img alt="">
+    <button type="button" class="ph-remove" aria-label="Видалити фото">✕</button>
   </div>
 </template>
 

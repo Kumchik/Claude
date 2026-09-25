@@ -34,6 +34,15 @@ let FILAMENTS = [
 let SHADE_COLORS = FILAMENTS;
 let BASE_COLORS = FILAMENTS;
 
+/* Товари, додані через /admin.html поза Dune (без 3D, з фото-галереєю й
+   не обов'язковим одним кольором на вибір) — і категорії, за якими вони
+   групуються на сторінці. Порожні, поки не завантажиться каталог або
+   поки в адмінці нічого не додано. */
+let catalogCategories = [];
+let catalogProducts = [];
+const findProduct = id => catalogProducts.find(p => p.id === id);
+const photoUrl = id => `/api/product-photo?id=${encodeURIComponent(id)}`;
+
 /* Заміняє значення вище на актуальні з сервера. Якщо функції недоступні
    (звичайний статичний хостинг, прев'ю) — мовчки лишає значення за
    замовчуванням вище, сайт далі працює. */
@@ -48,12 +57,40 @@ async function loadCatalog(){
     FILAMENTS = cat.filaments;
     SHADE_COLORS = FILAMENTS;
     BASE_COLORS = FILAMENTS;
+    catalogCategories = Array.isArray(cat.categories) ? cat.categories : [];
+    catalogProducts = Array.isArray(cat.products) ? cat.products : [];
     // an admin may have removed the colour the page defaulted to
     if (!getShade(state.shade)) state.shade = FILAMENTS[0].id;
     if (!getBase(state.base)) state.base = FILAMENTS[0].id;
   } catch (e){
     console.warn('loadCatalog failed, using defaults', e);
   }
+}
+
+/* Уніфікований опис рядка кошика — і для Dune (два кольори, свій 3D),
+   і для звичайних товарів з адмінки (фото, максимум один колір або без
+   кольору взагалі). Все відображення кошика й оформлення читає звідси,
+   щоб не дублювати цю розгалуженість у кожній функції. */
+function cartLineInfo(it){
+  if (it.product === 'dune'){
+    const shade = getShade(it.shade), base = getBase(it.base);
+    return {
+      name: PRODUCT_NAME, unitPrice: PRICE_UAH,
+      swatches: [shade?.hex, base?.hex],
+      lines: [`Абажур: ${shade?.name || '—'}`, `База й обруч: ${base?.name || '—'}`],
+      summary: `абажур ${shade?.name || '—'}, база ${base?.name || '—'}`,
+    };
+  }
+  const p = findProduct(it.product);
+  if (!p) return { name: 'Товар', unitPrice: 0, swatches: [], lines: [], summary: '', photo: null };
+  const color = p.filaments.find(f => f.id === it.color);
+  return {
+    name: p.name, unitPrice: p.price,
+    swatches: color ? [color.hex] : [],
+    lines: color ? [`Колір: ${color.name}`] : [],
+    summary: color ? `колір ${color.name}` : '',
+    photo: p.photos[0] ? photoUrl(p.photos[0]) : null,
+  };
 }
 
 // Кольори за замовчуванням — як на фото лампи.
@@ -187,38 +224,182 @@ function renderFaq(){
   });
 }
 
+/* ---------- товари з /admin.html ----------
+   Dune завжди зверху, у своєму окремому блоці з живим 3D — цього не
+   чіпаємо. Тут — усе, що додано в адмінці: секція під назвою категорії,
+   картка на товар (фото, назва, ціна, «Детальніше»), що відкриває модалку
+   з галереєю фото, описом, кольором (якщо є) і кнопкою «Додати в кошик». */
+function renderDynamicCatalog(){
+  const section = document.getElementById('more-products');
+  const box = $('moreProductsContainer');
+  box.innerHTML = '';
+  if (!catalogProducts.length){ section.hidden = true; return; }
+
+  catalogCategories.forEach(cat => {
+    const products = catalogProducts.filter(p => p.categoryId === cat.id);
+    if (!products.length) return;
+    const head = document.createElement('div');
+    head.className = 'section-head';
+    const h2 = document.createElement('h2');
+    h2.textContent = cat.name;
+    head.appendChild(h2);
+    const grid = document.createElement('div');
+    grid.className = 'catalog-grid';
+    products.forEach(p => {
+      const card = document.createElement('article');
+      card.className = 'catalog-card';
+      const photo = p.photos[0] ? photoUrl(p.photos[0]) : null;
+      if (photo){
+        const img = document.createElement('img');
+        img.src = photo; img.loading = 'lazy'; img.alt = p.name;
+        card.appendChild(img);
+      }
+      const body = document.createElement('div');
+      body.className = 'catalog-body';
+      body.innerHTML = `
+        <h3></h3>
+        <p></p>
+        <span class="catalog-price"></span>
+        <button type="button" class="btn btn-primary btn-small">Детальніше</button>`;
+      card.appendChild(body);
+      card.querySelector('h3').textContent = p.name;
+      card.querySelector('.catalog-body p').textContent = p.description || '';
+      card.querySelector('.catalog-price').textContent = formatPrice(p.price);
+      card.querySelector('button').addEventListener('click', () => openProductModal(p.id));
+      grid.appendChild(card);
+    });
+    box.append(head, grid);
+  });
+  section.hidden = box.children.length === 0;
+}
+
+let pmState = { productId: null, color: null, qty: 1 };
+
+function openProductModal(productId){
+  const p = findProduct(productId);
+  if (!p) return;
+  pmState = { productId, color: p.filaments[0]?.id || null, qty: 1 };
+
+  const photosBox = $('pmPhotos');
+  photosBox.innerHTML = '';
+  if (p.photos.length){
+    const main = document.createElement('img');
+    main.src = photoUrl(p.photos[0]);
+    main.alt = p.name;
+    photosBox.appendChild(main);
+    if (p.photos.length > 1){
+      const thumbs = document.createElement('div');
+      thumbs.className = 'pm-thumbs';
+      p.photos.forEach((photoId, i) => {
+        const t = document.createElement('img');
+        t.src = photoUrl(photoId);
+        t.alt = '';
+        t.className = i === 0 ? 'active' : '';
+        t.addEventListener('click', () => {
+          main.src = photoUrl(photoId);
+          thumbs.querySelectorAll('img').forEach(im => im.classList.remove('active'));
+          t.classList.add('active');
+        });
+        thumbs.appendChild(t);
+      });
+      photosBox.appendChild(thumbs);
+    }
+  }
+
+  $('pmTitle').textContent = p.name;
+  $('pmDescription').textContent = p.description || '';
+  $('pmDescription').hidden = !p.description;
+  renderProductColors(p);
+  updateProductModal(p);
+
+  const qtyBox = $('pmQty');
+  qtyBox.querySelector('output').textContent = pmState.qty;
+  qtyBox.querySelector('.q-minus').onclick = () => { pmState.qty = Math.max(1, pmState.qty - 1); qtyBox.querySelector('output').textContent = pmState.qty; };
+  qtyBox.querySelector('.q-plus').onclick = () => { pmState.qty = Math.min(MAX_QTY, pmState.qty + 1); qtyBox.querySelector('output').textContent = pmState.qty; };
+
+  $('pmAdd').onclick = () => {
+    addProductToCart(p.id, pmState.color, pmState.qty);
+    closeProductModal();
+  };
+
+  $('productModal').classList.add('open');
+  $('pmClose').focus();
+}
+
+function renderProductColors(p){
+  const box = $('pmColors');
+  if (!p.filaments.length){ box.innerHTML = ''; return; }
+  renderColorRow(box, p.filaments, pmState.color, id => {
+    pmState.color = id;
+    renderProductColors(p);
+  });
+}
+
+function updateProductModal(p){
+  $('pmPrice').textContent = formatPrice(p.price);
+}
+
+function closeProductModal(){
+  $('productModal').classList.remove('open');
+}
+
 /* ---------- cart ----------
-   Lines are { product, shade, base, qty }; the same lamp added twice
-   becomes one line with a bigger quantity. The cart is kept in this
-   browser (localStorage) so it survives a reload or a closed tab. Prices
-   shown here are for display only: the server recounts the total. */
+   Lines are { product, shade, base, qty } for Dune, or { product, color,
+   qty } for a product added from /admin.html (color omitted if that
+   product has no palette). The same line added twice becomes one line
+   with a bigger quantity. The cart is kept in this browser
+   (localStorage) so it survives a reload or a closed tab. Prices shown
+   here are for display only: the server recounts the total. */
 const CART_KEY = 'waveform-cart-v1';
 const MAX_QTY = 10;
-let cart = loadCart();
+// filled from loadCart() once the catalog is loaded (see DOMContentLoaded) —
+// otherwise a cart line for a product added via /admin.html would look
+// invalid before catalogProducts is populated and get dropped
+let cart = [];
 
 function loadCart(){
   try {
     const saved = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-    return Array.isArray(saved) ? saved.filter(it =>
-      it && it.product === 'dune' && getShade(it.shade) && getBase(it.base) &&
-      Number.isInteger(it.qty) && it.qty >= 1 && it.qty <= MAX_QTY) : [];
+    if (!Array.isArray(saved)) return [];
+    return saved.filter(it => {
+      if (!it || !Number.isInteger(it.qty) || it.qty < 1 || it.qty > MAX_QTY) return false;
+      if (it.product === 'dune') return getShade(it.shade) && getBase(it.base);
+      const p = findProduct(it.product);
+      if (!p) return false;
+      return p.filaments.length ? p.filaments.some(f => f.id === it.color) : true;
+    });
   } catch (e) { return []; }
 }
 function saveCart(){
   try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) { /* private mode */ }
 }
 const cartCount = () => cart.reduce((n, it) => n + it.qty, 0);
-const cartTotal = () => cart.reduce((sum, it) => sum + PRICE_UAH * it.qty, 0);
+const cartTotal = () => cart.reduce((sum, it) => sum + cartLineInfo(it).unitPrice * it.qty, 0);
 
 function addToCart(){
-  const same = cart.find(it => it.shade === state.shade && it.base === state.base);
+  const same = cart.find(it => it.product === 'dune' && it.shade === state.shade && it.base === state.base);
   if (same) same.qty = Math.min(MAX_QTY, same.qty + 1);
   else cart.push({ product: 'dune', shade: state.shade, base: state.base, qty: 1 });
   saveCart();
   renderCart();
+  bumpCartBadge();
+  openCart();
+}
+
+// used by the product modal (see initCatalogGrid) for anything added via /admin.html
+function addProductToCart(productId, color, qty = 1){
+  const same = cart.find(it => it.product === productId && it.color === color);
+  if (same) same.qty = Math.min(MAX_QTY, same.qty + qty);
+  else cart.push({ product: productId, color, qty: Math.min(MAX_QTY, qty) });
+  saveCart();
+  renderCart();
+  bumpCartBadge();
+  openCart();
+}
+
+function bumpCartBadge(){
   const badge = $('cartCount');
   badge.classList.remove('bump'); void badge.offsetWidth; badge.classList.add('bump');
-  openCart();
 }
 
 function setQty(i, qty){
@@ -246,21 +427,23 @@ function renderCart(){
   const list = $('cartList');
   list.innerHTML = '';
   cart.forEach((it, i) => {
-    const shade = getShade(it.shade), base = getBase(it.base);
+    const info = cartLineInfo(it);
     const li = document.createElement('li');
     li.className = 'cart-line';
+    const swatchHtml = info.swatches.length === 2
+      ? `<span class="sw-shade" style="background:${info.swatches[0]}"></span><span class="sw-base" style="background:${info.swatches[1]}"></span>`
+      : info.swatches.length === 1
+      ? `<span class="sw-shade" style="background:${info.swatches[0]}"></span>`
+      : info.photo ? `<img src="${info.photo}" alt="" loading="lazy">` : '';
     li.innerHTML = `
-      <div class="cart-swatch" aria-hidden="true"><span class="sw-shade"></span><span class="sw-base"></span></div>
-      <div class="cart-info"><strong></strong><small class="c-shade"></small><small class="c-base"></small>
+      <div class="cart-swatch${info.swatches.length === 1 ? ' single' : ''}" aria-hidden="true">${swatchHtml}</div>
+      <div class="cart-info"><strong></strong>${info.lines.map(l => `<small></small>`).join('')}
         <button type="button" class="cart-remove">Видалити</button></div>
       <div class="cart-side"><span class="cart-line-price"></span>
         <div class="qty"><button type="button" class="q-minus"></button><output></output><button type="button" class="q-plus"></button></div></div>`;
-    li.querySelector('.sw-shade').style.background = shade.hex;
-    li.querySelector('.sw-base').style.background = base.hex;
-    li.querySelector('strong').textContent = PRODUCT_NAME;
-    li.querySelector('.c-shade').textContent = `Абажур: ${shade.name}`;
-    li.querySelector('.c-base').textContent = `База й обруч: ${base.name}`;
-    li.querySelector('.cart-line-price').textContent = formatPrice(PRICE_UAH * it.qty);
+    li.querySelector('strong').textContent = info.name;
+    li.querySelectorAll('.cart-info small').forEach((el, j) => { el.textContent = info.lines[j]; });
+    li.querySelector('.cart-line-price').textContent = formatPrice(info.unitPrice * it.qty);
     li.querySelector('output').textContent = it.qty;
     const minus = li.querySelector('.q-minus'), plus = li.querySelector('.q-plus');
     minus.textContent = '−'; plus.textContent = '+';
@@ -304,7 +487,10 @@ function buildSummary(extra = []){
   return [
     'Заявка на замовлення Waveform',
     '',
-    ...cart.map((it, i) => `${i + 1}. ${PRODUCT_NAME} × ${it.qty}: абажур ${getShade(it.shade).name}, база ${getBase(it.base).name}`),
+    ...cart.map((it, i) => {
+      const info = cartLineInfo(it);
+      return `${i + 1}. ${info.name} × ${it.qty}${info.summary ? ': ' + info.summary : ''}`;
+    }),
     `Разом: ${formatPrice(cartTotal())}`,
     ...extra,
   ].join('\n');
@@ -328,14 +514,17 @@ function showCheckout(){
   const box = $('checkoutItem');
   box.innerHTML = '<ul></ul><div class="co-total"><span>Разом</span><span></span></div>';
   cart.forEach(it => {
+    const info = cartLineInfo(it);
     const li = document.createElement('li');
     const left = document.createElement('span');
-    left.textContent = `${PRODUCT_NAME} × ${it.qty}`;
-    const sub = document.createElement('small');
-    sub.textContent = `абажур ${getShade(it.shade).name} · база ${getBase(it.base).name}`;
-    left.appendChild(sub);
+    left.textContent = `${info.name} × ${it.qty}`;
+    if (info.summary){
+      const sub = document.createElement('small');
+      sub.textContent = info.summary.replace(/^./, c => c.toUpperCase());
+      left.appendChild(sub);
+    }
     const price = document.createElement('span');
-    price.textContent = formatPrice(PRICE_UAH * it.qty);
+    price.textContent = formatPrice(info.unitPrice * it.qty);
     li.append(left, price);
     box.querySelector('ul').appendChild(li);
   });
@@ -407,7 +596,7 @@ async function submitCheckout(e){
 
   const f = $('checkoutForm');
   const data = {
-    items: cart.map(({ product, shade, base, qty }) => ({ product, shade, base, qty })),
+    items: cart.map(({ product, shade, base, color, qty }) => ({ product, shade, base, color, qty })),
     payment: payment(),
     name: f.elements.name.value, phone: f.elements.phone.value,
     city: f.elements.city.value, branch: f.elements.branch.value,
@@ -596,9 +785,11 @@ function initNav(){
 /* ---------- init ---------- */
 document.addEventListener('DOMContentLoaded', async () => {
   await loadCatalog();
+  cart = loadCart();
   renderOptions();
   updatePreview();
   renderFaq();
+  renderDynamicCatalog();
   initNav();
 
   document.getElementById('lightToggle').addEventListener('click', () => {
@@ -625,9 +816,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   $('orderModal').addEventListener('click', e => {
     if (e.target.id === 'orderModal') closeOrderModal();
   });
+  $('pmClose').addEventListener('click', closeProductModal);
+  $('productModal').addEventListener('click', e => {
+    if (e.target.id === 'productModal') closeProductModal();
+  });
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     if ($('orderModal').classList.contains('open')) closeOrderModal();
+    else if ($('productModal').classList.contains('open')) closeProductModal();
     else if (cartOpen()) closeCart();
   });
   $('checkoutForm').addEventListener('submit', submitCheckout);
