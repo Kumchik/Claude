@@ -40,6 +40,8 @@ let BASE_COLORS = FILAMENTS;
    поки в адмінці нічого не додано. */
 let catalogCategories = [];
 let catalogProducts = [];
+// категорія, обрана для Dune в адмінці; порожньо — Dune без категорії, як і завжди
+let duneCategoryId = '';
 const findProduct = id => catalogProducts.find(p => p.id === id);
 const photoUrl = id => `/api/product-photo?id=${encodeURIComponent(id)}`;
 
@@ -59,6 +61,7 @@ async function loadCatalog(){
     BASE_COLORS = FILAMENTS;
     catalogCategories = Array.isArray(cat.categories) ? cat.categories : [];
     catalogProducts = Array.isArray(cat.products) ? cat.products : [];
+    duneCategoryId = typeof cat.duneCategoryId === 'string' ? cat.duneCategoryId : '';
     // an admin may have removed the colour the page defaulted to
     if (!getShade(state.shade)) state.shade = FILAMENTS[0].id;
     if (!getBase(state.base)) state.base = FILAMENTS[0].id;
@@ -197,7 +200,10 @@ function updatePreview(){
   document.getElementById('shadeColorName').textContent = `— ${shade.name}`;
   document.getElementById('baseColorName').textContent = `— ${base.name}`;
   document.getElementById('metaPrice').textContent = formatPrice();
-  document.getElementById('catalogPrice').textContent = formatPrice();
+  // Dune's catalog card (if shown) is rebuilt by renderCatalog() on every
+  // tab switch, so it may not be in the DOM at any given moment
+  const catalogPriceEl = document.getElementById('catalogPrice');
+  if (catalogPriceEl) catalogPriceEl.textContent = formatPrice();
   document.getElementById('addToCartBtn').textContent =
     `Додати в кошик — ${formatPrice()}`;
 }
@@ -224,53 +230,105 @@ function renderFaq(){
   });
 }
 
-/* ---------- товари з /admin.html ----------
-   Dune завжди зверху, у своєму окремому блоці з живим 3D — цього не
-   чіпаємо. Тут — усе, що додано в адмінці: секція під назвою категорії,
-   картка на товар (фото, назва, ціна, «Детальніше»), що відкриває модалку
-   з галереєю фото, описом, кольором (якщо є) і кнопкою «Додати в кошик». */
-function renderDynamicCatalog(){
-  const section = document.getElementById('more-products');
-  const box = $('moreProductsContainer');
-  box.innerHTML = '';
-  if (!catalogProducts.length){ section.hidden = true; return; }
+/* ---------- каталог: вкладки категорій + картки товарів ----------
+   Поки в адмінці немає жодної категорії, розділ виглядає так, як завжди
+   виглядав: картка Dune і заглушка "Нові форми". Щойно категорія
+   з'являється, замість цього — вкладки категорій; Dune потрапляє в ту з
+   них, яку для неї обрали в адмінці (fCategory / duneCategoryId), клік
+   по її картці веде до звичайного конструктора нижче на сторінці.
+   Кожен звичайний товар — картка з фото, ціною й кнопкою "Детальніше",
+   що відкриває модалку (галерея, опис, колір, кількість, у кошик). */
+let activeCategoryId = null;
 
+function buildCard({ name, description, price, photoSrc }, buttonLabel, onClick){
+  const card = document.createElement('article');
+  card.className = 'catalog-card';
+  if (photoSrc){
+    const img = document.createElement('img');
+    img.src = photoSrc; img.loading = 'lazy'; img.alt = name;
+    card.appendChild(img);
+  }
+  const body = document.createElement('div');
+  body.className = 'catalog-body';
+  body.innerHTML = '<h3></h3><p></p><span class="catalog-price"></span><button type="button" class="btn btn-primary btn-small"></button>';
+  card.appendChild(body);
+  card.querySelector('h3').textContent = name;
+  card.querySelector('.catalog-body p').textContent = description || '';
+  const priceEl = card.querySelector('.catalog-price');
+  priceEl.textContent = formatPrice(price);
+  const btn = card.querySelector('button');
+  btn.textContent = buttonLabel;
+  btn.addEventListener('click', onClick);
+  return { card, priceEl };
+}
+
+function buildDuneCard(){
+  const { card, priceEl } = buildCard(
+    { name: PRODUCT_NAME, description: 'Настільна лампа з рельєфом піщаної дюни', price: PRICE_UAH, photoSrc: 'img/dune-hero-700.jpg' },
+    'Обрати кольори',
+    () => document.getElementById('configurator').scrollIntoView({ behavior: 'smooth' }));
+  priceEl.id = 'catalogPrice'; // updatePreview() keeps this in sync with the chosen colours
+  return card;
+}
+
+function buildProductCard(p){
+  const { card } = buildCard(
+    { name: p.name, description: p.description, price: p.price, photoSrc: p.photos[0] ? photoUrl(p.photos[0]) : null },
+    'Детальніше', () => openProductModal(p.id));
+  return card;
+}
+
+function buildSoonCard(){
+  const card = document.createElement('article');
+  card.className = 'catalog-card catalog-card-soon';
+  card.innerHTML = `
+    <div class="soon-visual" aria-hidden="true">
+      <svg viewBox="0 0 64 64"><path d="M8,36 C14,36 16,24 22,24 C28,24 30,40 36,40 C42,40 44,28 50,28 C53,28 55,31 56,32"/></svg>
+    </div>
+    <div class="catalog-body">
+      <h3>Нові форми</h3>
+      <p>Скоро в колекції</p>
+      <a href="https://www.instagram.com/waveform.ua" class="btn btn-ghost btn-small" target="_blank" rel="noopener">Стежити в Instagram</a>
+    </div>`;
+  return card;
+}
+
+function renderCatalog(){
+  const tabsBox = $('catTabs');
+  const grid = $('catalogGrid');
+  const lead = $('catalogLead');
+  tabsBox.innerHTML = '';
+  grid.innerHTML = '';
+
+  if (!catalogCategories.length){
+    tabsBox.hidden = true;
+    lead.textContent = "Починаємо з Dune. Нові форми вже в роботі — стежте за нами в Instagram.";
+    grid.append(buildDuneCard(), buildSoonCard());
+    return;
+  }
+
+  tabsBox.hidden = false;
+  lead.textContent = 'Оберіть категорію.';
+  if (!activeCategoryId || !catalogCategories.some(c => c.id === activeCategoryId)){
+    activeCategoryId = catalogCategories[0].id;
+  }
   catalogCategories.forEach(cat => {
-    const products = catalogProducts.filter(p => p.categoryId === cat.id);
-    if (!products.length) return;
-    const head = document.createElement('div');
-    head.className = 'section-head';
-    const h2 = document.createElement('h2');
-    h2.textContent = cat.name;
-    head.appendChild(h2);
-    const grid = document.createElement('div');
-    grid.className = 'catalog-grid';
-    products.forEach(p => {
-      const card = document.createElement('article');
-      card.className = 'catalog-card';
-      const photo = p.photos[0] ? photoUrl(p.photos[0]) : null;
-      if (photo){
-        const img = document.createElement('img');
-        img.src = photo; img.loading = 'lazy'; img.alt = p.name;
-        card.appendChild(img);
-      }
-      const body = document.createElement('div');
-      body.className = 'catalog-body';
-      body.innerHTML = `
-        <h3></h3>
-        <p></p>
-        <span class="catalog-price"></span>
-        <button type="button" class="btn btn-primary btn-small">Детальніше</button>`;
-      card.appendChild(body);
-      card.querySelector('h3').textContent = p.name;
-      card.querySelector('.catalog-body p').textContent = p.description || '';
-      card.querySelector('.catalog-price').textContent = formatPrice(p.price);
-      card.querySelector('button').addEventListener('click', () => openProductModal(p.id));
-      grid.appendChild(card);
-    });
-    box.append(head, grid);
+    const tab = document.createElement('button');
+    tab.type = 'button';
+    tab.className = 'cat-tab' + (cat.id === activeCategoryId ? ' active' : '');
+    tab.textContent = cat.name;
+    tab.addEventListener('click', () => { activeCategoryId = cat.id; renderCatalog(); });
+    tabsBox.appendChild(tab);
   });
-  section.hidden = box.children.length === 0;
+
+  if (activeCategoryId === duneCategoryId) grid.appendChild(buildDuneCard());
+  catalogProducts.filter(p => p.categoryId === activeCategoryId).forEach(p => grid.appendChild(buildProductCard(p)));
+  if (!grid.children.length){
+    const empty = document.createElement('p');
+    empty.style.cssText = 'grid-column:1/-1; text-align:center';
+    empty.textContent = 'У цій категорії поки немає товарів.';
+    grid.appendChild(empty);
+  }
 }
 
 let pmState = { productId: null, color: null, qty: 1 };
@@ -787,9 +845,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadCatalog();
   cart = loadCart();
   renderOptions();
+  renderCatalog();
   updatePreview();
   renderFaq();
-  renderDynamicCatalog();
   initNav();
 
   document.getElementById('lightToggle').addEventListener('click', () => {

@@ -307,6 +307,14 @@ figure{ margin:0; }
 .benefit-card p{ font-size: .92rem; margin:0; }
 
 /* ---------- catalog ---------- */
+.cat-tabs{ display:flex; flex-wrap:wrap; justify-content:center; gap: 8px; margin: 0 0 32px; }
+.cat-tab{
+  border: 1.5px solid var(--line); background: var(--card); color: var(--ink-soft);
+  font: inherit; font-weight: 700; font-size: .92rem; padding: .55em 1.3em;
+  border-radius: 999px; cursor: pointer; transition: background .15s, color .15s, border-color .15s;
+}
+.cat-tab:hover{ border-color: var(--clay); color: var(--ink); }
+.cat-tab.active{ background: var(--clay); border-color: var(--clay); color: #fff; }
 .catalog-grid{ display:grid; grid-template-columns: repeat(2, minmax(0, 340px)); gap: 24px; justify-content:center; }
 .catalog-card{
   background: var(--card); border-radius: var(--radius-md); overflow:hidden;

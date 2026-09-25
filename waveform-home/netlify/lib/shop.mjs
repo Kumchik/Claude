@@ -49,6 +49,10 @@ export const DEFAULT_CATALOG = {
   // на вибір; порожня — товар без вибору кольору).
   categories: [],
   products: [],
+  // якщо порожньо — Dune показується сам, без категорій (як і зараз);
+  // якщо вказано id категорії — Dune зʼявляється карткою в цій категорії
+  // разом з іншими товарами, а клік по картці веде до конструктора
+  duneCategoryId: '',
 };
 
 export async function catalogStore(){
@@ -65,9 +69,10 @@ export async function getCatalog(){
     const store = await catalogStore();
     const saved = await store.get('config', { type: 'json' });
     if (saved && Array.isArray(saved.filaments) && saved.filaments.length){
-      // a catalog saved before categories/products existed still works
+      // a catalog saved before categories/products/duneCategoryId existed still works
       if (!Array.isArray(saved.categories)) saved.categories = [];
       if (!Array.isArray(saved.products)) saved.products = [];
+      if (typeof saved.duneCategoryId !== 'string') saved.duneCategoryId = '';
       return saved;
     }
   } catch (e){
@@ -148,7 +153,10 @@ export function validateCatalog(body){
     products.push({ id, name, categoryId, price: pPrice, description, photos, filaments: colors.filaments });
   }
 
-  return { catalog: { productName, price, filaments: duneColors.filaments, categories, products } };
+  let duneCategoryId = clean(body.duneCategoryId, 40).toLowerCase();
+  if (duneCategoryId && !catIds.has(duneCategoryId)) duneCategoryId = '';
+
+  return { catalog: { productName, price, filaments: duneColors.filaments, categories, products, duneCategoryId } };
 }
 
 export async function saveCatalog(catalog){

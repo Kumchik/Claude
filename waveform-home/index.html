@@ -227,41 +227,20 @@
   </section>
 
   <!-- CATALOG -->
+  <!-- Наповнюється renderCatalog() в app.js. Поки немає жодної категорії
+       в адмінці — показує тільки Dune і заглушку "Нові форми" (як і було
+       завжди). Щойно зʼявляється категорія — рендерить вкладки категорій
+       (Dune потрапляє в ту, яку обрали для неї в адмінці). -->
   <section class="section section-alt" id="catalog">
     <div class="container">
       <div class="section-head">
         <p class="eyebrow">колекція</p>
         <h2>Колекція Waveform</h2>
-        <p class="section-lead">Починаємо з Dune. Нові форми вже в роботі — стежте за нами в Instagram.</p>
+        <p class="section-lead" id="catalogLead">Починаємо з Dune. Нові форми вже в роботі — стежте за нами в Instagram.</p>
       </div>
-      <div class="catalog-grid">
-        <article class="catalog-card">
-          <img src="img/dune-hero-700.jpg" width="700" height="933" loading="lazy" alt="Лампа Waveform Dune">
-          <div class="catalog-body">
-            <h3>Dune</h3>
-            <p>Настільна лампа з рельєфом піщаної дюни</p>
-            <span class="catalog-price" id="catalogPrice">2 100 ₴</span>
-            <a href="#configurator" class="btn btn-primary btn-small">Обрати кольори</a>
-          </div>
-        </article>
-        <article class="catalog-card catalog-card-soon">
-          <div class="soon-visual" aria-hidden="true">
-            <svg viewBox="0 0 64 64"><path d="M8,36 C14,36 16,24 22,24 C28,24 30,40 36,40 C42,40 44,28 50,28 C53,28 55,31 56,32"/></svg>
-          </div>
-          <div class="catalog-body">
-            <h3>Нові форми</h3>
-            <p>Скоро в колекції</p>
-            <a href="https://www.instagram.com/waveform.ua" class="btn btn-ghost btn-small" target="_blank" rel="noopener">Стежити в Instagram</a>
-          </div>
-        </article>
-      </div>
+      <div class="cat-tabs" id="catTabs" hidden></div>
+      <div class="catalog-grid" id="catalogGrid"></div>
     </div>
-  </section>
-
-  <!-- Товари, додані через /admin.html — приховано, поки catalogProducts
-       порожній; заповнюється renderDynamicCatalog() в app.js -->
-  <section class="section section-alt" id="more-products" hidden>
-    <div class="container" id="moreProductsContainer"></div>
   </section>
 
   <!-- HOW IT WORKS -->

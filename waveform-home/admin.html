@@ -54,6 +54,11 @@
           <label for="fPrice">Ціна, ₴</label>
           <input type="number" id="fPrice" name="price" min="1" max="1000000" step="1" required>
         </div>
+        <div class="field">
+          <label for="fCategory">Категорія на сайті <em class="optional">(необовʼязково)</em></label>
+          <select id="fCategory"></select>
+          <p class="admin-hint">Якщо оберете категорію — Dune зʼявиться карткою серед товарів цієї категорії (клік веде до конструктора). Без категорії Dune показується сам, як зараз.</p>
+        </div>
         <p class="admin-hint">Кольори філаменту — одна палітра і для абажура, і для бази з обручем. Порядок тут — порядок на сайті.</p>
         <div id="colorRows" class="admin-colors"></div>
         <button type="button" class="btn btn-ghost btn-small" id="addColorBtn">+ Додати колір</button>

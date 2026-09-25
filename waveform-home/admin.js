@@ -107,7 +107,7 @@ function readCategoryRows(){
   });
 }
 
-// keeps every product's category <select> in sync whenever a category is added/renamed/removed
+// keeps every product's category <select> (and Dune's own) in sync whenever a category is added/renamed/removed
 function refreshCategoryOptions(){
   const categories = readCategoryRows();
   document.querySelectorAll('.pr-category').forEach(select => {
@@ -118,6 +118,14 @@ function refreshCategoryOptions(){
     [...select.options].forEach((opt, i) => { if (categories[i]) opt.textContent = categories[i].name; });
     if (categories.some(c => c.id === current)) select.value = current;
   });
+  const dune = $('fCategory');
+  if (dune){
+    const current = dune.value;
+    dune.innerHTML = ['<option value="">— без категорії (як зараз) —</option>']
+      .concat(categories.map(c => `<option value="${c.id}"></option>`)).join('');
+    [...dune.options].slice(1).forEach((opt, i) => { opt.textContent = categories[i].name; });
+    if (!current || categories.some(c => c.id === current)) dune.value = current;
+  }
 }
 
 /* ---------- товари ---------- */
@@ -214,6 +222,8 @@ async function loadCatalogIntoForm(){
 
   $('categoryRows').innerHTML = '';
   (cat.categories || []).forEach(addCategoryRow);
+  refreshCategoryOptions(); // populates #fCategory even when there are zero categories yet
+  $('fCategory').value = cat.duneCategoryId || '';
 
   $('productRows').innerHTML = '';
   (cat.products || []).forEach(addProductRow);
@@ -226,6 +236,7 @@ async function saveCatalog(){
     filaments: readColorRows($('colorRows')),
     categories: readCategoryRows(),
     products: readProductRows(),
+    duneCategoryId: $('fCategory').value,
   };
   return authedFetch('/api/admin-catalog', body);
 }
