@@ -618,4 +618,11 @@ document.addEventListener('DOMContentLoaded', () => {
   $('checkoutForm').addEventListener('change', e => { if (e.target.name === 'payment') syncSubmitLabel(); });
   checkReturnedOrder();
   document.getElementById('year').textContent = new Date().getFullYear();
+
+  // "back to top" arrow: appears after scrolling past the hero
+  const backToTop = $('backToTop');
+  const toggleBackToTop = () => backToTop.classList.toggle('is-visible', window.scrollY > 500);
+  window.addEventListener('scroll', toggleBackToTop, { passive: true });
+  toggleBackToTop();
+  backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 });

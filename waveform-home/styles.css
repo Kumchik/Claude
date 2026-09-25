@@ -574,3 +574,18 @@ body.no-scroll{ overflow: hidden; }
 @media (prefers-reduced-motion: reduce){
   *{ transition: none !important; scroll-behavior: auto !important; }
 }
+
+.back-to-top{
+  position: fixed; right: 22px; bottom: 22px; z-index: 80;
+  width: 46px; height: 46px; border-radius: 50%; border: none;
+  background: var(--clay); color: #fff; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 14px 30px -14px rgba(138,82,54,0.7);
+  opacity: 0; transform: translateY(10px); pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease, background .18s ease;
+}
+.back-to-top.is-visible{ opacity: 1; transform: translateY(0); pointer-events: auto; }
+.back-to-top:hover{ background: var(--clay-dark); }
+@media (max-width: 640px){
+  .back-to-top{ right: 14px; bottom: 14px; width: 42px; height: 42px; }
+}

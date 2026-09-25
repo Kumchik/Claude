@@ -16,7 +16,7 @@ window.SELLER = {
   // місце реєстрації ФОП з виписки з ЄДР
   address: 'Україна, Одеська обл., м. Білгород-Дністровський',
   phone: '+380 97 857 2847',
-  email: 'kumchikproduction@gmail.com',
+  email: 'waveform11111@gmail.com',
   telegram: '@waveform_orders_bot', // username бота, не особистого акаунта
   // скільки робочих днів займає виготовлення лампи після підтвердження
   productionDays: '2–5',
