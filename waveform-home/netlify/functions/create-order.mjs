@@ -35,6 +35,8 @@ export default async (req) => {
       ccy: 980,
       merchantPaymInfo: {
         reference: id,
+        // monobank emails the electronic (fiscal) receipt here after payment
+        ...(order.email ? { customerEmails: [order.email] } : {}),
         destination: `${PRODUCT_NAME}, замовлення ${id}${isTestPrice() ? ' (тестова оплата)' : ''}`,
         basketOrder: [{
           name: `${PRODUCT_NAME} (абажур ${FILAMENTS[order.shade]}, база ${FILAMENTS[order.base]})`,

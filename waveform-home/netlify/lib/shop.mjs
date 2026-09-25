@@ -71,6 +71,7 @@ export function validateOrder(body){
     city: clean(body.city, 80),
     branch: clean(body.branch, 120),
     payment: clean(body.payment, 10),
+    email: clean(body.email, 120).toLowerCase(),
   };
   if (!FILAMENTS[order.shade] || !FILAMENTS[order.base]) return { error: 'Оберіть кольори лампи.' };
   if (order.name.length < 3) return { error: 'Вкажіть прізвище та імʼя отримувача.' };
@@ -80,6 +81,9 @@ export function validateOrder(body){
   if (order.city.length < 2) return { error: 'Вкажіть місто.' };
   if (order.branch.length < 1) return { error: 'Вкажіть відділення або поштомат Нової пошти.' };
   if (!PAYMENT[order.payment]) return { error: 'Оберіть спосіб оплати.' };
+  // optional: where monobank sends the electronic receipt for card payments
+  if (order.payment !== 'card') order.email = '';
+  if (order.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(order.email)) return { error: 'Перевірте email для чека або залиште поле порожнім.' };
   if (body.agree !== true) return { error: 'Підтвердьте згоду з умовами оферти, щоб оформити замовлення.' };
   return { order };
 }
@@ -105,6 +109,7 @@ export function orderText(id, o, status){
     `Отримувач: ${o.name}`,
     `Телефон: ${o.phone}`,
     `Нова пошта: ${o.city}, ${o.branch}`,
+    ...(o.email ? [`Email для чека: ${o.email}`] : []),
     '',
     `Оплата: ${PAYMENT[o.payment]}`,
   ].join('\n');

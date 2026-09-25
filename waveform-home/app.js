@@ -230,6 +230,8 @@ function payment(){
 }
 
 function syncSubmitLabel(){
+  // the e-receipt email only applies to card payments (monobank sends it)
+  $('emailField').hidden = payment() !== 'card';
   $('checkoutSubmit').textContent = payment() === 'card'
     ? `Оплатити ${formatPrice()}`
     : 'Підтвердити замовлення';
@@ -250,6 +252,8 @@ function checkForm(){
   if (!/^(380\d{9}|0\d{9})$/.test(v('phone').replace(/\D/g, ''))) return ['Вкажіть телефон у форматі +380XXXXXXXXX.', f.elements.phone];
   if (v('city').length < 2) return ['Вкажіть місто.', f.elements.city];
   if (!v('branch')) return ['Вкажіть відділення або поштомат Нової пошти.', f.elements.branch];
+  const email = v('email');
+  if (payment() === 'card' && email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return ['Перевірте email для чека або залиште поле порожнім.', f.elements.email];
   if (!f.elements.agree.checked) return ['Підтвердьте згоду з умовами оферти, щоб оформити замовлення.', f.elements.agree];
   return null;
 }
@@ -267,6 +271,7 @@ async function submitCheckout(e){
     city: f.elements.city.value, branch: f.elements.branch.value,
     website: f.elements.website.value,
     agree: f.elements.agree.checked,
+    email: payment() === 'card' ? f.elements.email.value.trim() : '',
   };
   const btn = $('checkoutSubmit');
   btn.disabled = true;
@@ -303,6 +308,99 @@ async function submitCheckout(e){
     `Номер замовлення ${body.orderId}. Ми напишемо або зателефонуємо, щоб підтвердити деталі. ` +
     'Оплата — при отриманні на Новій пошті.',
     [{ label: 'Готово', onClick: closeOrderModal, primary: true }]);
+}
+
+/* ---------- Nova Poshta suggestions ----------
+   City and branch inputs suggest matches from Nova Poshta (via /api/np).
+   They stay plain text fields: if the lookup is unavailable, people just
+   type the city and branch themselves. */
+const npCache = new Map();
+async function npLookup(params){
+  const key = params.toString();
+  if (!npCache.has(key)){
+    npCache.set(key, fetch(`/api/np?${key}`)
+      .then(r => r.ok ? r.json() : [])
+      .catch(() => []));
+  }
+  const items = await npCache.get(key);
+  if (!Array.isArray(items)) npCache.delete(key);
+  return Array.isArray(items) ? items : [];
+}
+
+function combobox(input, list, load, pick){
+  let items = [], active = -1, timer = null, seq = 0;
+  const close = () => {
+    list.hidden = true; active = -1;
+    input.setAttribute('aria-expanded', 'false');
+    input.removeAttribute('aria-activedescendant');
+  };
+  const render = () => {
+    list.innerHTML = '';
+    items.forEach((it, i) => {
+      const li = document.createElement('li');
+      li.id = `${list.id}-${i}`;
+      li.setAttribute('role', 'option');
+      li.setAttribute('aria-selected', i === active ? 'true' : 'false');
+      li.textContent = it.label;
+      if (it.sub){ const s = document.createElement('small'); s.textContent = it.sub; li.appendChild(s); }
+      // pointerdown, not click: keeps the input from blurring first
+      li.addEventListener('pointerdown', e => { e.preventDefault(); choose(i); });
+      list.appendChild(li);
+    });
+    const open = items.length > 0;
+    list.hidden = !open;
+    input.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (active >= 0){
+      input.setAttribute('aria-activedescendant', `${list.id}-${active}`);
+      list.children[active]?.scrollIntoView({ block: 'nearest' });
+    }
+  };
+  const choose = i => { const it = items[i]; close(); if (it) pick(it); };
+  const refresh = () => {
+    clearTimeout(timer);
+    timer = setTimeout(async () => {
+      const mine = ++seq;
+      const next = await load(input.value.trim());
+      if (mine !== seq || document.activeElement !== input) return;
+      items = next; active = -1; render();
+    }, 220);
+  };
+  input.addEventListener('input', refresh);
+  input.addEventListener('focus', refresh);
+  input.addEventListener('blur', () => setTimeout(close, 120));
+  input.addEventListener('keydown', e => {
+    if (list.hidden) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+      e.preventDefault();
+      const n = items.length;
+      active = e.key === 'ArrowDown' ? (active + 1) % n : (active - 1 + n) % n;
+      render();
+    } else if (e.key === 'Enter' && active >= 0){
+      e.preventDefault(); choose(active);
+    } else if (e.key === 'Escape'){
+      e.stopPropagation(); close();
+    }
+  });
+}
+
+function initNovaPoshta(){
+  const city = $('coCity'), branch = $('coBranch');
+  let cityRef = '';
+  combobox(city, $('coCityList'),
+    q => q.length < 2 ? [] : npLookup(new URLSearchParams({ type: 'cities', q }))
+      .then(list => list.map(c => ({ label: c.name, sub: c.area, ref: c.ref }))),
+    it => {
+      city.value = it.label;
+      cityRef = it.ref;
+      branch.value = '';
+      branch.focus();
+    });
+  // typing a different city forgets the picked one
+  city.addEventListener('input', () => { cityRef = ''; });
+  combobox(branch, $('coBranchList'),
+    q => !cityRef ? [] : npLookup(new URLSearchParams({ type: 'warehouses', city: cityRef, q }))
+      .then(list => list.map(w => ({ label: w.name, sub: w.kind }))),
+    it => { branch.value = it.label; });
 }
 
 /* back from monobank: ?order=DN-…#order-result */
@@ -371,6 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Escape' && $('orderModal').classList.contains('open')) closeOrderModal();
   });
   $('checkoutForm').addEventListener('submit', submitCheckout);
+  initNovaPoshta();
   $('checkoutForm').addEventListener('input', e => {
     if (e.target.getAttribute('aria-invalid')){
       e.target.removeAttribute('aria-invalid');

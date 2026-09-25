@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Waveform Dune — лампа з фактурою піщаної дюни</title>
 <meta name="description" content="Waveform Dune — настільна лампа у формі піщаної дюни: рельєфна поверхня, мʼякі хвилі й тепле світло. Власне виробництво та дизайн, еко матеріали. Оберіть колір абажура й бази — доставка по всій Україні.">
+<meta property="og:type" content="product">
+<meta property="og:site_name" content="Waveform">
+<meta property="og:locale" content="uk_UA">
+<meta property="og:title" content="Waveform Dune — лампа з рельєфом піщаної дюни">
+<meta property="og:description" content="Тепле світло, мʼякі хвилі та фактура, яку хочеться розглядати. 15 кольорів абажура й бази, 2 100 ₴, доставка по всій Україні.">
+<meta property="og:url" content="https://waveform-dune.netlify.app/">
+<meta property="og:image" content="https://waveform-dune.netlify.app/img/og-dune.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Лампа Waveform Dune з рельєфним абажуром на коричневій базі">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F7F2EB">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
@@ -354,13 +366,17 @@
           <input id="coPhone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required maxlength="20" placeholder="+380 __ ___ __ __">
         </div>
         <div class="field-row">
-          <div class="field">
+          <div class="field np-field">
             <label for="coCity">Місто</label>
-            <input id="coCity" name="city" autocomplete="address-level2" required maxlength="80" placeholder="Київ">
+            <input id="coCity" name="city" autocomplete="off" required maxlength="80" placeholder="Почніть вводити: Київ"
+              role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="coCityList">
+            <ul class="np-list" id="coCityList" role="listbox" hidden></ul>
           </div>
-          <div class="field">
+          <div class="field np-field">
             <label for="coBranch">Відділення / поштомат НП</label>
-            <input id="coBranch" name="branch" required maxlength="120" placeholder="№12">
+            <input id="coBranch" name="branch" autocomplete="off" required maxlength="120" placeholder="Номер або адреса"
+              role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="coBranchList">
+            <ul class="np-list" id="coBranchList" role="listbox" hidden></ul>
           </div>
         </div>
         <!-- honeypot: hidden from people, bots fill it in -->
@@ -379,6 +395,11 @@
               <small>Оплата при отриманні на Новій пошті. Нова пошта бере комісію за переказ коштів.</small></span>
           </label>
         </fieldset>
+
+        <div class="field" id="emailField">
+          <label for="coEmail">Email для електронного чека <em class="optional">(необовʼязково)</em></label>
+          <input id="coEmail" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@example.com">
+        </div>
 
         <label class="agree">
           <input type="checkbox" name="agree" id="coAgree" required>
