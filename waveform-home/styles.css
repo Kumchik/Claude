@@ -29,6 +29,7 @@
 html{ scroll-behavior: smooth; }
 body{
   margin:0;
+  padding-top: calc(76px + env(safe-area-inset-top, 0px));
   background: var(--bg);
   color: var(--ink);
   font-family: 'Manrope', system-ui, sans-serif;
@@ -96,7 +97,7 @@ figure{ margin:0; }
 
 /* ---------- header ---------- */
 .site-header{
-  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50;
+  position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 50;
   background: rgba(247,242,235,0.88);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
@@ -156,7 +157,7 @@ figure{ margin:0; }
 .trust-inner span:nth-child(even){ color: var(--glow); }
 
 /* ---------- sections ---------- */
-.section{ padding: 96px 0; }
+.section{ padding: 96px 0; scroll-margin-top: calc(76px + env(safe-area-inset-top, 0px)); }
 .section-alt{ background: var(--bg-alt); }
 .section-head{ max-width: 640px; margin: 0 auto 48px; text-align:center; }
 .section-head h2{ font-size: clamp(1.8rem, 3.2vw, 2.6rem); }
