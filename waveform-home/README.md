@@ -87,9 +87,8 @@ Instagram, Viber тощо. Якщо підключите свій домен, з
 ### Налаштування (один раз)
 
 1. **Netlify**: Add new site → Import from GitHub → репозиторій
-   `Kumchik/Claude`, гілка `claude/website-switches-ftwtra`,
-   **Base directory: `waveform-home`**. Решту Netlify візьме з
-   `netlify.toml`.
+   `Kumchik/Claude`, гілка **`main`**, **Base directory: `waveform-home`**.
+   Решту Netlify візьме з `netlify.toml`.
 2. **monobank**: у кабінеті еквайрингу (web.monobank.ua) скопіюйте токен
    API. Для перевірки без реальних грошей є тестовий токен на
    api.monobank.ua.
@@ -110,6 +109,14 @@ Instagram, Viber тощо. Якщо підключите свій домен, з
 
 Якщо функції недоступні (звичайний статичний хостинг або прев'ю),
 форма пропонує надіслати замовлення в Telegram — замовлення не губиться.
+
+### Гілки: чернетка і сайт
+
+- **`main`** — те, що на сайті. Netlify збирає лише її.
+- **`claude/website-switches-ftwtra`** — робоча гілка з правками, які ще
+  не опубліковані (їх видно в прев'ю Claude).
+- Опублікувати = перенести робочу гілку в `main` (fast-forward). Одна
+  публікація — одна збірка на Netlify.
 
 ## Юридичні сторінки
 
