@@ -284,6 +284,10 @@ figure{ margin:0; }
   padding: 1px 10px; border-radius: 999px;
   background: var(--bg-alt);
   transition: color .2s ease, background .2s ease;
+  /* overrides .preview-row strong's text-align:right — fine for a
+     single line, but a two-word name wrapping to two lines inside this
+     pill staircased to the right instead of centering under itself */
+  text-align: center;
 }
 .preview-row .color-name.is-light{ background: var(--ink); }
 .preview-price strong{ color: var(--clay); font-size:1.15rem; font-family:'Fraunces', serif; }

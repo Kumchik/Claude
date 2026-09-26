@@ -208,7 +208,7 @@ function init(){
     }
   });
 
-  controls.target.set(0.08, 0, 0);
+  controls.target.set(0.12, 0, 0);
   // a fixed 3/4 angle that shows all three ribbed columns at once, like
   // a product photo — found by test-rendering the raw model offline
   // (X up, front toward -Z/-Y) against the reference photo, then
