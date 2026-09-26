@@ -249,7 +249,7 @@ function init(){
 
     // fit the whole box (plus a little air) in frame from the current angle
     const radius = size.length() / 2;
-    fitDist = radius / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.35;
+    fitDist = radius / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.1;
     const dir = camera.position.clone().sub(controls.target).normalize();
     camera.position.copy(controls.target).addScaledVector(dir, fitDist);
     camera.updateProjectionMatrix();
