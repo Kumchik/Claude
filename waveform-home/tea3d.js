@@ -92,10 +92,13 @@ function init(){
 
   const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 10);
   // the model (and this whole local scene: cube, lights, camera) uses the
-  // organizer's own native up axis (Z) instead of three.js' usual Y-up —
-  // it comes straight from the STL/CAD files unrotated, so there is no
-  // risk of a rotation-math mistake turning it on its side
-  camera.up.set(0, 0, 1);
+  // organizer's own native up axis — which, confirmed against the
+  // reference photo, is the STL files' X axis (not Z): the object stands
+  // with its 3 ribbed columns side by side across its Y axis, its depth
+  // along Z, and each column's arch cutout near the X-min end. Keeping
+  // the model unrotated and making the local scene match its axis avoids
+  // ever repeating a rotation-math mistake
+  camera.up.set(1, 0, 0);
   const backdropCard = new THREE.Mesh(
     new THREE.PlaneGeometry(4, 4),
     new THREE.MeshBasicMaterial({ map: bg, toneMapped: false, depthWrite: true })
@@ -104,11 +107,11 @@ function init(){
   camera.add(backdropCard);
   scene.add(camera);
 
-  // front of the organizer faces roughly -X/-Y here (see camera position
-  // below), with Z up — the key light comes from that same front-ish
+  // front of the organizer faces roughly -Z/-Y here (see camera position
+  // below), with X up — the key light comes from that same front-ish
   // side, elevated, and the rim from the opposite (back) side
   const key = new THREE.DirectionalLight(0xfff4e8, 1.5);
-  key.position.set(-0.6, -0.4, 0.9);
+  key.position.set(0.5, -0.6, -0.75);
   key.castShadow = true;
   key.shadow.mapSize.set(1024, 1024);
   key.shadow.radius = 14;
@@ -120,7 +123,7 @@ function init(){
   key.shadow.bias = -0.0004;
   scene.add(key);
   const rim = new THREE.DirectionalLight(0xe8eeff, 0.5);
-  rim.position.set(0.7, 0.5, 0.3);
+  rim.position.set(-0.3, 0.6, 0.7);
   scene.add(rim);
   const fill = new THREE.HemisphereLight(0xfff6ea, 0x6a5646, 0.55);
   scene.add(fill);
@@ -131,7 +134,7 @@ function init(){
     new RoundedBoxGeometry(CUBE, CUBE, CUBE, 5, CUBE_R),
     new THREE.MeshPhysicalMaterial({ color: 0xf3f1ec, roughness: 0.9, sheen: 0.2, sheenColor: 0xffffff })
   );
-  cube.position.z = -CUBE / 2;
+  cube.position.x = -CUBE / 2;
   cube.receiveShadow = true;
   scene.add(cube);
 
@@ -197,21 +200,21 @@ function init(){
     }
   });
 
-  controls.target.set(0, 0, 0.04);
-  // a fixed elevated 3/4 angle that shows all three compartments and their
-  // ribbed inserts at once, like a product photo — found by test-rendering
-  // the raw model offline (Z up, front toward -X/-Y) until it matched the
-  // reference photo, then reproduced here exactly
-  const viewDir = new THREE.Vector3(-420, -280, 220).normalize();
+  controls.target.set(0.08, 0, 0);
+  // a fixed elevated 3/4 angle that shows all three ribbed columns at
+  // once, like a product photo — found by test-rendering the raw model
+  // offline (X up, front toward -Z/-Y) against the reference photo, then
+  // reproduced here exactly
+  const viewDir = new THREE.Vector3(60, -280, -350).normalize();
   camera.position.copy(controls.target).addScaledVector(viewDir, fitDist);
-  controls.minPolarAngle = controls.maxPolarAngle = Math.acos(viewDir.z);
+  controls.minPolarAngle = controls.maxPolarAngle = Math.acos(viewDir.x);
   new ResizeObserver(resize).observe(stage);
   resize();
 
   function onLoad(gltf){
     const obj = gltf.scene;
-    // no rotation here: the STL/CAD files are already Z-up, and this whole
-    // local scene (cube, lights, camera.up above) uses that same axis —
+    // no rotation here: this whole local scene (cube, lights, camera.up
+    // above) is built to match the model's own native axis (X up),
     // deliberately, to avoid a rotation-math mistake ever turning it on
     // its side again
     obj.scale.setScalar(0.001); // millimetres -> metres, same convention as dune.glb
@@ -220,9 +223,9 @@ function init(){
     const box = new THREE.Box3().setFromObject(obj);
     const center = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());
-    obj.position.x -= center.x;
+    obj.position.x -= box.min.x; // rests on the display cube, like Dune
     obj.position.y -= center.y;
-    obj.position.z -= box.min.z; // rests on the display cube, like Dune
+    obj.position.z -= center.z;
 
     obj.traverse(o => {
       if (!o.isMesh) return;
