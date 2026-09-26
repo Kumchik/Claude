@@ -53,6 +53,20 @@ export const DEFAULT_CATALOG = {
   // якщо вказано id категорії — Dune зʼявляється карткою в цій категорії
   // разом з іншими товарами, а клік по картці веде до конструктора
   duneCategoryId: '',
+  // Другий особливий товар з живим 3D-конструктором (сторінка organizers.html) —
+  // один колір на вибір (не два, як у Dune), тому окремий об'єкт, а не запис
+  // у products[].
+  teaOrganizer: {
+    name: 'Waveform Чай-органайзер',
+    price: 950,
+    filaments: [
+      { id: 'sage-green',   name: 'Sage Green',   hex: '#8FBF8A' },
+      { id: 'bone-white',   name: 'Bone White',   hex: '#EDE6CC' },
+      { id: 'chocolate',    name: 'Chocolate',    hex: '#6B3F2E' },
+      { id: 'black',        name: 'Black',        hex: '#232325' },
+      { id: 'sunny-orange', name: 'Sunny Orange', hex: '#EE6A26' },
+    ],
+  },
 };
 
 export async function catalogStore(){
@@ -73,6 +87,9 @@ export async function getCatalog(){
       if (!Array.isArray(saved.categories)) saved.categories = [];
       if (!Array.isArray(saved.products)) saved.products = [];
       if (typeof saved.duneCategoryId !== 'string') saved.duneCategoryId = '';
+      if (!saved.teaOrganizer || !Array.isArray(saved.teaOrganizer.filaments) || !saved.teaOrganizer.filaments.length){
+        saved.teaOrganizer = structuredClone(DEFAULT_CATALOG.teaOrganizer);
+      }
       return saved;
     }
   } catch (e){
@@ -156,7 +173,16 @@ export function validateCatalog(body){
   let duneCategoryId = clean(body.duneCategoryId, 40).toLowerCase();
   if (duneCategoryId && !catIds.has(duneCategoryId)) duneCategoryId = '';
 
-  return { catalog: { productName, price, filaments: duneColors.filaments, categories, products, duneCategoryId } };
+  const teaRaw = body.teaOrganizer || {};
+  const teaName = clean(teaRaw.name, 80);
+  const teaPrice = Number(teaRaw.price);
+  if (teaName.length < 2) return { error: 'Чай-органайзер: вкажіть назву товару.' };
+  if (!Number.isFinite(teaPrice) || teaPrice < 1 || teaPrice > 1_000_000) return { error: 'Чай-органайзер: вкажіть коректну ціну.' };
+  const teaColors = checkFilaments(teaRaw.filaments, false, 'Чай-органайзер');
+  if (teaColors.error) return teaColors;
+  const teaOrganizer = { name: teaName, price: teaPrice, filaments: teaColors.filaments };
+
+  return { catalog: { productName, price, filaments: duneColors.filaments, categories, products, duneCategoryId, teaOrganizer } };
 }
 
 export async function saveCatalog(catalog){
@@ -224,6 +250,19 @@ export function validateOrder(body, catalog){
         shadeName: shadeF.name,
         baseName: baseF.name,
         unitPrice: catalog.price,
+      };
+    } else if (product === 'tea-organizer'){
+      const t = catalog.teaOrganizer;
+      if (!t) return { error: 'Товар недоступний.' };
+      const color = clean(raw?.color, 40);
+      const colorF = (t.filaments || []).find(f => f.id === color);
+      if (!colorF) return { error: `Оберіть колір для «${t.name}».` };
+      key = `tea-organizer:${color}`;
+      item = {
+        product, color, qty,
+        productName: t.name,
+        colorName: colorF.name,
+        unitPrice: t.price,
       };
     } else {
       const p = productMap.get(product);
