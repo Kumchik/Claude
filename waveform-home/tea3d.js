@@ -1,15 +1,16 @@
 /* =========================================================
    3D-прев'ю чай-органайзера для конструктора на organizers.html.
 
-   models/tea-organizer.glb зібрано з ваших STL-файлів (корпус + 3
-   вставки для трьох секцій): один суцільний меш, фарбується цілком
-   в один колір (на відміну від Dune — тут немає окремих деталей).
-   Модель стиснута для сайту (gltfpack, meshopt) — див.
+   models/tea-organizer.glb зібрано з ваших STL-файлів: корпус і 3
+   вставки (об'єднані в один меш, той самий колір для всіх трьох) —
+   два окремі вузли ('body' і 'insert' в glTF, як 'shade'/'hoop'/'base'
+   у dune.glb), фарбуються незалежно, як абажур і база в Dune. Модель
+   стиснута для сайту (gltfpack -kn, meshopt) — див.
    models/tea-organizer-plain.glb для запасного варіанту без
    WebAssembly-декодера.
 
-   app.js кладе обраний колір у window.teaState і викликає
-   window.tea3d.update(), коли він змінюється.
+   app.js кладе обрані кольори у window.teaState (base/insert) і
+   викликає window.tea3d.update(), коли вони змінюються.
    ========================================================= */
 
 import * as THREE from 'three';
@@ -152,12 +153,16 @@ function init(){
     stage.classList.add('touched');
   });
 
-  // matte printed plastic, same fuzzy-skin grain as Dune's base/hoop
-  const material = new THREE.MeshPhysicalMaterial({
+  // matte printed plastic, same fuzzy-skin grain as Dune's base/hoop —
+  // one material for the body, one for the 3 ribbed inserts, painted
+  // independently
+  const plastic = () => new THREE.MeshPhysicalMaterial({
     roughness: 0.88, metalness: 0, specularIntensity: 0.35,
     sheen: 0.25, sheenRoughness: 0.7,
   });
-  tweakMaterial(material, 0.0006);
+  const materials = { body: plastic(), insert: plastic() };
+  tweakMaterial(materials.body, 0.0006);
+  tweakMaterial(materials.insert, 0.0006);
 
   const composer = new EffectComposer(renderer);
   composer.setPixelRatio(dpr);
@@ -171,9 +176,12 @@ function init(){
 
   function apply(s){
     if (!s) return;
-    const color = new THREE.Color(s.color);
-    material.color.copy(color);
-    material.sheenColor.copy(color).lerp(new THREE.Color(1, 1, 1), 0.35);
+    const base = new THREE.Color(s.base);
+    const insert = new THREE.Color(s.insert);
+    materials.body.color.copy(base);
+    materials.body.sheenColor.copy(base).lerp(new THREE.Color(1, 1, 1), 0.35);
+    materials.insert.color.copy(insert);
+    materials.insert.sheenColor.copy(insert).lerp(new THREE.Color(1, 1, 1), 0.35);
     requestRender();
   }
 
@@ -229,7 +237,11 @@ function init(){
 
     obj.traverse(o => {
       if (!o.isMesh) return;
-      o.material = material;
+      // parts are named on their parent node: body / insert (see dune.glb's
+      // shade/hoop/base in lamp3d.js — same export pattern, gltfpack -kn)
+      let part = o;
+      while (part && !materials[part.name]) part = part.parent;
+      o.material = materials[part ? part.name : 'body'];
       o.castShadow = true;
       o.receiveShadow = true;
     });

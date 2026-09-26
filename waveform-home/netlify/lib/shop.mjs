@@ -54,17 +54,29 @@ export const DEFAULT_CATALOG = {
   // разом з іншими товарами, а клік по картці веде до конструктора
   duneCategoryId: '',
   // Другий особливий товар з живим 3D-конструктором (сторінка organizers.html) —
-  // один колір на вибір (не два, як у Dune), тому окремий об'єкт, а не запис
-  // у products[].
+  // два кольори на вибір, як у Dune (корпус і вставки фарбуються окремо),
+  // тому окремий об'єкт, а не запис у products[]. Та сама палітра, що й у
+  // Dune вище (filaments) — колір тут не окрема сутність, просто повний
+  // список продубльовано для цього товару.
   teaOrganizer: {
     name: 'Waveform Чай-органайзер',
     price: 950,
     filaments: [
-      { id: 'sage-green',   name: 'Sage Green',   hex: '#8FBF8A' },
+      { id: 'white',        name: 'White',        hex: '#F4F4F2' },
       { id: 'bone-white',   name: 'Bone White',   hex: '#EDE6CC' },
+      { id: 'beige',        name: 'Beige',        hex: '#E6CFC1' },
+      { id: 'oak',          name: 'Oak',          hex: '#BBAB9C' },
       { id: 'chocolate',    name: 'Chocolate',    hex: '#6B3F2E' },
       { id: 'black',        name: 'Black',        hex: '#232325' },
+      { id: 'sakura-pink',  name: 'Sakura Pink',  hex: '#F6B3BC' },
+      { id: 'magenta',      name: 'Magenta',      hex: '#E0409F' },
+      { id: 'red',          name: 'Red',          hex: '#D9283D' },
       { id: 'sunny-orange', name: 'Sunny Orange', hex: '#EE6A26' },
+      { id: 'yellow',       name: 'Yellow',       hex: '#E6DB4E' },
+      { id: 'olive-green',  name: 'Olive Green',  hex: '#86A35C' },
+      { id: 'grass-green',  name: 'Grass Green',  hex: '#2E7D66' },
+      { id: 'mint-green',   name: 'Mint Green',   hex: '#9EEBCF' },
+      { id: 'sky-blue',     name: 'Sky Blue',     hex: '#8EC5EF' },
     ],
   },
 };
@@ -254,14 +266,16 @@ export function validateOrder(body, catalog){
     } else if (product === 'tea-organizer'){
       const t = catalog.teaOrganizer;
       if (!t) return { error: 'Товар недоступний.' };
-      const color = clean(raw?.color, 40);
-      const colorF = (t.filaments || []).find(f => f.id === color);
-      if (!colorF) return { error: `Оберіть колір для «${t.name}».` };
-      key = `tea-organizer:${color}`;
+      const tFilamentMap = new Map((t.filaments || []).map(f => [f.id, f]));
+      const base = clean(raw?.base, 40), insert = clean(raw?.insert, 40);
+      const baseF = tFilamentMap.get(base), insertF = tFilamentMap.get(insert);
+      if (!baseF || !insertF) return { error: `Оберіть кольори для «${t.name}».` };
+      key = `tea-organizer:${base}:${insert}`;
       item = {
-        product, color, qty,
+        product, base, insert, qty,
         productName: t.name,
-        colorName: colorF.name,
+        baseName: baseF.name,
+        insertName: insertF.name,
         unitPrice: t.price,
       };
     } else {
@@ -281,8 +295,11 @@ export function validateOrder(body, catalog){
         unitPrice: p.price,
       };
     }
-    // the same product+colour twice → one line with the quantities added up
-    const same = items.find(x => (x.product === 'dune' ? `dune:${x.shade}:${x.base}` : `${x.product}:${x.color}`) === key);
+    // the same product+colour(s) twice → one line with the quantities added up
+    const sameKey = x => x.product === 'dune' ? `dune:${x.shade}:${x.base}`
+      : x.product === 'tea-organizer' ? `tea-organizer:${x.base}:${x.insert}`
+      : `${x.product}:${x.color}`;
+    const same = items.find(x => sameKey(x) === key);
     if (same) same.qty = Math.min(MAX_QTY, same.qty + qty);
     else items.push(item);
   }
@@ -323,10 +340,14 @@ export function newOrderId(){
 
 export const itemTitle = it => it.product === 'dune'
   ? `${it.productName} (абажур ${it.shadeName}, база ${it.baseName})`
+  : it.product === 'tea-organizer'
+  ? `${it.productName} (корпус ${it.baseName}, вставки ${it.insertName})`
   : it.colorName ? `${it.productName} (колір ${it.colorName})` : it.productName;
 
 const itemColorLine = it => it.product === 'dune'
   ? `   Абажур: ${it.shadeName}, база та обруч W: ${it.baseName}`
+  : it.product === 'tea-organizer'
+  ? `   Корпус: ${it.baseName}, вставки: ${it.insertName}`
   : it.colorName ? `   Колір: ${it.colorName}` : null;
 
 export function orderText(id, o, status){

@@ -230,10 +230,15 @@ figure{ margin:0; }
 
 /* tea-organizer's stage (tea3d.js): same look, but a wide box, not a tall
    lamp — its own aspect ratio, and no photo underneath (there isn't one)
-   so the loading background already matches the after-load gradient. */
+   so the loading background already matches the after-load gradient.
+   Width is NOT set to 100% here — on mobile that beat the .lamp-stage
+   mobile override below on specificity and forced the row (stage + price
+   card side by side) wider than the viewport, scrolling the whole page
+   sideways. Leaving width unset lets the same mobile rule that sizes
+   Dune's stage (width:auto + height:34vh) size this one too. */
 .lamp-stage.tea-stage{
   aspect-ratio: 4 / 3;
-  width: 100%;
+  width: min(100%, calc((100vh - 330px) * 4 / 3));
   background: radial-gradient(120% 90% at 50% 30%, #FBF7F1 0%, #E6DACB 100%);
 }
 
@@ -569,6 +574,14 @@ body.no-scroll{ overflow: hidden; }
     box-shadow: 0 12px 24px -18px rgba(42,36,32,0.5);
   }
   .lamp-stage{ width: auto; height: 34vh; max-height: 300px; min-height: 170px; flex-shrink: 0; margin: 0; border-radius: var(--radius-sm); }
+  /* .tea-stage's own desktop width rule (min(100%, calc(...))) has the same
+     2-class specificity as .lamp-stage above and would otherwise keep
+     winning here too — repeat the mobile sizing explicitly so it actually
+     takes over. Its aspect ratio is landscape (4:3) instead of Dune's
+     portrait (700:987), so sizing it the same way (from a height) makes it
+     much wider — wide enough to overflow the viewport next to the price
+     card. Sized from a width instead, small enough for both to fit. */
+  .lamp-stage.tea-stage{ width: 140px; height: auto; max-height: none; min-height: 0; }
   .preview-side{ gap: 10px; min-width: 0; flex: 1; align-items: stretch; }
   .preview-meta{ padding: 10px 14px; }
   .preview-meta .preview-row:first-child, .preview-divider{ display:none; }

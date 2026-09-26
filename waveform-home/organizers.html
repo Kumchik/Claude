@@ -95,7 +95,7 @@
         <div class="section-head">
           <p class="eyebrow">ваш органайзер</p>
           <h2>Оберіть колір під свій інтерʼєр</h2>
-          <p class="section-lead">Три секції — для трьох сортів чаю або трьох людей вдома, кожна з рельєфною хвилястою текстурою всередині. Органайзер можна покрутити, щоб роздивитись з усіх боків.</p>
+          <p class="section-lead">Три секції — для трьох сортів чаю або трьох людей вдома, кожна з рельєфною хвилястою текстурою всередині. Корпус і вставки фарбуються окремо — поєднуйте як хочете. Органайзер можна покрутити, щоб роздивитись з усіх боків.</p>
         </div>
 
         <div class="configurator">
@@ -103,7 +103,7 @@
           <div class="preview-sticky">
             <div class="lamp-stage tea-stage" id="teaStage">
               <!-- 3D model of the tea organizer (models/tea-organizer.glb), drawn by tea3d.js -->
-              <canvas class="lamp-canvas" id="teaCanvas" aria-label="3D-модель чай-органайзера в обраному кольорі. Потягніть, щоб повернути."></canvas>
+              <canvas class="lamp-canvas" id="teaCanvas" aria-label="3D-модель чай-органайзера в обраних кольорах. Потягніть, щоб повернути."></canvas>
               <span class="lamp-hint" id="teaHint">Потягніть, щоб повернути</span>
             </div>
             <div class="preview-side">
@@ -113,8 +113,12 @@
                   <strong id="teaMetaName">Waveform Чай-органайзер</strong>
                 </div>
                 <div class="preview-row">
-                  <span>Колір</span>
-                  <strong class="color-name" id="teaMetaColor">Sage Green</strong>
+                  <span>Корпус</span>
+                  <strong class="color-name" id="teaMetaBase">Bone White</strong>
+                </div>
+                <div class="preview-row">
+                  <span>Вставки</span>
+                  <strong class="color-name" id="teaMetaInsert">Chocolate</strong>
                 </div>
                 <div class="preview-divider"></div>
                 <div class="preview-row preview-price">
@@ -128,9 +132,15 @@
 
         <div class="configurator-controls">
           <div class="config-step">
-            <div class="step-label"><span class="step-num">1</span>Колір <em id="teaColorName"></em></div>
-            <div class="options-row" id="optTeaColor"></div>
-            <p class="step-hint">Один колір на весь органайзер — корпус і всі три вставки.</p>
+            <div class="step-label"><span class="step-num">1</span>Колір корпусу <em id="teaBaseColorName"></em></div>
+            <div class="options-row" id="optTeaBase"></div>
+            <p class="step-hint">Зовнішні стінки органайзера.</p>
+          </div>
+
+          <div class="config-step">
+            <div class="step-label"><span class="step-num">2</span>Колір вставок <em id="teaInsertColorName"></em></div>
+            <div class="options-row" id="optTeaInsert"></div>
+            <p class="step-hint">Три рельєфні хвилясті панелі секцій.</p>
           </div>
 
           <button class="btn btn-primary btn-wide" id="addTeaBtn" type="button">Додати в кошик — 950 ₴</button>
