@@ -585,7 +585,7 @@ body.no-scroll{ overflow: hidden; }
   .hero-photo{ max-width: 520px; width:100%; margin: 0 auto; }
   .about-inner{ grid-template-columns: 1fr; gap: 56px; }
   .about-photos{ max-width: 520px; width:100%; margin: 0 auto; }
-  .configurator{ grid-template-columns: 1fr; gap: 20px; }
+  .configurator{ grid-template-columns: minmax(0, 1fr); gap: 20px; }
   /* Single column: without this the preview would be its own grid row
      and scroll away. display:contents lifts .preview-sticky into
      .configurator itself, which spans the whole options column, so the
@@ -612,7 +612,16 @@ body.no-scroll{ overflow: hidden; }
   .preview-meta{ padding: 10px 14px; }
   .preview-meta .preview-row:first-child, .preview-divider{ display:none; }
   .preview-row{ font-size: .84rem; padding: 3px 0; flex-wrap: wrap; gap: 0 8px; }
-  .light-toggle{ padding: 6px 12px 6px 6px; font-size: .8rem; gap: 8px; align-self: flex-start; }
+  /* the pill always takes the full row and the height of two lines, so
+     switching between a one-word and a two-word colour ("Beige" ↔
+     "Sakura Pink") never resizes the card and makes the page jump */
+  .preview-row .color-name{
+    width: 100%; line-height: 1.25; min-height: calc(2.5em + 4px);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .light-toggle{ padding: 6px 12px 6px 6px; font-size: .8rem; gap: 8px; align-self: flex-start; max-width: 100%; }
+  .light-toggle-knob{ flex-shrink: 0; }
+  @media (max-width: 370px){ .light-toggle{ padding-right: 8px; gap: 6px; } }
   .light-toggle-knob{ width: 38px; height: 22px; }
   .light-toggle-knob::after{ width: 16px; height: 16px; }
   .light-toggle[aria-pressed="true"] .light-toggle-knob::after{ transform: translateX(16px); }
