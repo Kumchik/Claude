@@ -209,11 +209,13 @@ function init(){
   });
 
   controls.target.set(0.08, 0, 0);
-  // a fixed elevated 3/4 angle that shows all three ribbed columns at
-  // once, like a product photo — found by test-rendering the raw model
-  // offline (X up, front toward -Z/-Y) against the reference photo, then
-  // reproduced here exactly
-  const viewDir = new THREE.Vector3(60, -280, -350).normalize();
+  // a fixed 3/4 angle that shows all three ribbed columns at once, like
+  // a product photo — found by test-rendering the raw model offline
+  // (X up, front toward -Z/-Y) against the reference photo, then
+  // reproduced here exactly. Lower X component = a lower, closer-to-
+  // eye-level camera, so the display cube reads less and the organizer
+  // itself fills more of the frame.
+  const viewDir = new THREE.Vector3(20, -280, -350).normalize();
   camera.position.copy(controls.target).addScaledVector(viewDir, fitDist);
   controls.minPolarAngle = controls.maxPolarAngle = Math.acos(viewDir.x);
   new ResizeObserver(resize).observe(stage);
@@ -249,7 +251,7 @@ function init(){
 
     // fit the whole box (plus a little air) in frame from the current angle
     const radius = size.length() / 2;
-    fitDist = radius / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.1;
+    fitDist = radius / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.0;
     const dir = camera.position.clone().sub(controls.target).normalize();
     camera.position.copy(controls.target).addScaledVector(dir, fitDist);
     camera.updateProjectionMatrix();
