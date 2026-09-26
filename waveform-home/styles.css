@@ -180,6 +180,8 @@ figure{ margin:0; }
 .about-photo{ border-radius: var(--radius-md); overflow:hidden; background: #8e8a86; position:relative; }
 .about-photo img{ width:100%; aspect-ratio: 3/4; object-fit: cover; }
 .about-photo-on{ transform: translateY(36px); box-shadow: 0 30px 60px -30px rgba(255,190,110,0.8); }
+/* same staggered offset, without the lamp's warm "lit" glow */
+.about-photo-shift{ transform: translateY(36px); box-shadow: var(--shadow-card); }
 .about-photo figcaption{
   position:absolute; left:10px; bottom:10px;
   background: rgba(30,25,22,0.72); color:#fff;

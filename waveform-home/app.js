@@ -341,7 +341,7 @@ function buildDuneCard(){
 
 function buildTeaCard(){
   const { card, priceEl } = buildCard(
-    { name: TEA_NAME, description: 'Органайзер для чаю на три секції з рельєфною хвилястою текстурою', price: TEA_PRICE, photoSrc: null },
+    { name: TEA_NAME, description: 'Органайзер для чаю на три секції з рельєфною хвилястою текстурою', price: TEA_PRICE, photoSrc: 'img/tea-hero-700.jpg' },
     'Обрати колір',
     () => document.getElementById('teaBuilder').scrollIntoView({ behavior: 'smooth' }));
   priceEl.id = 'teaCatalogPrice'; // updateTeaPreview() keeps this in sync with the chosen colour
