@@ -34,6 +34,20 @@ let FILAMENTS = [
 let SHADE_COLORS = FILAMENTS;
 let BASE_COLORS = FILAMENTS;
 
+// Другий особливий товар з живим 3D (organizers.html) — один колір на
+// весь виріб, не два, як у Dune. Значення за замовчуванням тут — на
+// випадок, поки /api/catalog ще не завантажився; сервер: DEFAULT_CATALOG
+// в netlify/lib/shop.mjs.
+let TEA_NAME = 'Waveform Чай-органайзер';
+let TEA_PRICE = 950;
+let TEA_COLORS = [
+  { id: 'sage-green',   name: 'Sage Green',   hex: '#8FBF8A' },
+  { id: 'bone-white',   name: 'Bone White',   hex: '#EDE6CC' },
+  { id: 'chocolate',    name: 'Chocolate',    hex: '#6B3F2E' },
+  { id: 'black',        name: 'Black',        hex: '#232325' },
+  { id: 'sunny-orange', name: 'Sunny Orange', hex: '#EE6A26' },
+];
+
 /* Товари, додані через /admin.html поза Dune (без 3D, з фото-галереєю й
    не обов'язковим одним кольором на вибір) — і категорії, за якими вони
    групуються на сторінці. Порожні, поки не завантажиться каталог або
@@ -65,6 +79,12 @@ async function loadCatalog(){
     // an admin may have removed the colour the page defaulted to
     if (!getShade(state.shade)) state.shade = FILAMENTS[0].id;
     if (!getBase(state.base)) state.base = FILAMENTS[0].id;
+    if (cat.teaOrganizer && Array.isArray(cat.teaOrganizer.filaments) && cat.teaOrganizer.filaments.length){
+      TEA_NAME = cat.teaOrganizer.name || TEA_NAME;
+      TEA_PRICE = Number(cat.teaOrganizer.price) || TEA_PRICE;
+      TEA_COLORS = cat.teaOrganizer.filaments;
+      if (!getTeaColor(teaUiState.color)) teaUiState.color = TEA_COLORS[0].id;
+    }
   } catch (e){
     console.warn('loadCatalog failed, using defaults', e);
   }
@@ -82,6 +102,15 @@ function cartLineInfo(it){
       swatches: [shade?.hex, base?.hex],
       lines: [`Абажур: ${shade?.name || '—'}`, `База й обруч: ${base?.name || '—'}`],
       summary: `абажур ${shade?.name || '—'}, база ${base?.name || '—'}`,
+    };
+  }
+  if (it.product === 'tea-organizer'){
+    const color = getTeaColor(it.color);
+    return {
+      name: TEA_NAME, unitPrice: TEA_PRICE,
+      swatches: [color?.hex],
+      lines: [`Колір: ${color?.name || '—'}`],
+      summary: `колір ${color?.name || '—'}`,
     };
   }
   const p = findProduct(it.product);
@@ -156,6 +185,9 @@ const state = {
 function getShade(id){ return SHADE_COLORS.find(c => c.id === id); }
 function getBase(id){ return BASE_COLORS.find(c => c.id === id); }
 
+const teaUiState = { color: 'sage-green' };
+function getTeaColor(id){ return TEA_COLORS.find(c => c.id === id); }
+
 function formatPrice(uah = PRICE_UAH){
   return `${uah.toLocaleString('uk-UA')} ₴`;
 }
@@ -196,6 +228,28 @@ function renderOptions(){
   renderColorRow(document.getElementById('optBase'), BASE_COLORS, state.base, id => {
     state.base = id; renderOptions(); updatePreview();
   });
+}
+
+function renderTeaOptions(){
+  renderColorRow(document.getElementById('optTeaColor'), TEA_COLORS, teaUiState.color, id => {
+    teaUiState.color = id; renderTeaOptions(); updateTeaPreview();
+  });
+}
+
+function updateTeaPreview(){
+  const color = getTeaColor(teaUiState.color);
+  // tea3d.js may still be loading; it reads window.teaState itself once ready
+  window.teaState = { color: color.hex };
+  if (window.tea3d) window.tea3d.update(window.teaState);
+
+  paintColorName(document.getElementById('teaMetaColor'), color);
+  document.getElementById('teaColorName').textContent = `— ${color.name}`;
+  document.getElementById('teaMetaName').textContent = TEA_NAME;
+  document.getElementById('teaMetaPrice').textContent = formatPrice(TEA_PRICE);
+  document.getElementById('addTeaBtn').textContent = `Додати в кошик — ${formatPrice(TEA_PRICE)}`;
+  // teaCatalogPrice lives on organizers.html only (tea's catalog card)
+  const teaCatalogPriceEl = document.getElementById('teaCatalogPrice');
+  if (teaCatalogPriceEl) teaCatalogPriceEl.textContent = formatPrice(TEA_PRICE);
 }
 
 function updatePreview(){
@@ -283,6 +337,15 @@ function buildDuneCard(){
   return card;
 }
 
+function buildTeaCard(){
+  const { card, priceEl } = buildCard(
+    { name: TEA_NAME, description: 'Органайзер для чаю на три секції з рельєфною хвилястою текстурою', price: TEA_PRICE, photoSrc: null },
+    'Обрати колір',
+    () => document.getElementById('teaBuilder').scrollIntoView({ behavior: 'smooth' }));
+  priceEl.id = 'teaCatalogPrice'; // updateTeaPreview() keeps this in sync with the chosen colour
+  return card;
+}
+
 function buildProductCard(p){
   const { card } = buildCard(
     { name: p.name, description: p.description, price: p.price, photoSrc: p.photos[0] ? photoUrl(p.photos[0]) : null },
@@ -314,14 +377,15 @@ function renderLampsGrid(){
   catalogProducts.filter(p => duneCategoryId && p.categoryId === duneCategoryId).forEach(p => grid.appendChild(buildProductCard(p)));
 }
 
-// organizers.html: усе, що не в категорії Dune; заглушка, якщо ще нічого не додано
+// organizers.html: чай-органайзер завжди перша картка (як Dune на lamps.html),
+// плюс усе, що не в категорії Dune, і заглушка "більше форм" наприкінці
 function renderOrganizersGrid(){
   const grid = $('organizersGrid');
   if (!grid) return;
   grid.innerHTML = '';
-  const items = catalogProducts.filter(p => !duneCategoryId || p.categoryId !== duneCategoryId);
-  if (!items.length){ grid.appendChild(buildSoonCard()); return; }
-  items.forEach(p => grid.appendChild(buildProductCard(p)));
+  grid.appendChild(buildTeaCard());
+  catalogProducts.filter(p => !duneCategoryId || p.categoryId !== duneCategoryId).forEach(p => grid.appendChild(buildProductCard(p)));
+  grid.appendChild(buildSoonCard());
 }
 
 let pmState = { productId: null, color: null, qty: 1 };
@@ -415,6 +479,7 @@ function loadCart(){
     return saved.filter(it => {
       if (!it || !Number.isInteger(it.qty) || it.qty < 1 || it.qty > MAX_QTY) return false;
       if (it.product === 'dune') return getShade(it.shade) && getBase(it.base);
+      if (it.product === 'tea-organizer') return !!getTeaColor(it.color);
       const p = findProduct(it.product);
       if (!p) return false;
       return p.filaments.length ? p.filaments.some(f => f.id === it.color) : true;
@@ -431,6 +496,16 @@ function addToCart(){
   const same = cart.find(it => it.product === 'dune' && it.shade === state.shade && it.base === state.base);
   if (same) same.qty = Math.min(MAX_QTY, same.qty + 1);
   else cart.push({ product: 'dune', shade: state.shade, base: state.base, qty: 1 });
+  saveCart();
+  renderCart();
+  bumpCartBadge();
+  openCart();
+}
+
+function addTeaToCart(){
+  const same = cart.find(it => it.product === 'tea-organizer' && it.color === teaUiState.color);
+  if (same) same.qty = Math.min(MAX_QTY, same.qty + 1);
+  else cart.push({ product: 'tea-organizer', color: teaUiState.color, qty: 1 });
   saveCart();
   renderCart();
   bumpCartBadge();
@@ -844,6 +919,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderOptions();
     updatePreview();
   }
+  // конструктор чай-органайзера є тільки на organizers.html
+  if ($('optTeaColor')){
+    renderTeaOptions();
+    updateTeaPreview();
+  }
   renderLampsGrid();
   renderOrganizersGrid();
   renderFaq();
@@ -857,6 +937,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   renderCart();
   if ($('addToCartBtn')) $('addToCartBtn').addEventListener('click', addToCart);
+  if ($('addTeaBtn')) $('addTeaBtn').addEventListener('click', addTeaToCart);
   $('cartBtn').addEventListener('click', () => cartOpen() ? closeCart() : openCart());
   $('cartClose').addEventListener('click', () => closeCart());
   $('cartOverlay').addEventListener('click', () => closeCart());

@@ -63,6 +63,20 @@
         <div id="colorRows" class="admin-colors"></div>
         <button type="button" class="btn btn-ghost btn-small" id="addColorBtn">+ Додати колір</button>
 
+        <h2 class="admin-subhead">Чай-органайзер</h2>
+        <p class="admin-hint">Другий особливий товар із живим 3D (на сторінці органайзерів) — один колір на весь виріб, фото сюди не додаються.</p>
+        <div class="field">
+          <label for="fTeaName">Назва товару</label>
+          <input type="text" id="fTeaName" name="teaName" maxlength="80" required>
+        </div>
+        <div class="field">
+          <label for="fTeaPrice">Ціна, ₴</label>
+          <input type="number" id="fTeaPrice" name="teaPrice" min="1" max="1000000" step="1" required>
+        </div>
+        <p class="admin-hint">Кольори на вибір — по одному на весь органайзер (корпус і всі вставки).</p>
+        <div id="teaColorRows" class="admin-colors"></div>
+        <button type="button" class="btn btn-ghost btn-small" id="addTeaColorBtn">+ Додати колір</button>
+
         <h2 class="admin-subhead">Категорії</h2>
         <p class="admin-hint">Кожна категорія — окремий розділ на сайті з товарами нижче.</p>
         <div id="categoryRows" class="admin-categories"></div>

@@ -228,6 +228,15 @@ figure{ margin:0; }
 .lamp-stage.has-3d .lamp-hint{ opacity: 1; }
 .lamp-stage.has-3d.touched .lamp-hint{ opacity: 0; }
 
+/* tea-organizer's stage (tea3d.js): same look, but a wide box, not a tall
+   lamp — its own aspect ratio, and no photo underneath (there isn't one)
+   so the loading background already matches the after-load gradient. */
+.lamp-stage.tea-stage{
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  background: radial-gradient(120% 90% at 50% 30%, #FBF7F1 0%, #E6DACB 100%);
+}
+
 .preview-side{ width: 100%; display:flex; flex-direction:column; align-items:center; gap: 16px; }
 .light-toggle{
   display:inline-flex; align-items:center; gap: 12px;

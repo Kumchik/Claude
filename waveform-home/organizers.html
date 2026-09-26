@@ -32,7 +32,7 @@
       <a href="organizers.html" aria-current="page">Органайзери</a>
       <a href="#contacts">Контакти</a>
     </nav>
-    <a href="#organizersCatalog" class="btn btn-primary btn-small header-cta">Каталог</a>
+    <a href="#teaBuilder" class="btn btn-primary btn-small header-cta">Конструктор</a>
     <button class="cart-btn" id="cartBtn" type="button" aria-label="Кошик" aria-controls="cartDrawer" aria-expanded="false">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 11.1a2 2 0 0 1-2 1.9H8.2a2 2 0 0 1-2-1.9L5 8Z"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/></svg>
       <span class="cart-count" id="cartCount" hidden>0</span>
@@ -53,7 +53,7 @@
         <h1>Порядок, який <em>приємно тримати</em> в руках</h1>
         <p class="hero-sub">Функціональні дрібнички для дому — органайзери для чаю, бʼюті-засобів, підставки та інше. Той самий підхід до форми й матеріалів, що й у наших лампах.</p>
         <div class="hero-actions">
-          <a href="#organizersCatalog" class="btn btn-primary">Дивитись органайзери</a>
+          <a href="#teaBuilder" class="btn btn-primary">Обрати колір</a>
           <a href="lamps.html" class="btn btn-ghost">Лампи Waveform</a>
         </div>
         <ul class="hero-points">
@@ -79,8 +79,9 @@
   </section>
 
   <!-- CATALOG -->
-  <!-- Усе, що не в категорії Dune (renderOrganizersGrid() в app.js);
-       заглушка "Скоро в колекції", поки в адмінці немає жодного товару. -->
+  <!-- Чай-органайзер (окремий товар з живим 3D, як Dune) завжди перша
+       картка, плюс усе, що не в категорії Dune (renderOrganizersGrid() в
+       app.js); наприкінці — заглушка "Скоро в колекції". -->
   <section class="section section-alt" id="organizersCatalog">
     <div class="container">
       <div class="section-head">
@@ -89,6 +90,54 @@
         <p class="section-lead">Для чаю, бʼюті-засобів, дрібниць на столі — і не тільки.</p>
       </div>
       <div class="catalog-grid" id="organizersGrid"></div>
+
+      <div class="dune-builder" id="teaBuilder">
+        <div class="section-head">
+          <p class="eyebrow">ваш органайзер</p>
+          <h2>Оберіть колір під свій інтерʼєр</h2>
+          <p class="section-lead">Три секції — для трьох сортів чаю або трьох людей вдома, кожна з рельєфною хвилястою текстурою всередині. Органайзер можна покрутити, щоб роздивитись з усіх боків.</p>
+        </div>
+
+        <div class="configurator">
+        <div class="configurator-preview">
+          <div class="preview-sticky">
+            <div class="lamp-stage tea-stage" id="teaStage">
+              <!-- 3D model of the tea organizer (models/tea-organizer.glb), drawn by tea3d.js -->
+              <canvas class="lamp-canvas" id="teaCanvas" aria-label="3D-модель чай-органайзера в обраному кольорі. Потягніть, щоб повернути."></canvas>
+              <span class="lamp-hint" id="teaHint">Потягніть, щоб повернути</span>
+            </div>
+            <div class="preview-side">
+              <div class="preview-meta">
+                <div class="preview-row">
+                  <span>Модель</span>
+                  <strong id="teaMetaName">Waveform Чай-органайзер</strong>
+                </div>
+                <div class="preview-row">
+                  <span>Колір</span>
+                  <strong class="color-name" id="teaMetaColor">Sage Green</strong>
+                </div>
+                <div class="preview-divider"></div>
+                <div class="preview-row preview-price">
+                  <span>Вартість</span>
+                  <strong id="teaMetaPrice">950 ₴</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="configurator-controls">
+          <div class="config-step">
+            <div class="step-label"><span class="step-num">1</span>Колір <em id="teaColorName"></em></div>
+            <div class="options-row" id="optTeaColor"></div>
+            <p class="step-hint">Один колір на весь органайзер — корпус і всі три вставки.</p>
+          </div>
+
+          <button class="btn btn-primary btn-wide" id="addTeaBtn" type="button">Додати в кошик — 950 ₴</button>
+          <p class="config-note">Оплата карткою на сайті через monobank (Apple Pay, Google Pay) або накладеним платежем на Новій пошті.</p>
+        </div>
+      </div>
+      </div>
     </div>
   </section>
 
@@ -271,5 +320,12 @@
 </button>
 
 <script src="app.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+} }
+</script>
+<script type="module" src="tea3d.js"></script>
 </body>
 </html>

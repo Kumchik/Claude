@@ -220,6 +220,11 @@ async function loadCatalogIntoForm(){
   $('colorRows').innerHTML = '';
   cat.filaments.forEach(c => addColorRow($('colorRows'), c));
 
+  $('fTeaName').value = cat.teaOrganizer?.name || '';
+  $('fTeaPrice').value = cat.teaOrganizer?.price || '';
+  $('teaColorRows').innerHTML = '';
+  (cat.teaOrganizer?.filaments || []).forEach(c => addColorRow($('teaColorRows'), c));
+
   $('categoryRows').innerHTML = '';
   (cat.categories || []).forEach(addCategoryRow);
   refreshCategoryOptions(); // populates #fCategory even when there are zero categories yet
@@ -234,6 +239,11 @@ async function saveCatalog(){
     productName: $('fProductName').value.trim(),
     price: Number($('fPrice').value),
     filaments: readColorRows($('colorRows')),
+    teaOrganizer: {
+      name: $('fTeaName').value.trim(),
+      price: Number($('fTeaPrice').value),
+      filaments: readColorRows($('teaColorRows')),
+    },
     categories: readCategoryRows(),
     products: readProductRows(),
     duneCategoryId: $('fCategory').value,
@@ -243,6 +253,7 @@ async function saveCatalog(){
 
 document.addEventListener('DOMContentLoaded', () => {
   $('addColorBtn').addEventListener('click', () => addColorRow($('colorRows')));
+  $('addTeaColorBtn').addEventListener('click', () => addColorRow($('teaColorRows')));
   $('addCategoryBtn').addEventListener('click', () => addCategoryRow());
   $('addProductBtn').addEventListener('click', () => addProductRow());
 
