@@ -191,6 +191,16 @@ figure{ margin:0; }
 
 /* ---------- configurator ---------- */
 .configurator{ display:grid; grid-template-columns: 380px 1fr; gap: 44px; }
+/* tea-organizer's preview column is 1.5x Dune's (570px, not 380px) — the
+   .tea-stage width formula above is capped by this column's width via
+   min(100%, …), so widening just the formula alone did nothing until
+   this got a matching bump. :where() keeps this at the same specificity
+   as the plain .configurator rules above and in the mobile media query
+   below, so normal source order still applies: this overrides the
+   desktop rule above it, and the mobile rule further down (single
+   column, .configurator-preview: display:contents) still overrides
+   this in turn — it never fights the mobile layout. */
+:where(#teaBuilder) .configurator{ grid-template-columns: 570px 1fr; }
 .configurator-preview{ align-self: stretch; }
 .preview-sticky{ position: sticky; top: calc(96px + env(safe-area-inset-top, 0px)); display:flex; flex-direction:column; align-items:center; gap: 16px; }
 
@@ -238,7 +248,7 @@ figure{ margin:0; }
    Dune's stage (width:auto + height:34vh) size this one too. */
 .lamp-stage.tea-stage{
   aspect-ratio: 4 / 3;
-  width: min(100%, calc((100vh - 330px) * 4 / 3));
+  width: min(100%, calc((100vh - 330px) * 4 / 3 * 1.5));
   background: radial-gradient(120% 90% at 50% 30%, #FBF7F1 0%, #E6DACB 100%);
 }
 
@@ -581,7 +591,7 @@ body.no-scroll{ overflow: hidden; }
      portrait (700:987), so sizing it the same way (from a height) makes it
      much wider — wide enough to overflow the viewport next to the price
      card. Sized from a width instead, small enough for both to fit. */
-  .lamp-stage.tea-stage{ width: 140px; height: auto; max-height: none; min-height: 0; }
+  .lamp-stage.tea-stage{ width: 210px; height: auto; max-height: none; min-height: 0; }
   .preview-side{ gap: 10px; min-width: 0; flex: 1; align-items: stretch; }
   .preview-meta{ padding: 10px 14px; }
   .preview-meta .preview-row:first-child, .preview-divider{ display:none; }
