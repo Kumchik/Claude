@@ -165,6 +165,10 @@ figure{ margin:0; }
 /* ---------- sections ---------- */
 .section{ padding: 96px 0; scroll-margin-top: calc(76px + env(safe-area-inset-top, 0px)); }
 .dune-builder{ margin-top: 72px; scroll-margin-top: calc(76px + env(safe-area-inset-top, 0px)); }
+/* first thing in its section (lamps.html) — the section's own padding is enough */
+.dune-builder:first-child{ margin-top: 0; }
+/* catalog heading placed under a constructor needs the same breathing room */
+.section-head.catalog-head{ margin-top: 72px; }
 .section-alt{ background: var(--bg-alt); }
 .section-head{ max-width: 640px; margin: 0 auto 48px; text-align:center; }
 .section-head h2{ font-size: clamp(1.8rem, 3.2vw, 2.6rem); }
