@@ -90,18 +90,14 @@
   </section>
 
   <!-- CONFIGURATOR + CATALOG -->
-  <!-- Конструктор Dune — одразу під заголовком розділу; картки каталогу
+  <!-- Конструктор Dune (зі своїм заголовком «Ваша Dune») — одразу на
+       початку секції; заголовок «Каталог: Лампи Waveform» і картки
        (Dune завжди перша, плюс товари з тієї ж категорії, якщо в адмінці
        для неї обрали категорію — renderLampsGrid() в app.js) — нижче
        нього. Клік по картці Dune прокручує назад до конструктора вище.
        Інші товари поки без живого 3D — відкриваються в модалці. -->
   <section class="section section-alt" id="configurator">
     <div class="container">
-      <div class="section-head">
-        <p class="eyebrow">каталог</p>
-        <h2>Лампи Waveform</h2>
-        <p class="section-lead">Починаємо з Dune. Нові моделі вже в роботі.</p>
-      </div>
       <div class="dune-builder" id="duneBuilder">
         <div class="section-head">
           <p class="eyebrow">ваша Dune</p>
@@ -166,6 +162,11 @@
       </div>
       </div>
 
+      <div class="section-head">
+        <p class="eyebrow">каталог</p>
+        <h2>Лампи Waveform</h2>
+        <p class="section-lead">Починаємо з Dune. Нові моделі вже в роботі.</p>
+      </div>
       <div class="catalog-grid" id="catalogGrid"></div>
     </div>
   </section>
